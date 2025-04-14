@@ -27,7 +27,7 @@ bool checkPhoneNumber(std::string PhoneNumber)
     // std::cout << PhoneNumber << '\n';
     // std::cout << PhoneNumber.length() << '\n';
 
-    if(PhoneNumber.length()>=5 && PhoneNumber.length()<=15)
+    if(PhoneNumber.length()>=7 && PhoneNumber.length()<=15)
     {
         for(int i=0; i<PhoneNumber.length(); i++)
         {
@@ -61,7 +61,33 @@ bool checkPhoneNumber(std::string PhoneNumber)
   
 }
 
+bool checkPhoneNumber2(std::string PhoneNumber)
+{
+    PhoneNumber = deleteSpaces(PhoneNumber);
+    // std::cout << PhoneNumber.length() << '\n';
+    
+    if (PhoneNumber.length() >= 7 & PhoneNumber.length() <= 15)
+    {
+        for(int i=0; i<PhoneNumber.length(); i++)
+        {
+            if(std::isdigit(PhoneNumber[i]))
+            {
+                continue;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void addNewCustomer()
 {
-    
+
 }

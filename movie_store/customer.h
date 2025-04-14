@@ -12,4 +12,5 @@ struct Customer
 std::string generateId();
 std::string deleteSpaces(std::string str);
 bool checkPhoneNumber(std::string PhoneNumber);
+bool checkPhoneNumber2(std::string PhoneNumber);
 void addNewCustomer(); // TODO: takes an array of Customer
