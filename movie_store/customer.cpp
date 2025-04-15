@@ -1,6 +1,8 @@
 #include "customer.h"
 #include <iostream>
 #include <algorithm>
+#include <thread>
+#include <chrono>
 
 std::string generateId()
 {
@@ -87,7 +89,93 @@ bool checkPhoneNumber2(std::string PhoneNumber)
     }
 }
 
-void addNewCustomer()
+bool checkId(std::string& id, Customer c[], int size)
 {
+    for(int i=0; i<size; i++)
+    {
+        if(c[i].Id == id)
+        {
+            return false;
+        }
+    }
+    return true;
+}
 
+// Customer C[10] = {{"Name1", "121212"},{"Name2", "121212"},{"Name3", "121212"}};
+
+void addNewCustomer(Customer c[], int size)
+{
+    std::string name, phonenum, id;
+    std::cout << "Enter Customer name: ";
+    getline(std::cin, name);
+    
+
+    do 
+    {
+        std::cout << "Enter Customer phone: +";
+        getline(std::cin, phonenum);
+        
+        if(!checkPhoneNumber(phonenum))
+        {
+            std::cout << "Invalid phone number!\n";
+        }
+        
+        // if(checkPhoneNumber(phonenum))
+        // {
+        //     break;
+        // } 
+        // else
+        // {
+        //     std::cout << "Invalid phone number!\n";
+        // }
+
+    } while(!checkPhoneNumber(phonenum));
+    
+    do
+    {
+        id = generateId();
+        // --->sleep for 1 sec.
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // <thread> <chrono>
+
+    } while(!checkId(id, c, size));
+    
+
+    // id = generateId();
+
+    // for(int i=0; i<limit; i++)
+    // {
+    //     if(c[i].Id == id)
+    //     {
+    //         id = generateId();
+    //         continue;
+    //     }
+    // }
+
+    // int index = 0;
+    // for(const auto t : c) can't because Customer c[] is a pointer 
+    // {
+    //     std::cout << sizeof(t) << '\n';
+    //     index++;
+    // }
+    // std::cout << index << '\n';
+
+    for(int i=0; i<size; i++){
+        if(c[i].Name.empty())
+        {
+            c[i].Name = name;
+            c[i].PhoneNumber = phonenum;
+            c[i].Id = id;
+            break;
+        }   
+    }
+    
+    for(int j=0; j<size; j++)
+    {
+        if(!c[j].Name.empty())
+        {
+            std::cout << c[j].Name << '\n';
+            std::cout << c[j].PhoneNumber << '\n';
+            std::cout << c[j].Id << '\n';
+        }
+    }
 }
