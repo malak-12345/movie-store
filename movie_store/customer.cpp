@@ -66,7 +66,7 @@ bool checkPhoneNumber2(std::string PhoneNumber)
     PhoneNumber = deleteSpaces(PhoneNumber);
     // std::cout << PhoneNumber.length() << '\n';
     
-    if (PhoneNumber.length() >= 7 & PhoneNumber.length() <= 15)
+    if (PhoneNumber.length() >= 7 && PhoneNumber.length() <= 15)
     {
         for(int i=0; i<PhoneNumber.length(); i++)
         {
