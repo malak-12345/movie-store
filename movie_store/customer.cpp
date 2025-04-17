@@ -143,21 +143,22 @@ void addNewCustomer(Customer c[customer_max], int size){
     // }
 }
 
-void list_customers(Customer customers[customer_max], int number_of_customers){
+void list_customers(Customer customers[], int number_of_customers){
     int num = 1;
     for (int i = 0; i < number_of_customers; i++)
     {
-        std::cout << num<<"." << std::endl
+        std::cout << num << "." << std::endl;
         std::cout << "Customer ID: " << customers[i].Id << std::endl;
         std::cout << "Name: " << customers[i].Name << std::endl;
         std::cout << "Phone Number: " << customers[i].PhoneNumber << std::endl;
         if (!customers[i].PreviouslyRentedMovies.size() == 0)
         {
             std::cout << "has rented: ";
-            for (int j : customers[i].PreviouslyRentedMovies)
+            for (std::string j : customers[i].PreviouslyRentedMovies)
             {
-                if (j != "") { std::cout << "."; break; }
-                if (j > 0) { std::cout << ", "; }
+                if (j.empty()) { std::cout << "."; break; }
+                // if (j > 0) { std::cout << ", "; }
+                std::cout << '\n';
                 std::cout << j;
             }
             std::cout << "\n";
