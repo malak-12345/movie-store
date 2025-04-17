@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
-
+#include "customer.h"
+#define movies_max 100
 struct date {
     int year, month, day;
 };
@@ -16,8 +17,11 @@ struct movie {
     date DueDate;
 };
 
-std::vector<movie> movies;
+movie movies[movies_max];
+int movies_count = sizeof(movies) / sizeof(movies[0]);
 
-//void ListMovies(const std::vector<movie>& movies);
+
+void ListMovies(const movie(&movies)[movies_max],int& movies_count);
 double rate(movie& movie);
-void ListUnrented(std::vector<movie>& movies);
+void ListUnrented(movie(&movies)[movies_max],const int& movies_count);
+void Rent(movie(&movies)[movies_max], int movies_count), Customer (&customers)[customer_max]);

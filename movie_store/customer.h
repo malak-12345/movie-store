@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "Howard_Hinnant/include/date/date.h"
 #define limit 8
+#define customer_max 50
 
 struct Customer
 {
@@ -10,6 +12,7 @@ struct Customer
     std::vector<std::string> PreviouslyRentedMovies;
 };
 
+Customer customers[customer_max];
 std::string generateId();
 std::string deleteSpaces(std::string str);
 bool checkPhoneNumber(std::string PhoneNumber);
