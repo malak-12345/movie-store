@@ -1,6 +1,8 @@
 #include "customer.h"
 #include <iostream>
 #include <algorithm>
+#include <thread>
+#include <chrono>
 
 std::string generateId()
 {
@@ -13,7 +15,7 @@ std::string generateId()
     return Id;
 }
 
-std::string deleteSpaces(std::string str)
+std::string deleteSpaces(std::string& str)
 {
     str.erase(remove(str.begin(),str.end(), ' '), str.end());
     return str;
@@ -68,13 +70,9 @@ bool checkPhoneNumber2(std::string PhoneNumber)
     
     if (PhoneNumber.length() >= 7 && PhoneNumber.length() <= 15)
     {
-        for(int i=0; i<PhoneNumber.length(); i++)
+        for(const char& i : PhoneNumber) //int i=0; i<PhoneNumber.length(); i++
         {
-            if(std::isdigit(PhoneNumber[i]))
-            {
-                continue;
-            }
-            else
+            if(!std::isdigit(i))
             {
                 return false;
             }
@@ -87,7 +85,61 @@ bool checkPhoneNumber2(std::string PhoneNumber)
     }
 }
 
-void addNewCustomer()
+bool checkId(std::string& id, Customer c[], int size)
 {
+    for(int i=0; i<size; i++)
+    {
+        if(c[i].Id == id)
+        {
+            return false;
+        }
+    }
+    return true;
+}
 
+void addNewCustomer(Customer c[], int size)
+{
+    std::string name, phonenum, id;
+    std::cout << "Enter Customer name: ";
+    getline(std::cin, name);
+    
+    do 
+    {
+        std::cout << "Enter Customer phone: +";
+        getline(std::cin, phonenum);
+        
+        if(!checkPhoneNumber(phonenum))
+        {
+            std::cout << "Invalid phone number!\n";
+        }
+
+    } while(!checkPhoneNumber(phonenum));
+    
+    do
+    {
+        id = generateId();
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // --->sleep for 1 sec.
+
+    } while(!checkId(id, c, size));
+
+
+    for(int i=0; i<size; i++){
+        if(c[i].Name.empty())
+        {
+            c[i].Name = name;
+            c[i].PhoneNumber = phonenum;
+            c[i].Id = id;
+            break;
+        }   
+    }
+    
+    // for(int j=0; j<size; j++)
+    // {
+    //     if(!c[j].Name.empty())
+    //     {
+    //         std::cout << c[j].Name << '\n';
+    //         std::cout << c[j].PhoneNumber << '\n';
+    //         std::cout << c[j].Id << '\n';
+    //     }
+    // }
 }
