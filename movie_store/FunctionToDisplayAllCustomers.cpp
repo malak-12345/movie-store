@@ -20,3 +20,30 @@ void list(Customer customers[], int number_of_customers)
     }
 }
 
+void list(Customer customers[], int number_of_customers)
+{
+    for (int i = 0; i < number_of_customers; i++)
+    {
+        cout << "Customer ID :" << customers[i].Id << endl;
+        cout << "Name :" << customers[i].Name << endl;
+        cout << "Phone Number :" << customers[i].PhoneNumber << endl;
+        if (!customers[i].CurrentlyRentedMovies[0].empty())
+        {
+            cout << "Currently Renting : ";
+            
+            for(int j=0; j<limit; j++)
+            {
+                if(customers[i].CurrentlyRentedMovies[j].empty()) { cout << "."; break; }
+                if(j>0) cout <<", ";
+                // cout << '\n';
+                cout <<customers[i].CurrentlyRentedMovies[j];
+            }
+            cout << '\n';
+        }
+        else
+        {
+            cout << "Currently Renting : 0" << endl;
+        }
+      
+    }
+}
