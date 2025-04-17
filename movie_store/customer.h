@@ -1,11 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-<<<<<<< HEAD
 #include "Howard_Hinnant/include/date/date.h"
-=======
-#include <array>
->>>>>>> e62ca82a458e79665f5e4ec5d3ede06f7a4e247e
 #define limit 8
 #define customer_max 50
 
@@ -18,11 +14,12 @@ struct Customer
 };
 
 Customer customers[customer_max];
+int customers_count = sizeof(customers) / sizeof(customers[0]);
 std::string generateId();
 std::string deleteSpaces(std::string& str);
 
 bool checkPhoneNumber(std::string PhoneNumber);
 bool checkPhoneNumber2(std::string PhoneNumber);
-
-bool checkId(std::string& id, Customer c[], int size);
-void addNewCustomer(Customer c[], int size);
+void list_customers(Customer customers[customer_max], int number_of_customers);
+bool checkId(std::string& id, Customer c[customer_max], int size);
+void addNewCustomer(Customer c[customer_max], int size);
