@@ -12,12 +12,12 @@ struct Customer
     // std::array<std::string, limit> CurrentlyRentedMovies;
     std::vector<std::string> PreviouslyRentedMovies;
 };
-
+int CurrentlyRentedMovies_count = sizeof(CurrentlyRentedMovies) / sizeof(CurrentlyRentedMovies[0]);
 Customer customers[customer_max];
 int customers_count = sizeof(customers) / sizeof(customers[0]);
+
 std::string generateId();
 std::string deleteSpaces(std::string& str);
-
 bool checkPhoneNumber(std::string PhoneNumber);
 bool checkPhoneNumber2(std::string PhoneNumber);
 void list_customers(Customer customers[customer_max], int number_of_customers);

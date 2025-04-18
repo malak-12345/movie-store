@@ -21,7 +21,7 @@ movie movies[movies_max];
 int movies_count = sizeof(movies) / sizeof(movies[0]);
 
 
-void ListMovies(const movie(&movies)[movies_max],int& movies_count);
+void ListMovies(const movie(&movies)[],int& movies_count);
 double rate(movie& movie);
-void ListUnrented(movie(&movies)[movies_max],const int& movies_count);
-void Rent(movie(&movies)[movies_max], int movies_count), Customer (&customers)[customer_max]);
+int ListUnrented(movie(&movies)[],const int& movies_count);
+void Rent(Customer(&cust)[], int movies_count, movie(&movies)[]);

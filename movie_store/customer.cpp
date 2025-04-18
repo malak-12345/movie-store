@@ -85,7 +85,7 @@ bool checkPhoneNumber2(std::string PhoneNumber)
     }
 }
 
-bool checkId(std::string& id, Customer c[customer_max], int size)
+bool checkId(std::string& id, Customer c[], int size)
 {
     for(int i=0; i<size; i++)
     {
@@ -97,7 +97,7 @@ bool checkId(std::string& id, Customer c[customer_max], int size)
     return true;
 }
 
-void addNewCustomer(Customer c[customer_max], int size){
+void addNewCustomer(Customer c[], int size){
     std::string name, phonenum, id;
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
@@ -143,11 +143,11 @@ void addNewCustomer(Customer c[customer_max], int size){
     // }
 }
 
-void list_customers(Customer customers[customer_max], int number_of_customers){
+void list_customers(Customer customers[], int number_of_customers){
     int num = 1;
     for (int i = 0; i < number_of_customers; i++)
     {
-        std::cout << num<<"." << std::endl
+        std::cout << num << "." << std::endl;
         std::cout << "Customer ID: " << customers[i].Id << std::endl;
         std::cout << "Name: " << customers[i].Name << std::endl;
         std::cout << "Phone Number: " << customers[i].PhoneNumber << std::endl;
