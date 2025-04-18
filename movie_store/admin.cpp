@@ -42,10 +42,7 @@ void deleteMovie(movie movies[], int size, std::string name)
             movies[i].DueDate.day = 0;
             movies[i].DueDate.month = 0;
             movies[i].DueDate.year = 0;
-        }
-        else
-        {
-            std::cout << "This film doesn't exist\n";
+            break;
         }
     }
 }
