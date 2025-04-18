@@ -21,49 +21,49 @@ std::string deleteSpaces(std::string& str)
     return str;
 }
 
-bool checkPhoneNumber(std::string PhoneNumber)
-{
-    char digits[10] = {'0','1','2','3','4','5','6','7','8','9'};
+// bool checkPhoneNumber(std::string PhoneNumber)
+// {
+//     char digits[10] = {'0','1','2','3','4','5','6','7','8','9'};
 
-    PhoneNumber = deleteSpaces(PhoneNumber);
-    // std::cout << PhoneNumber << '\n';
-    // std::cout << PhoneNumber.length() << '\n';
+//     PhoneNumber = deleteSpaces(PhoneNumber);
+//     // std::cout << PhoneNumber << '\n';
+//     // std::cout << PhoneNumber.length() << '\n';
 
-    if(PhoneNumber.length()>=7 && PhoneNumber.length()<=15)
-    {
-        for(int i=0; i<PhoneNumber.length(); i++)
-        {
-            bool isDigit = false;
+//     if(PhoneNumber.length()>=7 && PhoneNumber.length()<=15)
+//     {
+//         for(int i=0; i<PhoneNumber.length(); i++)
+//         {
+//             bool isDigit = false;
             
-            // std::cout << "Outer loop:" << PhoneNumber[i] << '\n';
-            // std::cout << sizeof(PhoneNumber[i]) << '\n';
+//             // std::cout << "Outer loop:" << PhoneNumber[i] << '\n';
+//             // std::cout << sizeof(PhoneNumber[i]) << '\n';
             
-            for(int j=0; j<10; j++)
-            {
-                // std::cout << "i: " << i << "j: " << j << '\n';
-                if(PhoneNumber[i] == digits[j])
-                {
-                    // std::cout << "Inner loop:" << digits[j] << '\n';
-                    isDigit = true;
-                    break;
-                }
-            }
+//             for(int j=0; j<10; j++)
+//             {
+//                 // std::cout << "i: " << i << "j: " << j << '\n';
+//                 if(PhoneNumber[i] == digits[j])
+//                 {
+//                     // std::cout << "Inner loop:" << digits[j] << '\n';
+//                     isDigit = true;
+//                     break;
+//                 }
+//             }
         
-            if(!isDigit)
-            {
-                // std::cout << "not a digit\n";
-                return false;
-            }
-        }
-        return true;
-    }
-    else{
-        return false;
-    }
+//             if(!isDigit)
+//             {
+//                 // std::cout << "not a digit\n";
+//                 return false;
+//             }
+//         }
+//         return true;
+//     }
+//     else{
+//         return false;
+//     }
   
-}
+// }
 
-bool checkPhoneNumber2(std::string PhoneNumber)
+bool checkPhoneNumber(std::string PhoneNumber)
 {
     PhoneNumber = deleteSpaces(PhoneNumber);
     // std::cout << PhoneNumber.length() << '\n';
@@ -143,7 +143,9 @@ void addNewCustomer(Customer c[], int size){
     // }
 }
 
-void list_customers(Customer customers[], int number_of_customers){
+
+void list_customers(Customer customers[], int number_of_customers)
+{
     int num = 1;
     for (int i = 0; i < number_of_customers; i++)
     {
@@ -154,15 +156,19 @@ void list_customers(Customer customers[], int number_of_customers){
         if (!customers[i].PreviouslyRentedMovies.size() == 0)
         {
             std::cout << "has rented: ";
-            for (int j : customers[i].PreviouslyRentedMovies)
+
+            for (std::string j : customers[i].PreviouslyRentedMovies)
             {
-                if (j != "") { std::cout << "."; break; }
-                if (j > 0) { std::cout << ", "; }
+                if (j.empty()) { std::cout << "."; break; }
+                // if (j > 0) { std::cout << ", "; }
+                std::cout << '\n';
                 std::cout << j;
             }
             std::cout << "\n";
         }
-        else {
+
+        else 
+        {
             std::cout << "hasn't rented any movies yet" << std::endl;
         }
 
@@ -177,9 +183,12 @@ void list_customers(Customer customers[], int number_of_customers){
             }
             std::cout << "\n";
         }
-        else {
+
+        else 
+        {
             std::cout << "Currently Renting: none" << std::endl;
         }
         num++;
     }
 }
+
