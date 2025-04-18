@@ -1,6 +1,16 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <iostream>
+#include <algorithm>
+#include <thread>
+#include <chrono>
+#include <limits>
+#include <sstream>
+
+
+
+
 #define limit 8
 #define customer_max 50
 

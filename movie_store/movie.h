@@ -1,13 +1,13 @@
 #pragma once
-#include <string>
-#include <vector>
 #include "customer.h"
 #include "Howard_Hinnant/include/date/date.h"
-#include <iostream>
-#include <limits>
-#include <sstream>
-#include <chrono>
-#include <thread>
+//#include <string>
+//#include <vector>
+//#include <iostream>
+//#include <limits>
+//#include <sstream>
+//#include <chrono>
+//#include <thread>
 #define movies_max 100
 
 

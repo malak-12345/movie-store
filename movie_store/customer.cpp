@@ -1,8 +1,5 @@
 #include "customer.h"
-#include <iostream>
-#include <algorithm>
-#include <thread>
-#include <chrono>
+
 
 std::string generateId()
 {
