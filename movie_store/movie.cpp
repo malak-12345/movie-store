@@ -1,12 +1,10 @@
 #include "movie.h"
 #include "customer.h"
-#include <iostream>
-#include <limits>
-#include <chrono>
-#include <thread>
 
+using namespace date;
+using namespace std::chrono;
 
-void ListMovies(const movie(&movies)[], const int& movies_count) {
+void ListMovies(const movie movies[], const int& movies_count) {
     int MovieNum = 1;
     if (movies_count != 0) {
         for (int i = 0;i <= movies_count;i++) {
@@ -30,7 +28,7 @@ void ListMovies(const movie(&movies)[], const int& movies_count) {
 }
 
 //will always be called before renting and sometimes separately
-int ListUnrented(const movie(&movies)[], const int& movies_count) {
+int ListUnrented(const movie movies[], const int& movies_count) {
     int MovieNum = 1;
     if (movies_count != 0) {
         for (int i = 0;i <= movies_count;i++) {
@@ -54,11 +52,11 @@ int ListUnrented(const movie(&movies)[], const int& movies_count) {
 
 
 double rate(movie& movie) { //using a weighted rating algorithm
-    std::cout << "on a scale from 1 to 5, how much would you rate this movie?: ";
     int Rating;
     bool ValidRating = false;
     double FinalRating = 0.0;
     int a, b, c, d, e;
+    std::cout << "on a scale from 1 to 5, how much would you rate this movie?: ";
     while (!ValidRating) {
         Rating = 0;
         a = 0;
@@ -67,6 +65,7 @@ double rate(movie& movie) { //using a weighted rating algorithm
         d = 0;
         e = 0;
         std::cin >> Rating;
+        if (Rating == 0) return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
         if (std::cin.good() && Rating >= 1 && Rating <= 5) {
             ValidRating = true;
         }
@@ -129,36 +128,38 @@ double rate(movie& movie) { //using a weighted rating algorithm
 
 
 
-void Rent(Customer(&cust)[], int movies_count, movie(&movies)[]){
-    bool CustomerFound = false, repeat = true;
-    int selected,customer ,segment_count = 3,  match = 1, unrented_movies_count = ListUnrented(movies, movies_count);
-    char delimiter = '/';
-    std::string name, id, enterd_date;
+void Rent(Customer cust[], int movies_count, movie movies[]){
+    bool CustomerFound = false, repeat = true, date_good=false;
+    int selected,customer, match = 1, unrented_movies_count = ListUnrented(movies, movies_count);
+    std::string name, id;
+    std::string entered_date;
+    char delimiter1, delimiter2;
+    int y, m, d;
+    year_month_day today = year_month_day{ floor<days>(system_clock::now()) };
+    std::cout << "\n\n";
     ListUnrented(movies, movies_count);
     while (!CustomerFound) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        std::cout << "enter customer name: "; //"if you wish to go back enter '0', otherwise..." add a way to navigate
-        std::getline(std::cin, name);
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "enter customer id: ";
         std::getline(std::cin, id);
+        if (id == "0") return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         for (int i = 0; i < customers_count;i++) {
-            if (cust[i].Id == id && cust[i].Name == name || /*is admin*/) {
+            if (cust[i].Id == id) {
                 CustomerFound = true;
                 customer = i;
                 break;
             }
             else {
                 std::cerr << "wrong name or id, please try again\n";
+                std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             }
         }
     }
     std::cout << "pick a movie number: ";
     while (repeat) {
         std::cin >> selected;
+        if (selected == 0) return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
         if (std::cin.good() && selected < unrented_movies_count && selected > 0) {
             repeat = false;
         }
@@ -176,15 +177,18 @@ void Rent(Customer(&cust)[], int movies_count, movie(&movies)[]){
             std::cout << "\toverdue fee per day: " << movies[i].fee << " EGP" << std::endl;
             std::cout << "\tmovie rating:" << movies[i].rating << std::endl;
             std::cout << "\thas been rented: " << movies[i].RentedCount << " times" << std::endl;
-            std::cout << "today is: "<</*date*/ <<std::endl;
-            std::cout << "specify due date in this exact format yy/mm/dd : ";
-            //std::istringstream iss(enterd_date);     fix
-            //std::getline(std::cin, enterd_date);
-
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "today is: "<< today <<std::endl;
+            while (!date_good)/*incomplete fail safe*/ {
+                std::cout << "specify due date in this exact format yyyy-mm-dd : ";
+                getline(std::cin, entered_date);
+                if (entered_date == "0") return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
+                std::istringstream iss(entered_date);
+                if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') {
+                    movies[i].DueDate = year(y) / month(m) / day(d);
+                } //note to self: implement fail safe !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            }
             movies[i].rented = true;
-            movies[i].RentedCount ++;
+            movies[i].RentedCount++;
             movies[i].CurrentRenter = name;
             for (int j = 0;j < customers_count;j++) {
                 if (cust[customer].Id == id) {
@@ -198,8 +202,3 @@ void Rent(Customer(&cust)[], int movies_count, movie(&movies)[]){
         }
     }
 }
-
-
-
-
-
