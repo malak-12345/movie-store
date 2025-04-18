@@ -6,15 +6,15 @@
 #include <thread>
 
 
-void ListMovies(const std::vector<movie>& movies) {
+void ListMovies(const movie(&movies)[movies_max], const int& movies_count) {
     int MovieNum = 1;
-    if (!movies.size() == 0) {
-        for (movie i : movies) {
-            std::cout << MovieNum << ". " << i.Name << std::endl;
-            std::cout << "\tprice: " << i.price << " EGP" << std::endl;
-            std::cout << "\trating:" << i.rating << std::endl;
-            std::cout << "\trented: " << i.RentedCount << " times" << std::endl;
-            if (i.rented) {
+    if (movies_count != 0) {
+        for (int i = 0;i <= movies_count;i++) {
+            std::cout << MovieNum << ". " << movies[i].Name << std::endl;
+            std::cout << "\tprice: " << movies[i].price << " EGP" << std::endl;
+            std::cout << "\trating:" << movies[i].rating << std::endl;
+            std::cout << "\trented: " << movies[i].RentedCount << " times" << std::endl;
+            if (movies[i].rented) {
                 std::cout << "\trented status: " << "rented" << std::endl;
             }
             else {
@@ -30,14 +30,12 @@ void ListMovies(const std::vector<movie>& movies) {
 }
 
 //will always be called before renting and sometimes separately
-void ListUnrented(std::vector<movie>& movies) {
-    int id, selected, index = 0, MovieNum = 1;
-    bool CustomerFound = false, repeat = false;
-    std::string name;
-    if (!movies.size() == 0) {
-        for (movie i : movies) {
-            if (!i.rented) {
-                std::cout << MovieNum << ". " << i.Name << std::endl;
+void ListUnrented(const movie(&movies)[movies_max], const int& movies_count) {
+    int MovieNum = 1;
+    if (movies_count != 0) {
+        for (int i = 0;i <= movies_count;i++) {
+            if (!movies[i].rented) {
+                std::cout << MovieNum << ". " << movies[i].Name << std::endl;
                 MovieNum++;
             }
         }
@@ -46,38 +44,10 @@ void ListUnrented(std::vector<movie>& movies) {
             std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             // main_menu();
         }
-        // std::cout << "enter customer id: ";
-        // std::cin >> id;
-        std::cout << "enter customer name: "; //"if you wish to go back enter '0', otherwise" add a way to navigate
-        std::getline(std::cin, name);
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        for (customer i : customers) {
-            if (name == i.name) {
-                CustomerFound = true;
-                break;
-            }
-            index++;
-        }
-        std::cout << "pick a movie number: ";
-        while (repeat) {
-            std::cin >> selected;
-            if (std::cin.good() && selected <= MovieNum) {
-                repeat = false;
-                rent(/*arguments*/);
-            }
-            else {
-                std::cerr << "Invalid choice. Please select a valid movie number";
-                repeat = true;
-            }
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-    }
-    else {
+    }else {
         std::cerr << "there are currently no movies on the system, please add a movie first" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        // main_menu();
+        //exit to main menu main_menu();
     }
 }
 
@@ -154,3 +124,16 @@ double rate(movie& movie) { //using a weighted rating algorithm
     std::cout << "\nthank you for your review!! " << std::endl;
     return FinalRating;
 }
+
+
+
+
+void rent() {
+    bool CustomerFound = false, repeat = true;
+    int selected;
+    std::string name;
+    ListUnrented(movies, movies_count);
+
+}
+
+

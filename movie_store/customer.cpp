@@ -85,7 +85,7 @@ bool checkPhoneNumber2(std::string PhoneNumber)
     }
 }
 
-bool checkId(std::string& id, Customer c[], int size)
+bool checkId(std::string& id, Customer c[customer_max], int size)
 {
     for(int i=0; i<size; i++)
     {
@@ -97,8 +97,7 @@ bool checkId(std::string& id, Customer c[], int size)
     return true;
 }
 
-void addNewCustomer(Customer c[], int size)
-{
+void addNewCustomer(Customer c[customer_max], int size){
     std::string name, phonenum, id;
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
@@ -142,4 +141,46 @@ void addNewCustomer(Customer c[], int size)
     //         std::cout << c[j].Id << '\n';
     //     }
     // }
+}
+
+void list_customers(Customer customers[], int number_of_customers){
+    int num = 1;
+    for (int i = 0; i < number_of_customers; i++)
+    {
+        std::cout << num << "." << std::endl;
+        std::cout << "Customer ID: " << customers[i].Id << std::endl;
+        std::cout << "Name: " << customers[i].Name << std::endl;
+        std::cout << "Phone Number: " << customers[i].PhoneNumber << std::endl;
+        if (!customers[i].PreviouslyRentedMovies.size() == 0)
+        {
+            std::cout << "has rented: ";
+            for (std::string j : customers[i].PreviouslyRentedMovies)
+            {
+                if (j.empty()) { std::cout << "."; break; }
+                // if (j > 0) { std::cout << ", "; }
+                std::cout << '\n';
+                std::cout << j;
+            }
+            std::cout << "\n";
+        }
+        else {
+            std::cout << "hasn't rented any movies yet" << std::endl;
+        }
+
+        if (!customers[i].CurrentlyRentedMovies[0].empty())
+        {
+            std::cout << "Currently Renting: ";
+            for (int j = 0; j < limit; j++)
+            {
+                if (customers[i].CurrentlyRentedMovies[j].empty()) { std::cout << "."; break; }
+                if (j > 0) { std::cout << ", "; }
+                std::cout << customers[i].CurrentlyRentedMovies[j];
+            }
+            std::cout << "\n";
+        }
+        else {
+            std::cout << "Currently Renting: none" << std::endl;
+        }
+        num++;
+    }
 }
