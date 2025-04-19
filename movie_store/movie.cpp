@@ -190,7 +190,7 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
             movies[i].rented = true;
             movies[i].RentedCount++;
             movies[i].CurrentRenter = name;
-            cust[customer].CurrentlyRentedMovies[CurrentlyRentedMovies_count] = movies[i].Name;
+            cust[customer].CurrentlyRentedMovies[cust[customer].CurrentlyRentedMovies_count] = movies[i].Name;
             cust[customer].PreviouslyRentedMovies.push_back(movies[i].Name);
         }
         if (!movies[i].rented) {
