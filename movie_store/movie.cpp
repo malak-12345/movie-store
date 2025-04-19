@@ -1,6 +1,5 @@
 #include "movie.h"
 #include "customer.h"
-
 using namespace date;
 using namespace std::chrono;
 
@@ -39,12 +38,12 @@ int ListUnrented(const movie movies[], const int& movies_count) {
         }
         if (MovieNum == 1) { //meaning there are movies on the system but no movies were displayed, aka they are all rented 
             std::cerr << "there are currently no available movies to rent" << std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            std::this_thread::sleep_for(std::chrono::seconds(3));
             // main_menu();
         }
     }else {
         std::cerr << "there are currently no movies on the system, please add a movie first" << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
         //exit to main menu main_menu();
     }
     return MovieNum;
@@ -58,7 +57,7 @@ double rate(movie& movie) { //using a weighted rating algorithm
     int a, b, c, d, e;
     std::cout << "on a scale from 1 to 5, how much would you rate this movie?: ";
     while (!ValidRating) {
-        Rating = 0;
+        //Rating = 0;
         a = 0;
         b = 0;
         c = 0;
@@ -66,7 +65,7 @@ double rate(movie& movie) { //using a weighted rating algorithm
         e = 0;
         std::cin >> Rating;
         if (Rating == 0) return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
-        if (std::cin.good() && Rating >= 1 && Rating <= 5) {
+        if (std::cin.good() && Rating > 0 && Rating < 6) {
             ValidRating = true;
         }
         else {
@@ -74,6 +73,7 @@ double rate(movie& movie) { //using a weighted rating algorithm
         }
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
         if (!movie.AllRatings.size() == 0) {
             for (int i : movie.AllRatings) {
                 switch (i)
@@ -119,7 +119,6 @@ double rate(movie& movie) { //using a weighted rating algorithm
         default:
             break;
         }
-    }
     FinalRating = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / (a + b + c + d + e);
     std::cout << "\nthank you for your review!!! " << std::endl;
     return FinalRating;
@@ -147,6 +146,7 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
         for (int i = 0; i < customers_count;i++) {
             if (cust[i].Id == id) {
                 CustomerFound = true;
+                name = cust[i].Name;
                 customer = i;
                 break;
             }
@@ -190,15 +190,38 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
             movies[i].rented = true;
             movies[i].RentedCount++;
             movies[i].CurrentRenter = name;
-            for (int j = 0;j < customers_count;j++) {
-                if (cust[customer].Id == id) {
-                    cust[customer].CurrentlyRentedMovies[CurrentlyRentedMovies_count] = movies[i].Name;
-                    cust[customer].PreviouslyRentedMovies.push_back(movies[i].Name);
-                }
-            }
+            cust[customer].CurrentlyRentedMovies[CurrentlyRentedMovies_count] = movies[i].Name;
+            cust[customer].PreviouslyRentedMovies.push_back(movies[i].Name);
         }
         if (!movies[i].rented) {
             match++;
+        }
+    }
+}
+
+date::day validate_due(movie& movie) {
+
+}
+
+void ListDueAccounts(movie(&mov)[movies_max])
+{ //fyi it updates the accounts before listing them
+    int num = 1;
+    for (int i = 0;i < movies_max;i++) {
+        validate_due(mov[i]);
+    }
+    for (int i = 0; i < movies_max;i++) {
+        if (mov[i].due = true) {
+            int days_due = validate_due(/*args*/);
+            for (int j = 0;j < customer_max;j++) {
+                if (mov[i].CurrentRenter == cust[j].name) {
+                    std::cout << num << "." << cust[j].name << std::endl;
+                    std::cout << "id: " << cust[j].Id << std::endl;
+                    std::cout << "phone number: " << cust[j].PhoneNumber << std::endl;
+                    std::cout << "movie was due: " << days_due << "days ago.\n" << std::endl;
+                    std::cout << "due fees: " << days_due * mov[i].fee << std::endl;
+                }
+            }
+            num++;
         }
     }
 }

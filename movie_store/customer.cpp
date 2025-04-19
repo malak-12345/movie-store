@@ -174,9 +174,9 @@ void list_customers(Customer customers[], int number_of_customers)
             std::cout << "Currently Renting: ";
             for (int j = 0; j < limit; j++)
             {
-                if (customers[i].CurrentlyRentedMovies[j].empty()) { std::cout << "."; break; }
                 if (j > 0) { std::cout << ", "; }
                 std::cout << customers[i].CurrentlyRentedMovies[j];
+                if (customers[i].CurrentlyRentedMovies[j].empty()) { std::cout << "."; break; }
             }
             std::cout << "\n";
         }

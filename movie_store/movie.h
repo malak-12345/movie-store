@@ -1,6 +1,5 @@
 #pragma once
 #include "customer.h"
-#include "Howard_Hinnant/include/date/date.h"
 //#include <string>
 //#include <vector>
 //#include <iostream>
@@ -29,3 +28,5 @@ void ListMovies(const movie movies[],int& movies_count);
 double rate(movie& movie);
 int ListUnrented(movie movies[],const int& movies_count);
 void Rent(Customer cust [], int movies_count, movie movies[]);
+date::day validate_due(movie movie); //to do
+void ListDueAccounts();

@@ -1,5 +1,4 @@
 ﻿#include "admin.h"
-#include <iostream>
 
 std::string ADMIN = "admin";
 std::string ADMIN_PSSWRD = "admin"; // very safe ;) __ i can see😂
@@ -74,4 +73,8 @@ void login()
             std::cout << "Wrong password or username\n";
         }
     } while(checkCredentials(login, passwrd) == "");
+}
+
+void ChangeDate() {
+
 }
