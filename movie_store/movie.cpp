@@ -1,5 +1,5 @@
-#include "movie.h"
-#include "customer.h"
+#include "admin.h" //thus movie.h and customer.h and date.h are included too
+
 using namespace date;
 using namespace std::chrono;
 
@@ -168,7 +168,7 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
             }
             else {
                 std::cerr << "wrong id, please try again\n";
-                std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+                std::this_thread::sleep_for(std::chrono::seconds(3));
             }
         }
     }
@@ -244,7 +244,7 @@ date::day validate_due(movie& movie) {
 
 }
 
-void ListDueAccounts(movie(&mov)[movies_max])
+void ListDueAccounts(movie(&mov)[movies_max], Customer customers[])
 { //fyi it updates the accounts before listing them
     int num = 1;
     for (int i = 0;i < movies_max;i++) {
@@ -265,4 +265,106 @@ void ListDueAccounts(movie(&mov)[movies_max])
             num++;
         }
     }
+}
+
+
+
+
+void MainMenu() { 
+    bool is_admin = false, is_user = false, valid = false;
+    int choice, check;
+    std::cout << "note that if you wish at any point in time to go back or exit press 0\n";
+    check = login();
+    if (check == 0) {
+        return; //terminate program
+    }
+    if (check == 1) {
+        is_admin = true;
+    }
+    if (check == 2) {
+        is_user = true;
+    }
+    while (is_admin || is_user) { //infinite loop till log out or termination
+        std::cout << "" << std::endl;
+        std::cout << "press  1: Rent a movie" << std::endl;
+        std::cout << "press  2: Return a movie" << std::endl;
+        std::cout << "press  3: Add a customer" << std::endl;
+        std::cout << "press  4: List rented movies" << std::endl; //the renter name and id must be displayed
+        std::cout << "press  5: List top 10 rented movies" << std::endl;
+        std::cout << "press  6: List top 10 rated movies" << std::endl;
+        if (is_admin) {
+            std::cout << "press  7: Add a movie" << std::endl;
+            std::cout << "press  8: Delete a movie" << std::endl;
+            std::cout << "press  9: Delete a customer" << std::endl;
+            std::cout << "press  10: set date manually" << std::endl;
+            std::cout << "press  11: log out" << std::endl;
+        }
+        std::cout << "press  0: Exit" << std::endl;
+        std::cout << "\nat any point in time, if you wish to go back to main menu enter \"0\"" << std::endl;
+        while (!valid) {
+            std::cin >> choice;
+            if ((std::cin.good() && choice < 7 && choice > -1) || (std::cin.good() && is_admin && choice < 12 && choice > -1)) {
+                valid = true;
+            }
+            else {
+                std::cerr << "Invalid choice. Please enter a valid choice: ";
+                valid = false;
+            }
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        switch (choice)
+        {
+        case 0:
+            return;
+        case 1:
+            
+            break;
+        case 2:
+
+            break;
+        case 3:
+            
+            break;
+        case 4:
+
+            break;
+        case 5:
+            
+            break;
+        case 6:
+            
+            break;
+        case 7:
+
+            break;
+        case 8:
+
+            break;
+        case 9:
+
+            break;
+        case 10:
+
+            break;
+        case 11:
+            // is_admin = false
+            //reinvoke login
+            break;
+        default:
+            std::cerr << "validation error in the main menu function, please contact your IT provider\nexiting program in 3 seconds";
+            std::this_thread::sleep_for(std::chrono::seconds(3));
+            return;
+        }
+        valid = false; //allows you to retake input from usr
+    }
+
+
+
+
+
+
+
+
 }

@@ -21,7 +21,7 @@ struct movie {
 };
 
 movie movies[movies_max];
-int movies_count = sizeof(movies) / sizeof(movies[0]); // = 100 (const)
+//int movies_count = sizeof(movies) / sizeof(movies[0]); // = 100 (const)
 
 
 void ListMovies(const movie movies[],int& movies_count);
@@ -29,6 +29,6 @@ double rate(movie& movie);
 int ListUnrented(movie movies[],const int& movies_count);
 bool isFull(Customer customers[], int customerNum);
 void Rent(Customer cust [], int movies_count, movie movies[]);
-void Rent(Customer cust [], int movies_count, movie movies[]);
 date::day validate_due(movie movie); //to do
 void ListDueAccounts();
+void MainMenu(); 
