@@ -45,28 +45,28 @@ void deleteMovie(movie movies[], int size, std::string name)
     }
 }
 
-void login()
+int login()
 {
     std::string login, passwrd;
     do
     {
         std::cout << "Enter username: ";
         getline(std::cin, login);
-        
+        if (login == "0") return 0;
         std::cout << "Enter password: ";
         getline(std::cin, passwrd);
-
+        if (passwrd == "0") return 0;
         if(checkCredentials(login, passwrd) == "admin")
         {
-            std::cout << "\nWelcome to admin control panel\n";
-            // adminPanel(); ???
-            // return "admin"; ??? for main menu?
+            std::cout << "Welcome, " << login << "!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            return 1;
         }
         else if(checkCredentials(login, passwrd) == "user")
         {
             std::cout << "Welcome, " << login << "!\n";
-            // userPanel(); ???
-            // return "user"; ??? for main menu?
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            return 2;
         }
         else
         {
