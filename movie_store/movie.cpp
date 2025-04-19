@@ -6,20 +6,25 @@ using namespace std::chrono;
 
 void ListMovies(const movie movies[], const int& movies_count) {
     int MovieNum = 1;
-    if (movies_count != 0) {
-        for (int i = 0;i <= movies_count;i++) {
-            std::cout << MovieNum << ". " << movies[i].Name << std::endl;
-            std::cout << "\tprice: " << movies[i].price << " EGP" << std::endl;
-            std::cout << "\trating:" << movies[i].rating << std::endl;
-            std::cout << "\trented: " << movies[i].RentedCount << " times" << std::endl;
-            if (movies[i].rented) {
-                std::cout << "\trented status: " << "rented" << std::endl;
+    if (movies_count != 0) 
+    {
+        for (int i = 0; i < movies_count; i++) 
+        {
+            if(!movies[i].Name.empty())
+            {
+                std::cout << MovieNum << ". " << movies[i].Name << std::endl;
+                std::cout << "\tprice: " << movies[i].price << " EGP" << std::endl;
+                std::cout << "\trating:" << movies[i].rating << std::endl;
+                std::cout << "\trented: " << movies[i].RentedCount << " times" << std::endl;
+                if (movies[i].rented) {
+                    std::cout << "\trented status: " << "rented" << std::endl;
+                }
+                else {
+                    std::cout << "\trented status: " << "not rented" << std::endl;
+                }
+                std::cout << "\n";
+                MovieNum++;
             }
-            else {
-                std::cout << "\trented status: " << "not rented" << std::endl;
-            }
-            std::cout << "\n";
-            MovieNum++;
         }
     }
     else {
@@ -31,8 +36,8 @@ void ListMovies(const movie movies[], const int& movies_count) {
 int ListUnrented(const movie movies[], const int& movies_count) {
     int MovieNum = 1;
     if (movies_count != 0) {
-        for (int i = 0;i <= movies_count;i++) {
-            if (!movies[i].rented) {
+        for (int i = 0; i < movies_count; i++) {
+            if (!movies[i].rented && !movies[i].Name.empty()) {
                 std::cout << MovieNum << ". " << movies[i].Name << std::endl;
                 MovieNum++;
             }
@@ -126,7 +131,16 @@ double rate(movie& movie) { //using a weighted rating algorithm
 }
 
 
-
+bool isFull(Customer customers[], int customerNum)
+{
+    for(int i = 0; i < limit; i++)
+    {
+        if(customers[customerNum].CurrentlyRentedMovies[i].empty()) 
+            return true; 
+    } 
+    
+    return false;
+}
 
 void Rent(Customer cust[], int movies_count, movie movies[]){
     bool CustomerFound = false, repeat = true, date_good=false;
@@ -144,14 +158,16 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
         if (id == "0") return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        for (int i = 0; i < customers_count;i++) {
+        
+        std::transform(id.begin(), id.end(), id.begin(), toupper); // c# ---> C#
+        for (int i = 0; i < customers_count; i++) {
             if (cust[i].Id == id) {
                 CustomerFound = true;
                 customer = i;
                 break;
             }
             else {
-                std::cerr << "wrong name or id, please try again\n";
+                std::cerr << "wrong id, please try again\n";
                 std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             }
         }
@@ -170,9 +186,9 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
-    for (int i = 0; i < movies_count;i++) {
-        if (!movies[i].rented && match == selected) {
-            std::cout << "movie:   " << movies[i].Name << std::endl;
+    for (int i = 0; i < movies_count; i++) {
+        if (!movies[i].Name.empty() && !movies[i].rented && match == selected) {
+            std::cout << "movie: " << movies[i].Name << std::endl;
             std::cout << "\tprice per day: " << movies[i].price << " EGP" << std::endl;
             std::cout << "\toverdue fee per day: " << movies[i].fee << " EGP" << std::endl;
             std::cout << "\tmovie rating:" << movies[i].rating << std::endl;
@@ -187,17 +203,39 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
                     movies[i].DueDate = year(y) / month(m) / day(d);
                 } //note to self: implement fail safe !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
-            movies[i].rented = true;
-            movies[i].RentedCount++;
-            movies[i].CurrentRenter = name;
-            for (int j = 0;j < customers_count;j++) {
-                if (cust[customer].Id == id) {
-                    cust[customer].CurrentlyRentedMovies[CurrentlyRentedMovies_count] = movies[i].Name;
-                    cust[customer].PreviouslyRentedMovies.push_back(movies[i].Name);
+            if(isFull(cust, customer))
+            {
+                for (int k = 0; k < limit; k++)
+                {
+                    if(cust[customer].CurrentlyRentedMovies[k].empty())
+                    {
+                        cust[customer].CurrentlyRentedMovies[k] = movies[i].Name;
+                        break;
+                    } 
                 }
+                movies[i].rented = true;
+                movies[i].RentedCount++;
+                movies[i].CurrentRenter = name;
             }
+            else
+            {
+                std::cout << "You have reached your renting limit!\n";
+            }
+            // movies[i].rented = true;
+            // movies[i].RentedCount++;
+            // movies[i].CurrentRenter = name;
+            // for (int j = 0; j < customers_count; j++) {
+            //     if (cust[customer].Id == id) {
+                    // cust[customer].CurrentlyRentedMovies[CurrentlyRentedMovies_count] = movies[i].Name;
+            //         cust[customer].PreviouslyRentedMovies.push_back(movies[i].Name);
+            //     }
+            // }
+            
+            // after he brings back the movie.  ???
+            // cust[customer].PreviouslyRentedMovies.push_back(movies[i].Name);
+            
         }
-        if (!movies[i].rented) {
+        if (!movies[i].Name.empty() && !movies[i].rented) {
             match++;
         }
     }

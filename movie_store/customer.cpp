@@ -140,8 +140,7 @@ void addNewCustomer(Customer c[], int size){
     // }
 }
 
-
-void list_customers(Customer customers[], int number_of_customers)
+void listCustomers(Customer customers[], int number_of_customers)
 {
     int num = 1;
     for (int i = 0; i < number_of_customers; i++)
