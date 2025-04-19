@@ -131,11 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="admin.cpp" />
     <ClCompile Include="customer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="movie.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="admin.h" />
     <ClInclude Include="customer.h" />
     <ClInclude Include="movie.h" />
   </ItemGroup>

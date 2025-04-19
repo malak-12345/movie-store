@@ -1,8 +1,5 @@
 #include "customer.h"
-#include <iostream>
-#include <algorithm>
-#include <thread>
-#include <chrono>
+
 
 std::string generateId()
 {
@@ -97,8 +94,7 @@ bool checkId(std::string& id, Customer c[], int size)
     return true;
 }
 
-void addNewCustomer(Customer c[], int size)
-{
+void addNewCustomer(Customer c[], int size){
     std::string name, phonenum, id;
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
@@ -144,6 +140,7 @@ void addNewCustomer(Customer c[], int size)
     // }
 }
 
+
 void list_customers(Customer customers[], int number_of_customers)
 {
     int num = 1;
@@ -156,6 +153,7 @@ void list_customers(Customer customers[], int number_of_customers)
         if (!customers[i].PreviouslyRentedMovies.size() == 0)
         {
             std::cout << "has rented: ";
+
             for (std::string j : customers[i].PreviouslyRentedMovies)
             {
                 if (j.empty()) { std::cout << "."; break; }
@@ -165,6 +163,7 @@ void list_customers(Customer customers[], int number_of_customers)
             }
             std::cout << "\n";
         }
+
         else 
         {
             std::cout << "hasn't rented any movies yet" << std::endl;
@@ -181,6 +180,7 @@ void list_customers(Customer customers[], int number_of_customers)
             }
             std::cout << "\n";
         }
+
         else 
         {
             std::cout << "Currently Renting: none" << std::endl;
@@ -188,3 +188,4 @@ void list_customers(Customer customers[], int number_of_customers)
         num++;
     }
 }
+

@@ -1,8 +1,8 @@
-#include "admin.h"
+﻿#include "admin.h"
 #include <iostream>
 
 std::string ADMIN = "admin";
-std::string ADMIN_PSSWRD = "admin"; // very safe ;)
+std::string ADMIN_PSSWRD = "admin"; // very safe ;) __ i can see😂
 
 std::string USER = "user";
 std::string USER_PSSWRD = "user";
@@ -39,13 +39,9 @@ void deleteMovie(movie movies[], int size, std::string name)
             movies[i].fee = 0;
             movies[i].rating = 0;
             movies[i].RentedCount = 0;
-            movies[i].DueDate.day = 0;
-            movies[i].DueDate.month = 0;
-            movies[i].DueDate.year = 0;
-        }
-        else
-        {
-            std::cout << "This film doesn't exist\n";
+            movies[i].DueDate = date::year(1000) / date::month(10) / date::day(10);
+            movies[i].due = false;
+            break;
         }
     }
 }
