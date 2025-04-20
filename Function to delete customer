@@ -1,0 +1,15 @@
+void deleteCustomer(Customer customers[], int size, std::string id) {
+    for (int i = 0; i < size; i++) {
+        if (customers[i].id == id && customers[i].isActive) {
+            customers[i].id.clear();
+            customers[i].name.clear();
+          
+            customers[i].phone.clear();
+            customers[i].hasRental = false;
+            customers[i].isActive = false; 
+            std::cout << "Customer with ID " << id << " deleted (marked inactive).\n";
+            return;
+        }
+    }
+
+    std::cout << "Customer with ID " << id << " not found or already inactive.\n";
