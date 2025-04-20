@@ -1,6 +1,6 @@
 #include "customer.h"
 
-
+//-------------------------utilities-----------------------------
 std::string generateId()
 {
     std::string Id = "C#";
@@ -11,56 +11,12 @@ std::string generateId()
     }
     return Id;
 }
-
 std::string deleteSpaces(std::string& str)
 {
     str.erase(remove(str.begin(),str.end(), ' '), str.end());
     return str;
 }
-
-// bool checkPhoneNumber(std::string PhoneNumber)
-// {
-//     char digits[10] = {'0','1','2','3','4','5','6','7','8','9'};
-
-//     PhoneNumber = deleteSpaces(PhoneNumber);
-//     // std::cout << PhoneNumber << '\n';
-//     // std::cout << PhoneNumber.length() << '\n';
-
-//     if(PhoneNumber.length()>=7 && PhoneNumber.length()<=15)
-//     {
-//         for(int i=0; i<PhoneNumber.length(); i++)
-//         {
-//             bool isDigit = false;
-            
-//             // std::cout << "Outer loop:" << PhoneNumber[i] << '\n';
-//             // std::cout << sizeof(PhoneNumber[i]) << '\n';
-            
-//             for(int j=0; j<10; j++)
-//             {
-//                 // std::cout << "i: " << i << "j: " << j << '\n';
-//                 if(PhoneNumber[i] == digits[j])
-//                 {
-//                     // std::cout << "Inner loop:" << digits[j] << '\n';
-//                     isDigit = true;
-//                     break;
-//                 }
-//             }
-        
-//             if(!isDigit)
-//             {
-//                 // std::cout << "not a digit\n";
-//                 return false;
-//             }
-//         }
-//         return true;
-//     }
-//     else{
-//         return false;
-//     }
-  
-// }
-
-bool checkPhoneNumber(std::string PhoneNumber)
+bool checkPhoneNumber(std::string& PhoneNumber)
 {
     PhoneNumber = deleteSpaces(PhoneNumber);
     // std::cout << PhoneNumber.length() << '\n';
@@ -81,7 +37,6 @@ bool checkPhoneNumber(std::string PhoneNumber)
         return false;
     }
 }
-
 bool checkId(std::string& id, Customer c[], int size)
 {
     for(int i=0; i<size; i++)
@@ -93,6 +48,8 @@ bool checkId(std::string& id, Customer c[], int size)
     }
     return true;
 }
+//-------------------------utilities-----------------------------
+
 
 void addNewCustomer(Customer c[], int size){
     std::string name, phonenum, id;
@@ -139,7 +96,6 @@ void addNewCustomer(Customer c[], int size){
     //     }
     // }
 }
-
 void listCustomers(Customer customers[], int number_of_customers)
 {
     int num = 1;
@@ -149,24 +105,6 @@ void listCustomers(Customer customers[], int number_of_customers)
         std::cout << "Customer ID: " << customers[i].Id << std::endl;
         std::cout << "Name: " << customers[i].Name << std::endl;
         std::cout << "Phone Number: " << customers[i].PhoneNumber << std::endl;
-        if (!customers[i].PreviouslyRentedMovies.size() == 0)
-        {
-            std::cout << "has rented: ";
-
-            for (std::string j : customers[i].PreviouslyRentedMovies)
-            {
-                if (j.empty()) { std::cout << "."; break; }
-                // if (j > 0) { std::cout << ", "; }
-                std::cout << '\n';
-                std::cout << j;
-            }
-            std::cout << "\n";
-        }
-
-        else 
-        {
-            std::cout << "hasn't rented any movies yet" << std::endl;
-        }
 
         if (!customers[i].CurrentlyRentedMovies[0].empty())
         {
@@ -179,10 +117,26 @@ void listCustomers(Customer customers[], int number_of_customers)
             }
             std::cout << "\n";
         }
-
         else 
         {
             std::cout << "Currently Renting: none" << std::endl;
+        }
+
+        if (!customers[i].PreviouslyRentedMovies.size() == 0)
+        {
+            std::cout << "has rented: ";
+
+            for (std::string j : customers[i].PreviouslyRentedMovies)
+            {
+                if (j.empty()) { std::cout << "."; break; }
+                std::cout << '\n';
+                std::cout << j;
+            }
+            std::cout << "\n";
+        }
+        else 
+        {
+            std::cout << "hasn't rented any movies yet" << std::endl;
         }
         num++;
     }

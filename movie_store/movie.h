@@ -20,15 +20,29 @@ struct movie {
     date::year_month_day DueDate;
 };
 
+
 movie movies[movies_max];
 int movies_count = 0;
 
 
-void ListMovies(const movie movies[],int& movies_count);
-double rate(movie& movie);
-int ListUnrented(movie movies[],const int& movies_count);
+//-------------------------utilities-----------------------------
+bool isCustomerFound(Customer customers[], int num_of_customers ,std::string& id);
+int getCustomerNum(Customer customers[], int number_of_customers, std::string& id);
+bool isMovieFound(movie movies[], int num_of_movies, std::string& movieName);
+int getMovieNum(movie movies[], int num_of_movies, std::string& movieName);
+bool isMovieRentedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName);
 bool isFull(Customer customers[], int customerNum);
-void Rent(Customer cust [], int movies_count, movie movies[]);
+//-------------------------utilities-----------------------------
+
+void ListMovies(const movie movies[],int& movies_count);
+int ListUnrented(movie movies[],const int& movies_count);
+
+bool rate(movie movies[], int num_of_movies, std::string& movieName, Customer customers[], int num_of_customers ,std::string& id);
+double calcRatings(movie movies[], int num_of_movies, std::string& movieName);
+
+void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies);
+
 date::day validate_due(movie movie); //to do
 void ListDueAccounts();
-void MainMenu(); 
+
+void MainMenu(Customer customers[], int num_of_customers, movie movies[], int num_of_movies); 
