@@ -42,7 +42,7 @@ double calcRatings(movie movies[], int num_of_movies, std::string& movieName);
 
 void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies);
 
-date::day validate_due(movie movie); //to do
-void ListDueAccounts();
+int validate_due(movie& movie); //to do
+void ListDueAccounts(movie(&mov)[movies_max], Customer cust[]);
 
 void MainMenu(Customer customers[], int num_of_customers, movie movies[], int num_of_movies); 
