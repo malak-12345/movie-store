@@ -53,9 +53,11 @@ int login()
         std::cout << "Enter username: ";
         getline(std::cin, login);
         if (login == "0") return 0;
+        
         std::cout << "Enter password: ";
         getline(std::cin, passwrd);
         if (passwrd == "0") return 0;
+        
         if(checkCredentials(login, passwrd) == "admin")
         {
             std::cout << "Welcome, " << login << "!\n";
