@@ -21,7 +21,7 @@ struct Customer
 };
 
 Customer customers[customer_max];
-//int customers_count = sizeof(customers) / sizeof(customers[0]); // =50(const)
+int customers_count = 0;
 
 std::string generateId();
 std::string deleteSpaces(std::string& str);

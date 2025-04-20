@@ -21,7 +21,7 @@ struct movie {
 };
 
 movie movies[movies_max];
-//int movies_count = sizeof(movies) / sizeof(movies[0]); // = 100 (const)
+int movies_count = 0;
 
 
 void ListMovies(const movie movies[],int& movies_count);

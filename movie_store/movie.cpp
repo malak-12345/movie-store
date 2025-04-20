@@ -216,6 +216,7 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
                 movies[i].rented = true;
                 movies[i].RentedCount++;
                 movies[i].CurrentRenter = name;
+                movies_count++;
             }
             else
             {
@@ -240,26 +241,23 @@ void Rent(Customer cust[], int movies_count, movie movies[]){
     }
 }
 
-date::day validate_due(movie& movie) {
-
+int validate_due(movie& movie) {
+    if(movie.DueDate)
 }
 
 void ListDueAccounts(movie(&mov)[movies_max], Customer customers[])
-{ //fyi it updates the accounts before listing them
+{ //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
     int num = 1;
-    for (int i = 0;i < movies_max;i++) {
-        validate_due(mov[i]);
-    }
-    for (int i = 0; i < movies_max;i++) {
+    for (int i = 0; i < movies_count;i++) {
+        int days_due = validate_due(/*args*/);
         if (mov[i].due = true) {
-            int days_due = validate_due(/*args*/);
             for (int j = 0;j < customer_max;j++) {
                 if (mov[i].CurrentRenter == cust[j].name) {
                     std::cout << num << "." << cust[j].name << std::endl;
                     std::cout << "id: " << cust[j].Id << std::endl;
                     std::cout << "phone number: " << cust[j].PhoneNumber << std::endl;
                     std::cout << "movie was due: " << days_due << "days ago.\n" << std::endl;
-                    std::cout << "due fees: " << days_due * mov[i].fee << std::endl;
+                    std::cout << "due fees up till now: " << days_due * mov[i].fee << std::endl;
                 }
             }
             num++;
