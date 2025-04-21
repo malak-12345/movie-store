@@ -49,7 +49,7 @@ bool isMovieRentedByCustomer(Customer customers[], int num_of_customers ,std::st
     int customerNum = getCustomerNum(customers, num_of_customers, id);
     for (int i = 0; i < limit; i++)
     {
-        if(customers[customerNum].PreviouslyRentedMovies[i] == movieName) return true;
+        if(customers[customerNum].CurrentlyRentedMovies[i] == movieName) return true;
     }
     
     return false;
@@ -63,7 +63,71 @@ bool isFull(Customer customers[], int customerNum)
     
     return false;
 }
+// bool isMovieRatedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName)
+// {
+//     int customerIndex = getCustomerNum(customers, num_of_customers, id);
+//     if(customers[customerIndex].rating.count(movieName))
+//     {
+//         return true;
+//     }
+//     return false;
+// }
 //-------------------------utilities-----------------------------
+
+bool editRating(movie movies[],int num_of_movies,std::string& movieName,
+                Customer customers[],int num_of_customers,std::string& id)
+{
+    int customerIndex = getCustomerNum(customers, num_of_customers, id);
+    
+    if (isMovieRentedByCustomer(customers, customers_count, id, movieName))
+    {
+        if(customers[customerIndex].rating.count(movieName))
+        {
+            int rating = 0;
+            int movieIndex = getMovieNum(movies, movies_count, movieName);
+            std::cout << "Rating: " << movieName << "\n\n";    
+            std::cout << "1: *\n" <<
+                         "2: **\n" <<
+                         "3: ***\n" <<
+                         "4: ****\n" <<
+                         "5: *****\n\n";
+            
+            std::cout << "Pick a rating from above: ";
+            std::cin >> rating;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (rating >= 1 && rating <= 5)
+            {
+                //update allRatings vector
+                for(int i = 0; i < movies[movieIndex].AllRatings.size(); i++)
+                {
+                    if (movies[movieIndex].AllRatings[i] == customers[customerIndex].rating.at(movieName))
+                    {
+                        movies[movieIndex].AllRatings[i] = rating;
+                        break;
+                    }
+                }
+                customers[customerIndex].rating.at(movieName) = rating; 
+                return true; // for main menu
+            }
+            else
+            {
+                std::cout << "Wrong rating! please pick a rating from above!\n";
+                return false; // for main menu
+            }
+        }
+        else
+        {
+            std::cout << "This movie isn't rated before please rate it!\n";
+            return true;
+        }
+    }
+    else
+    {
+        std::cout << "This movie isn't rented by the customer! Rent it please before rating it.\n";
+        return true; // for main menu
+    }
+}
 
 
 void ListMovies(const movie movies[], const int& movies_count) {
@@ -125,82 +189,97 @@ int ListUnrented(const movie movies[], const int& movies_count) {
 bool rate(movie (&movies)[movies_max], int movies_count, int movieNum, std::string& movieName,
           Customer customers[], int customers_count,std::string& id)
 {
+    int customerIndex = getCustomerNum(customers, customers_count, id);
+    
     if (isMovieRentedByCustomer(customers, customers_count, id, movieName))
     {
-        int rating = 0, a = 0, b = 0, c = 0, d = 0, e = 0;
-        int movieNum = getMovieNum(movies, movies_count, movieName);
-        int movieNum = getMovieNum(movies, movies_count, movieName);
-        std::cout << "Rating: " << movieName << "\n\n";
-        std::cout << "1: *\n" <<
-                     "2: **\n" <<
-                     "3: ***\n" <<
-                     "4: ****\n" <<
-                     "5: *****\n\n";
-        
-        std::cout << "Pick a rating from above: ";
-        std::cin >> rating;
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        switch (rating)
+        if(!customers[customerIndex].rating.count(movieName))
         {
-        case 1:
-            movies[movieNum].AllRatings.push_back(1);
-            break;                    
-        case 2:
-            movies[movieNum].AllRatings.push_back(2);
-            break;                    
-        case 3:
-            movies[movieNum].AllRatings.push_back(3);
-            break;                    
-        case 4:
-            movies[movieNum].AllRatings.push_back(4);
-            break;                    
-        case 5:
-            movies[movieNum].AllRatings.push_back(5);
-            break;
-        
-        default:
-            std::cout << "Please pick a valid rating\n";
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            return false;
-        }
-        if (!movies[movieNum].AllRatings.empty())
-        {
-            for (int i : movies[movieNum].AllRatings)
+            int rating = 0, a = 0, b = 0, c = 0, d = 0, e = 0;
+            int movieNum = getMovieNum(movies, movies_count, movieName);
+            std::cout << "Rating: " << movieName << "\n\n";
+            std::cout << "1: *\n" <<
+                         "2: **\n" <<
+                         "3: ***\n" <<
+                         "4: ****\n" <<
+                         "5: *****\n\n";
+            
+            std::cout << "Pick a rating from above: ";
+            std::cin >> rating;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            
+            switch (rating)
             {
-                switch (i)
-                {
-                case 1:
-                    a++;
-                    break;
-                case 2:
-                    b++;
-                    break;
-                case 3:
-                    c++;
-                    break;
-                case 4:
-                    d++;
-                    break;
-                case 5:
-                    e++;
-                    break;
-                default:
-                    std::cerr << "error in the ratings vector or the calcrating function, please contact your IT provider" << std::endl;
-                    break;
-                }
+            case 1:
+                movies[movieNum].AllRatings.push_back(1);
+                customers[customerIndex].rating.insert({movieName, 1}); 
+                break;                    
+            case 2:
+                movies[movieNum].AllRatings.push_back(2);
+                customers[customerIndex].rating.insert({movieName, 2});  
+                break;                    
+            case 3:
+                movies[movieNum].AllRatings.push_back(3);
+                customers[customerIndex].rating.insert({movieName, 3}); 
+                break;                    
+            case 4:
+                movies[movieNum].AllRatings.push_back(4);
+                customers[customerIndex].rating.insert({movieName, 4}); 
+                break;                    
+            case 5:
+                movies[movieNum].AllRatings.push_back(5);
+                customers[customerIndex].rating.insert({movieName, 5}); 
+                break;
+            
+            default:
+                std::cout << "Please pick a valid rating\n";
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                return false;
             }
-            movies[movieNum].rating = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / (a + b + c + d + e);
-        }
+            if (!movies[movieNum].AllRatings.empty())
+            {
+                for (int i : movies[movieNum].AllRatings)
+                {
+                    switch (i)
+                    {
+                    case 1:
+                        a++;
+                        break;
+                    case 2:
+                        b++;
+                        break;
+                    case 3:
+                        c++;
+                        break;
+                    case 4:
+                        d++;
+                        break;
+                    case 5:
+                        e++;
+                        break;
+                    default:
+                        std::cerr << "error in the ratings vector or the calcrating function, please contact your IT provider" << std::endl;
+                        break;
+                    }
+                }
+                movies[movieNum].rating = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / (a + b + c + d + e);
+            }
+            else
+            {
+                movies[movieNum].rating = rating;
+                return true; //for main menu
+            }
+        } 
         else
         {
-            movies[movieNum].rating = rating;
-            return true; //for main menu
+            std::cout << "this movie is already rated! Please edit your rating.\n";
+            return true;    
         }
     } 
     else 
     {
-        std::cout << "This movie isn't rented by the customer!\n";
+        std::cout << "This movie isn't rented by the customer! Rent it please before rating it.\n";
         return true; // for main menu
     }
     std::cout << "Thanks for your rating!\n";

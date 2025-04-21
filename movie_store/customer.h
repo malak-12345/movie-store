@@ -7,6 +7,7 @@
 #include <chrono>
 #include <limits>
 #include <sstream>
+#include <map>
 #include "Howard_Hinnant/include/date/date.h"
 
 #define limit 8
@@ -17,6 +18,9 @@ struct Customer
     std::string Name, PhoneNumber, Id;
     std::string CurrentlyRentedMovies[limit];
     std::vector<std::string> PreviouslyRentedMovies;
+    std::map<std::string, int> rating; // the key is moviename and the value is the rating.
+    // Problem that keys must be unique. movie name can be the same??
+    // need to make sure the movie name isn't duplicated when adding new movie ---> !isMovieFound();
 };
 
 

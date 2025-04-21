@@ -32,7 +32,10 @@ bool isMovieFound(movie movies[], int num_of_movies, std::string& movieName);
 int getMovieNum(movie movies[], int num_of_movies, std::string& movieName);
 bool isMovieRentedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName);
 bool isFull(Customer customers[], int customerNum);
+// bool isMovieRatedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName);
 //-------------------------utilities-----------------------------
+
+bool editRating(movie movies[],int num_of_movies,std::string& movieName, Customer customers[],int num_of_customers,std::string& id);
 
 void ListMovies(const movie movies[],int& movies_count);
 int ListUnrented(movie movies[],const int& movies_count);
