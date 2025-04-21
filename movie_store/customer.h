@@ -7,7 +7,7 @@
 #include <chrono>
 #include <limits>
 #include <sstream>
-#include "date.h"
+#include "Howard_Hinnant/include/date/date.h"
 
 #define limit 8
 #define customer_max 50
@@ -19,8 +19,10 @@ struct Customer
     std::vector<std::string> PreviouslyRentedMovies;
 };
 
-// Customer customers[customer_max];
-//int customers_count = sizeof(customers) / sizeof(customers[0]); // =50(const)
+
+Customer customers[customer_max];
+int customers_count = 0;
+
 
 //-------------------------utilities-----------------------------
 std::string generateId();

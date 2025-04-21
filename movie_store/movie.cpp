@@ -76,8 +76,13 @@ void ListMovies(const movie movies[], const int& movies_count) {
             {
                 std::cout << MovieNum << ". " << movies[i].Name << std::endl;
                 std::cout << "\tprice: " << movies[i].price << " EGP" << std::endl;
-                std::cout << "\trating:" << movies[i].rating << std::endl;
                 std::cout << "\trented: " << movies[i].RentedCount << " times" << std::endl;
+                if (movies[i].AllRatings.empty()) {
+                std::cout << "\trating: has not been rated yet"<< std::endl;
+                }
+                else {
+                std::cout << "\trating:" << movies[i].rating << std::endl;
+                }
                 if (movies[i].rented) {
                     std::cout << "\trented status: " << "rented" << std::endl;
                 }
@@ -116,87 +121,15 @@ int ListUnrented(const movie movies[], const int& movies_count) {
     return MovieNum;
 }
 
-// double rate(movie& movie) { //using a weighted rating algorithm
-//     int Rating;
-//     bool ValidRating = false;
-//     double FinalRating = 0.0;
-//     int a, b, c, d, e;
-//     std::cout << "on a scale from 1 to 5, how much would you rate this movie?: ";
-//     while (!ValidRating) {
-//         //Rating = 0;
-//         a = 0;
-//         b = 0;
-//         c = 0;
-//         d = 0;
-//         e = 0;
-//         std::cin >> Rating;
-//         if (Rating == 0) return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
-//         if (std::cin.good() && Rating > 0 && Rating < 6) {
-//             ValidRating = true;
-//         }
-//         else {
-//             std::cerr << "Invalid Rating. Please enter a whole number between 1 and 5.\n";
-//         }
-//         std::cin.clear();
-//         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//     }
-//         if (!movie.AllRatings.size() == 0) {
-//             for (int i : movie.AllRatings) {
-//                 switch (i)
-//                 {
-//                 case 1:
-//                     a++;
-//                     break;
-//                 case 2:
-//                     b++;
-//                     break;
-//                 case 3:
-//                     c++;
-//                     break;
-//                 case 4:
-//                     d++;
-//                     break;
-//                 case 5:
-//                     e++;
-//                     break;
-//                 default:
-//                     std::cerr << "error in the ratings vector, please contact your IT provider" << std::endl;
-//                     break;
-//                 }
-//             }
-//         }
-//         switch (Rating)
-//         {
-//         case 1:
-//             a++;
-//             break;
-//         case 2:
-//             b++;
-//             break;
-//         case 3:
-//             c++;
-//             break;
-//         case 4:
-//             d++;
-//             break;
-//         case 5:
-//             e++;
-//             break;
-//         default:
-//             break;
-//         }
-//     FinalRating = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / (a + b + c + d + e);
-//     std::cout << "\nthank you for your review!!! " << std::endl;
-//     return FinalRating;
-// }
 
-bool rate(movie movies[], int num_of_movies, std::string& movieName, 
-          Customer customers[], int num_of_customers ,std::string& id)
+bool rate(movie (&movies)[movies_max], int movies_count, int movieNum, std::string& movieName,
+          Customer customers[], int customers_count,std::string& id)
 {
-    if (isMovieRentedByCustomer(customers, num_of_customers, id, movieName))
+    if (isMovieRentedByCustomer(customers, customers_count, id, movieName))
     {
-        int rating = 0;
-        int movieNum = getMovieNum(movies, num_of_movies, movieName);
+        int rating = 0, a = 0, b = 0, c = 0, d = 0, e = 0;
+        int movieNum = getMovieNum(movies, movies_count, movieName);
+        int movieNum = getMovieNum(movies, movies_count, movieName);
         std::cout << "Rating: " << movieName << "\n\n";
         std::cout << "1: *\n" <<
                      "2: **\n" <<
@@ -206,6 +139,8 @@ bool rate(movie movies[], int num_of_movies, std::string& movieName,
         
         std::cout << "Pick a rating from above: ";
         std::cin >> rating;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         switch (rating)
         {
         case 1:
@@ -225,9 +160,42 @@ bool rate(movie movies[], int num_of_movies, std::string& movieName,
             break;
         
         default:
-            std::cout << "Please pick a right rating\n";
+            std::cout << "Please pick a valid rating\n";
             std::this_thread::sleep_for(std::chrono::seconds(2));
             return false;
+        }
+        if (!movies[movieNum].AllRatings.empty())
+        {
+            for (int i : movies[movieNum].AllRatings)
+            {
+                switch (i)
+                {
+                case 1:
+                    a++;
+                    break;
+                case 2:
+                    b++;
+                    break;
+                case 3:
+                    c++;
+                    break;
+                case 4:
+                    d++;
+                    break;
+                case 5:
+                    e++;
+                    break;
+                default:
+                    std::cerr << "error in the ratings vector or the calcrating function, please contact your IT provider" << std::endl;
+                    break;
+                }
+            }
+            movies[movieNum].rating = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / (a + b + c + d + e);
+        }
+        else
+        {
+            movies[movieNum].rating = rating;
+            return true; //for main menu
         }
     } 
     else 
@@ -239,47 +207,7 @@ bool rate(movie movies[], int num_of_movies, std::string& movieName,
     return true; // for main menu
 }
 
-double calcRatings(movie movies[], int num_of_movies, std::string& movieName)
-{
-    int a, b, c, d, e;
-    int movieNum = getMovieNum(movies, num_of_movies, movieName);
-    double FinalRating = 0.0;
-        
-    if (!movies[movieNum].AllRatings.size() == 0) 
-    { 
-        for (int i : movies[movieNum].AllRatings) 
-        {    
-            switch (i)    
-            {    
-            case 1:
-                a++;
-                break;
-            case 2:
-                b++;
-                break;
-            case 3:
-                c++;
-                break;
-            case 4:
-                d++;
-                break;
-            case 5:
-                e++;
-                break;
-            default:
-                std::cerr << "error in the ratings vector, please contact your IT provider" << std::endl;
-                break;
-            }
-        } 
-            FinalRating = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / (a + b + c + d + e);
-            return FinalRating;
-    }
-    else
-    {
-        std::cout << "There are no ratings!\n";
-        return 0; //for main menu
-    }
-}
+
 
 void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies)
 {
@@ -362,6 +290,10 @@ void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_
                         break;
                     } 
                 }
+                movies[i].rented = true;
+                movies[i].RentedCount++;
+                movies[i].CurrentRenter = name;
+                movies_count++;
             }
             else
             {
@@ -380,26 +312,76 @@ void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_
     }
 }
 
-date::day validate_due(movie& movie) {
+void return_movie(Customer(&customer)[customer_max], int cust_num, movie(&mov)[movies_max], int mov_num) {
+    int num = 1, index;
+    std::string movieName, ans, id;
+    for (std::string i : customer[cust_num].CurrentlyRentedMovies) {
+        std::cout << num << "." << i << std::endl;
+        num++;
+    }
+    std::cout << "enter name of the movie you wish to return: ";
+    getline(std::cin, movieName);
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    for (std::string i : customer[cust_num].CurrentlyRentedMovies) {
+        if (movieName == i) {
+            index = getMovieNum(mov, mov_num, movieName);
+            mov[index].rented = false;
+            mov[index].CurrentRenter.clear();
+            mov[index].due = false;
+            mov[index].DueDate = date::year(1000) / date::month(10) / date::day(10);
+            i.clear();
+            std::cout << "would you like to rate the movie? y/n: ";
+            getline(std::cin, ans);
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (ans == "y") {
+                do
+                {
+                    rate(movies, mov_num, movieName, customers, cust_num, id);
+                } while (!rate(movies, mov_num, movieName, customers, cust_num, id));
+            }
+            else {
+                return; //back to main menu
+            }
+        }
 
+    }
 }
 
-void ListDueAccounts(movie(&mov)[movies_max], Customer customers[])
-{ //fyi it updates the accounts before listing them
-    int num = 1;
-    for (int i = 0;i < movies_max;i++) {
-        validate_due(mov[i]);
+int validate_due(movie& movie) {
+    auto now = std::chrono::system_clock::now();
+    sys_days today = floor<days>(now);
+    sys_days due = movie.DueDate;
+    auto today_n = today.time_since_epoch();
+    int today_int = today_n.count();
+    auto due_n = due.time_since_epoch();
+    int due_int = due_n.count();
+    int diff=0;
+    if (today > due) {
+        movie.due = true;
+        diff = today_int - due_int;
+        return diff;
     }
-    for (int i = 0; i < movies_max;i++) {
+    else {
+        movie.due = false;
+        return 0;
+    }
+}
+
+void ListDueAccounts(movie(&mov)[movies_max], Customer cust[])
+{ //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
+    int num = 1;
+    for (int i = 0; i < movies_count;i++) {
+        int days_due = validate_due(mov[i]);
         if (mov[i].due = true) {
-            int days_due = validate_due(/*args*/);
-            for (int j = 0;j < customer_max;j++) {
-                if (mov[i].CurrentRenter == cust[j].name) {
-                    std::cout << num << "." << cust[j].name << std::endl;
+            for (int j = 0;j < customers_count;j++) {
+                if (mov[i].CurrentRenter == cust[j].Name) {
+                    std::cout << num << "." << cust[j].Name << std::endl;
                     std::cout << "id: " << cust[j].Id << std::endl;
                     std::cout << "phone number: " << cust[j].PhoneNumber << std::endl;
                     std::cout << "movie was due: " << days_due << "days ago.\n" << std::endl;
-                    std::cout << "due fees: " << days_due * mov[i].fee << std::endl;
+                    std::cout << "due fees up till now: " << days_due * mov[i].fee << std::endl;
                 }
             }
             num++;
@@ -496,7 +478,10 @@ void MainMenu(Customer customers[], int num_of_customers, movie movies[], int nu
             break;
         }
         case 3:
-            
+            //std::string ID
+            //std::cout << "enter customer ID: ";
+            // enter movie name (name of rented movie by customer)
+            //getCustomerNum(Customer customers[], int number_of_customers, std::string & id)
             break;
         case 4:
 
@@ -536,12 +521,4 @@ void MainMenu(Customer customers[], int num_of_customers, movie movies[], int nu
         }
         valid = false; //allows you to retake input from usr
     }
-
-
-
-
-
-
-
-
 }

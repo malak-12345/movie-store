@@ -20,8 +20,10 @@ struct movie {
     date::year_month_day DueDate;
 };
 
-// movie movies[movies_max];
-//int movies_count = sizeof(movies) / sizeof(movies[0]); // = 100 (const)
+
+movie movies[movies_max];
+int movies_count = 0;
+
 
 //-------------------------utilities-----------------------------
 bool isCustomerFound(Customer customers[], int num_of_customers ,std::string& id);
@@ -40,7 +42,7 @@ double calcRatings(movie movies[], int num_of_movies, std::string& movieName);
 
 void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies);
 
-date::day validate_due(movie movie); //to do
-void ListDueAccounts();
+int validate_due(movie& movie); //to do
+void ListDueAccounts(movie(&mov)[movies_max], Customer cust[]);
 
 void MainMenu(Customer customers[], int num_of_customers, movie movies[], int num_of_movies); 

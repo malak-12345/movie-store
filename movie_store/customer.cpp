@@ -51,7 +51,7 @@ bool checkId(std::string& id, Customer c[], int size)
 //-------------------------utilities-----------------------------
 
 
-void addNewCustomer(Customer c[], int size){
+void addNewCustomer(Customer c[], int customers_count){
     std::string name, phonenum, id;
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
@@ -73,10 +73,10 @@ void addNewCustomer(Customer c[], int size){
         id = generateId();
         std::this_thread::sleep_for(std::chrono::seconds(1)); // --->sleep for 1 sec.
 
-    } while(!checkId(id, c, size));
+    } while(!checkId(id, c, customers_count));
 
 
-    for(int i=0; i<size; i++){
+    for(int i=0; i< customers_count; i++){
         if(c[i].Name.empty())
         {
             c[i].Name = name;
