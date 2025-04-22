@@ -21,8 +21,8 @@ struct movie {
 };
 
 
-movie movies[movies_max];
-int movies_count = 0;
+// movie movies[movies_max];
+// int movies_count = 0;
 
 
 //-------------------------utilities-----------------------------
@@ -32,16 +32,15 @@ bool isMovieFound(movie movies[], int num_of_movies, std::string& movieName);
 int getMovieNum(movie movies[], int num_of_movies, std::string& movieName);
 bool isMovieRentedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName);
 bool isFull(Customer customers[], int customerNum);
-// bool isMovieRatedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName);
 //-------------------------utilities-----------------------------
 
-bool editRating(movie movies[],int num_of_movies,std::string& movieName, Customer customers[],int num_of_customers,std::string& id);
 
-void ListMovies(const movie movies[],int& movies_count);
-int ListUnrented(movie movies[],const int& movies_count);
+void ListMovies(movie movies[],int num_of_movies);
+void listRented(movie movies[], int num_of_movies);
+int ListUnrented(movie movies[], int movies_count);
 
 bool rate(movie movies[], int num_of_movies, std::string& movieName, Customer customers[], int num_of_customers ,std::string& id);
-double calcRatings(movie movies[], int num_of_movies, std::string& movieName);
+bool editRating(movie movies[],int num_of_movies,std::string& movieName, Customer customers[],int num_of_customers,std::string& id);
 
 void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies);
 
