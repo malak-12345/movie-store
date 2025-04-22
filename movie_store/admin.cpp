@@ -93,6 +93,53 @@ int login()
     } while(checkCredentials(login, passwrd) == "");
 }
 
-void ChangeDate() {
+
+// in main menu add,   bool isDateChanged, and sys_days new_date 
+bool ChangeDate(sys_days& new_date) {
+    char ans;
+    bool date_good = false;
+    std::cout << "do you wish to set date manually y/n?: ";
+
+    do {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (std::cin.fail()) {
+            std::cerr << "Input error occurred." << std::endl;
+        }
+        else if(!(ans == 'y' || ans == 'Y' || ans == 'n' || ans == 'N')) {
+            std::cout << "Invalid input, please enter a valid choice" << std::endl;
+        }
+        std::cin >> ans;
+    }while (std::cin.fail() || !(ans == 'y' || ans == 'Y' || ans == 'n' || ans == 'N'));
+    if (ans == 'y' || ans == 'Y') {
+        while (!date_good)/*incomplete fail safe*/ {
+            std::string entered_date;
+            std::cout << "specify date in this exact format yyyy-mm-dd : ";
+            getline(std::cin, entered_date);
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (entered_date == "0") return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
+            std::istringstream iss(entered_date);
+            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') {
+                today = year(y) / month(m) / day(d); //conerts from date::..... to sys_days
+                date_good = true;
+            }
+            else {
+                std::cerr << "wrong format or invalid date, please try again"
+                    date_good = false;
+            }
+        }
+
+
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+
+void add_movie(movie movies[], int movies_count) {
 
 }
