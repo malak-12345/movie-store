@@ -1,3 +1,4 @@
+#pragma once
 #include "movie.h"
 
 std::string checkCredentials(std::string& login, std::string& passwrd);

@@ -434,9 +434,15 @@ bool editRating(movie movies[], int num_of_movies, std::string& movieName,
 //     }
 // }
 
-int validate_due(movie& movie) {
+int validate_due(movie& movie, bool isDateChanged, sys_days new_date) {
     auto now = std::chrono::system_clock::now();
-    sys_days today = floor<days>(now);
+    sys_days today;
+    if (isDateChanged) {
+        today = new_date;
+    }
+    else {
+        today = floor<days>(now);
+    }
     sys_days due = movie.DueDate;
     auto today_n = today.time_since_epoch();
     int today_int = today_n.count();
