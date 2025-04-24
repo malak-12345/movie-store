@@ -1,12 +1,5 @@
 #pragma once
 #include "customer.h"
-//#include <string>
-//#include <vector>
-//#include <iostream>
-//#include <limits>
-//#include <sstream>
-//#include <chrono>
-//#include <thread>
 #define movies_max 100
 
 

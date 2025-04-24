@@ -53,9 +53,9 @@ bool checkId(std::string& id, Customer c[], int size)
 
 void addNewCustomer(Customer customers[], int number_of_customers){
     std::string name, phonenum, id;
-    std::transform(name.begin(), name.end(), name.begin(), tolower);
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
+    std::transform(name.begin(), name.end(), name.begin(), tolower);
     
     do 
     {

@@ -98,7 +98,7 @@ void ListMovies(movie movies[], int num_of_movies)
             std::cerr << "no movies to display, please add a movie first\n";
         }
 }
-//will always be called before renting and sometimes separately
+
 void listRented(movie movies[], int num_of_movies)
 {
     for (int i=0; i<num_of_movies; i++)
