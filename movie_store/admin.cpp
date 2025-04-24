@@ -19,23 +19,60 @@ std::string checkCredentials(std::string& login, std::string& passwrd)
     return "";
 }
 
-void deleteCustomer(Customer customers[], int num_of_customers, std::string& id)
+void deleteCustomer(Customer customers[], int& customers_count, std::string& id)
 {
-    for (int i = 0; i < num_of_customers; i++) 
+    if(customers_count != 0)
     {
-        if (customers[i].Id == id) 
+        for (int i = 0; i < customers_count; i++) 
         {
-            customers[i].Name.clear();
-            customers[i].Id.clear();
-            customers[i].PhoneNumber.clear();
-            customers[i].PreviouslyRentedMovies.clear();
-            for(int j = 0; j < limit; j++)
+            if (customers[i].Id == id) 
             {
-                customers[i].CurrentlyRentedMovies[j].clear();
+                if(i < customers_count-1)
+                {
+                    customers[i].Name == customers[customers_count-1].Name;
+                    customers[i].PhoneNumber == customers[customers_count-1].PhoneNumber;
+                    customers[i].Id == customers[customers_count-1].Id;
+                    customers[i].PreviouslyRentedMovies == customers[customers_count-1].PreviouslyRentedMovies;
+                    for(int j = 0; j < limit; j++)
+                    {
+                        customers[i].CurrentlyRentedMovies[j] == customers[customers_count-1].CurrentlyRentedMovies[j];
+                    }
+                    
+                    customers[customers_count-1].Name.clear();
+                    customers[customers_count-1].Id.clear();
+                    customers[customers_count-1].PhoneNumber.clear();
+                    customers[customers_count-1].PreviouslyRentedMovies.clear();
+                    for(int j = 0; j < limit; j++)
+                    {
+                        customers[customers_count-1].CurrentlyRentedMovies[j].clear();
+                    }
+                    customers_count--;
+                }
+                else if (i == customers_count-1)
+                {
+                    customers[i].Name.clear();
+                    customers[i].Id.clear();
+                    customers[i].PhoneNumber.clear();
+                    customers[i].PreviouslyRentedMovies.clear();
+                    for(int j = 0; j < limit; j++)
+                    {
+                        customers[i].CurrentlyRentedMovies[j].clear();
+                    }
+                    customers_count--;
+                }
+                else
+                {
+                    std::cout << "Error in the customer array, please contact your IT provider\n";
+                    break;
+                }
+                std::cout << "Customer with ID: " << id << " deleted successfully.\n";
+                break;
             }
-            std::cout << "Customer with ID " << id << " deleted successfully.\n";
-            break;
         }
+    }
+    else
+    {
+        std::cout << "There are no customers! Please add.\n";
     }
 }
 
@@ -56,35 +93,36 @@ void deleteMovie(movie movies[], int num_of_movies, std::string& name)
             movies[i].RentedCount = 0;
             movies[i].DueDate = date::year(1000) / date::month(10) / date::day(10); //default state for empty, not an actual thing in the language i just decided that
             movies[i].due = false;
+            std::cout << "Movie : "<< name << " deleted successfully\n";
             break;
         }
     }
 }
 
-int login()
+std::string login()
 {
     std::string login, passwrd;
     do
     {
         std::cout << "Enter username: ";
         getline(std::cin, login);
-        if (login == "0") return 0;
+        if (login == "0") return "";
         
         std::cout << "Enter password: ";
         getline(std::cin, passwrd);
-        if (passwrd == "0") return 0;
+        if (passwrd == "0") return "";
         
         if(checkCredentials(login, passwrd) == "admin")
         {
             std::cout << "Welcome, " << login << "!\n";
             std::this_thread::sleep_for(std::chrono::seconds(2));
-            return 1;
+            return "admin";
         }
         else if(checkCredentials(login, passwrd) == "user")
         {
             std::cout << "Welcome, " << login << "!\n";
             std::this_thread::sleep_for(std::chrono::seconds(2));
-            return 2;
+            return "user";
         }
         else
         {

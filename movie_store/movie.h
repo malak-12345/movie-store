@@ -22,7 +22,7 @@ struct movie {
 
 
 // movie movies[movies_max];
-// int movies_count = 0;
+// int movies_count = getMoviesCount(); //put it in main
 
 
 //-------------------------utilities-----------------------------
@@ -32,6 +32,7 @@ bool isMovieFound(movie movies[], int num_of_movies, std::string& movieName);
 int getMovieNum(movie movies[], int num_of_movies, std::string& movieName);
 bool isMovieRentedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName);
 bool isFull(Customer customers[], int customerNum);
+int getMoviesCount(movie movies[], int size);
 //-------------------------utilities-----------------------------
 
 
