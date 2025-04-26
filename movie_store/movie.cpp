@@ -418,42 +418,34 @@ bool editRating(movie movies[], int num_of_movies, std::string& movieName,
 //     }
 // }
 
-// void return_movie(Customer(&customer)[customer_max], int cust_num, movie(&mov)[movies_max], int mov_num) {
-//     int num = 1, index;
-//     std::string movieName, ans, id;
-//     for (std::string i : customer[cust_num].CurrentlyRentedMovies) {
-//         std::cout << num << "." << i << std::endl;
-//         num++;
-//     }
-//     std::cout << "enter name of the movie you wish to return: ";
-//     getline(std::cin, movieName);
-//     std::cin.clear();
-//     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//     for (std::string i : customer[cust_num].CurrentlyRentedMovies) {
-//         if (movieName == i) {
-//             index = getMovieNum(mov, mov_num, movieName);
-//             mov[index].rented = false;
-//             mov[index].CurrentRenter.clear();
-//             mov[index].due = false;
-//             mov[index].DueDate = date::year(1000) / date::month(10) / date::day(10);
-//             i.clear();
-//             std::cout << "would you like to rate the movie? y/n: ";
-//             getline(std::cin, ans);
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//             if (ans == "y") {
-//                 do
-//                 {
-//                     rate(movies, mov_num, movieName, customers, cust_num, id);
-//                 } while (!rate(movies, mov_num, movieName, customers, cust_num, id));
-//             }
-//             else {
-//                 return; //back to main menu
-//             }
-//         }
-
-//     }
-// }
+ void return_movie(Customer customer[], int cust_num, movie mov[], int mov_num) {
+     int num = 1, index, ans;
+     std::string movieName, ans, id;
+     for (std::string i : customer[cust_num].CurrentlyRentedMovies) {
+         std::cout << num << "." << i << std::endl;
+         num++;
+     }
+     std::cout << "enter number of the movie you wish to return: ";
+     if (is_num(ans) && ans < 9 && ans > 0) {
+        movieName = customer[cust_num].CurrentlyRentedMovies[ans - 1];
+        index = getMovieNum(mov, mov_num, movieName);
+        mov[index].rented = false;
+        mov[index].CurrentRenter.clear();
+        mov[index].due = false;
+        mov[index].DueDate = date::year(3000) / date::month(10) / date::day(10);
+        customer[cust_num].CurrentlyRentedMovies[ans-1].clear();
+        std::cout << "would you like to rate the movie? y/n: ";
+        if (yes_no()) {
+            do
+            {
+                rate(mov, mov_num, movieName, customer, cust_num, id);
+            } while (!rate(mov, mov_num, movieName, customer, cust_num, id));
+        }
+        else {
+            return; //back to main menu
+        }
+     }
+ }
 
 int validate_due(movie& movie, bool isDateChanged, sys_days new_date) {
     auto now = std::chrono::system_clock::now();
@@ -481,25 +473,26 @@ int validate_due(movie& movie, bool isDateChanged, sys_days new_date) {
     }
 }
 
-// void ListDueAccounts(movie(&mov)[movies_max], Customer cust[])
-// { //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
-//     int num = 1;
-//     for (int i = 0; i < movies_count;i++) {
-//         int days_due = validate_due(mov[i]);
-//         if (mov[i].due = true) {
-//             for (int j = 0;j < customers_count;j++) {
-//                 if (mov[i].CurrentRenter == cust[j].Name) {
-//                     std::cout << num << "." << cust[j].Name << std::endl;
-//                     std::cout << "id: " << cust[j].Id << std::endl;
-//                     std::cout << "phone number: " << cust[j].PhoneNumber << std::endl;
-//                     std::cout << "movie was due: " << days_due << "days ago.\n" << std::endl;
-//                     std::cout << "due fees up till now: " << days_due * mov[i].fee << std::endl;
-//                 }
-//             }
-//             num++;
-//         }
-//     }
-// }
+ void ListDueAccounts(movie mov[],int num_of_movies, Customer cust[], int num_of_customers, bool isDateChanged, sys_days new_date)
+ { //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
+     int num = 1;
+     for (int i = 0; i < num_of_movies;i++) {
+         int days_due = validate_due(mov[i], isDateChanged, new_date);
+         if (mov[i].due = true) {
+             for (int j = 0;j < num_of_customers;j++) {
+                 if (mov[i].CurrentRenter == cust[j].Name) {
+                     std::cout << num << "." << cust[j].Name << std::endl;
+                     std::cout << "id: " << cust[j].Id << std::endl;
+                     std::cout << "phone number: " << cust[j].PhoneNumber << std::endl;
+                     std::cout << "due movie: " << mov[i].Name << std::endl;
+                     std::cout << "movie was due: " << days_due << "days ago.\n" << std::endl;
+                     std::cout << "due fees up till now: " << days_due * mov[i].fee << std::endl;
+                 }
+             }
+             num++;
+         }
+     }
+ }
 
 
 
@@ -507,7 +500,9 @@ int validate_due(movie& movie, bool isDateChanged, sys_days new_date) {
 void MainMenu(Customer customers[], int num_of_customers, movie movies[], int num_of_movies) { 
     bool valid = false,isDateChanged = false;
     int choice;
-    sys_days new_date;
+    sys_days new_date, today;
+    auto now = std::chrono::system_clock::now();
+    today = floor<days>(now);
     std::string check;
     
     std::string menu[] = {
@@ -526,11 +521,17 @@ void MainMenu(Customer customers[], int num_of_customers, movie movies[], int nu
     };
     const int menuSize = sizeof(menu)/sizeof(menu[0]);
     
-    std::cout << "Note that if you wish at any point in time to go back or exit press 0\n";
+
     
     check = login();
     while (check=="user" || check=="admin") { //infinite loop till log out or termination
-
+        if (isDateChanged) {
+            std::cout << "\ncurrent date: " << new_date;
+        }
+        else {
+            std::cout << "\ncurrent date: " << today;
+        }
+        
         for(int i = 0; i < menuSize; i++)
         {
             std::cout << menu[i] << '\n';

@@ -28,4 +28,4 @@ int getCustomersCount(Customer customers[], int size);
 //-------------------------utilities-----------------------------
 
 void listCustomers(Customer customers[], int customers_count);
-void addNewCustomer(Customer customers[], int size, int& customers_count);
+

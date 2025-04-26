@@ -100,7 +100,7 @@ void deleteMovie(movie movies[], int movies_count, std::string& name)
             movies[movies_count - 1].fee = 0;
             movies[movies_count - 1].rating = 0;
             movies[movies_count - 1].RentedCount = 0;
-            movies[movies_count - 1].DueDate = date::year(1000) / date::month(10) / date::day(10);
+            movies[movies_count - 1].DueDate = date::year(3000) / date::month(10) / date::day(10);
             movies[movies_count - 1].due = false;
             movies_count--;
         }
@@ -160,28 +160,68 @@ std::string login()
 
 void add_movie(movie movies[]) {
     std::string name;
-    int price, fee;
+    double price, fee;
     std::cout << "enter movie name: ";
     getline(std::cin, name);
     std::transform(name.begin(), name.end(), name.begin(), tolower);
     std::cout << "\nenter movie price per day: ";
-    std::cin >> price;
-
+    is_num(price);
     std::cout << "\nenter due fees per day: ";
+    is_num(fee);
 }
 
+void addNewCustomer(Customer customers[], int& customers_count) {
+    std::string name, phonenum, id;
+    std::cout << "Enter Customer name: ";
+    getline(std::cin, name);
+    std::transform(name.begin(), name.end(), name.begin(), tolower);
 
-// to do while debugging: fix this shitty infinite loop
+    do
+    {
+        std::cout << "Enter Customer phone: +";
+        getline(std::cin, phonenum);
+
+        if (!checkPhoneNumber(phonenum))
+        {
+            std::cout << "Invalid phone number!\n";
+        }
+        else if (checkPhoneNumberRegistered(customers, customers_count, phonenum))
+        {
+            std::cout << "This phone number is already registered!\n";
+        }
+
+    } while (!checkPhoneNumber(phonenum) && !checkPhoneNumberRegistered(customers, customers_count, phonenum));
+
+    do
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // ---> sleep for 1 sec.
+        id = generateId();
+
+    } while (checkId(customers, customers_count, id));
+
+
+    for (int i = 0; i < customers_count; i++) {
+        if (customers[i].Name.empty())
+        {
+            customers[i].Name = name;
+            customers[i].PhoneNumber = phonenum;
+            customers[i].Id = id;
+            customers_count++;
+            break;
+        }
+    }
+}
+
+// to do while debugging: fix this shitty double enter
 // in main menu add,   bool isDateChanged, and sys_days new_date 
 bool ChangeDate(sys_days& new_date) {
-    char ans, y, m, d;
+    int y, m, d;
     char delimiter1, delimiter2;
     std::string entered_date;
     std::cout << "do you wish to set date manually y/n?: ";
     if (yes_no()) {
         while (true) //infinite loop till broken by return
         {
-            std::string entered_date;
             std::cout << "specify date in this exact format yyyy/mm/dd : ";
             getline(std::cin, entered_date);
             std::cin.clear();
