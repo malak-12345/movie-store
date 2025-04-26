@@ -80,47 +80,7 @@ int getCustomersCount(Customer customers[], int size) // get customers count at 
 //-------------------------utilities-----------------------------
 
 
-void addNewCustomer(Customer customers[], int size, int& customers_count){
-    std::string name, phonenum, id;
-    std::cout << "Enter Customer name: ";
-    getline(std::cin, name);
-    std::transform(name.begin(), name.end(), name.begin(), tolower);
-    
-    do 
-    {
-        std::cout << "Enter Customer phone: +";
-        getline(std::cin, phonenum);
-        
-        if(!checkPhoneNumber(phonenum))
-        {
-            std::cout << "Invalid phone number!\n";
-        }
-        else if (checkPhoneNumberRegistered(customers, customers_count, phonenum))
-        {
-            std::cout << "This phone number is already registered!\n";
-        }
 
-    } while(!checkPhoneNumber(phonenum) && !checkPhoneNumberRegistered(customers, customers_count, phonenum));
-    
-    do
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // ---> sleep for 1 sec.
-        id = generateId();
-
-    } while(checkId(customers, customers_count, id));
-
-
-    for(int i = 0; i < size; i++){
-        if(customers[i].Name.empty())
-        {
-            customers[i].Name = name;
-            customers[i].PhoneNumber = phonenum;
-            customers[i].Id = id;
-            customers_count++;
-            break;
-        }   
-    }
-}
 void listCustomers(Customer customers[], int customers_count)
 {
     if(customers_count !=0)

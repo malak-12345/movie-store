@@ -5,7 +5,7 @@
 
 
 struct movie {
-    std::string Name, CurrentRenter;
+    std::string Name, CurrentRenter = "";
     double rating = 0, price, fee; //renting price and fee are per day
     int RentedCount = 0;
     bool rented = false, due = false;
@@ -37,8 +37,8 @@ bool rate(movie movies[], int num_of_movies, std::string& movieName, Customer cu
 bool editRating(movie movies[],int num_of_movies,std::string& movieName, Customer customers[],int num_of_customers,std::string& id);
 
 void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies);
-
-int validate_due(movie& movie); //to do
-void ListDueAccounts(movie(&mov)[movies_max], Customer cust[]);
+void return_movie(Customer customer[], int cust_num, movie mov[], int mov_num);
+int validate_due(movie& movie, bool isDateChanged, sys_days new_date);
+void ListDueAccounts(movie mov[], int num_of_movies, Customer cust[], int num_of_customers, bool isDateChanged, sys_days new_date);
 
 void MainMenu(Customer customers[], int num_of_customers, movie movies[], int num_of_movies); 
