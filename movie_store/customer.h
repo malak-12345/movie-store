@@ -15,17 +15,16 @@ struct Customer
 
 
 // Customer customers[customer_max];
-// int customers_count = getCustomersCount(); // put it in main.
 
 
 //-------------------------utilities-----------------------------
-std::string generateId();
-std::string deleteSpaces(std::string& str);
-bool checkPhoneNumber(std::string& PhoneNumber);
-bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::string& PhoneNumber);
-bool checkId(Customer customers[], int customers_count, std::string& id);
-int getCustomersCount(Customer customers[], int size);
+std::string generateId(); // done
+std::string deleteSpaces(std::string& str); // done
+bool checkPhoneNumber(std::string& PhoneNumber); // done
+bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::string& PhoneNumber); // done
+bool checkId(Customer customers[], int customers_count, std::string& id); // done
+int getCustomersCount(Customer customers[], int size); // done
 //-------------------------utilities-----------------------------
 
-void listCustomers(Customer customers[], int customers_count);
-
+void listCustomers(Customer customers[], int customers_count); // done
+void addNewCustomer(Customer customers[], int size_of_customers, int& customers_count); // done

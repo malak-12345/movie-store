@@ -1,22 +1,22 @@
 #include "customer.h"
 
 //-------------------------utilities-----------------------------
-std::string generateId()
+std::string generateId() // done
 {
     std::string Id = "C#";
     srand(time(0)); // changes seed
-    for (int i =1; i<=4; i++)
+    for (int i = 1; i <= 4; i++)
     {
-        Id+= std::to_string(rand()%10); // generates number from 0 -> 9 and adds it
+        Id += std::to_string(rand() % 10); // generates number from 0 -> 9 and adds it
     }
     return Id;
 }
-std::string deleteSpaces(std::string& str)
+std::string deleteSpaces(std::string& str) //done
 {
     str.erase(remove(str.begin(),str.end(), ' '), str.end());
     return str;
 }
-bool checkPhoneNumber(std::string& PhoneNumber)
+bool checkPhoneNumber(std::string& PhoneNumber) // done
 {
     PhoneNumber = deleteSpaces(PhoneNumber);
     
@@ -36,7 +36,7 @@ bool checkPhoneNumber(std::string& PhoneNumber)
         return false;
     }
 }
-bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::string& PhoneNumber)
+bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::string& PhoneNumber) // done
 {
     for(int i = 0; i < customers_count; i++)
     {
@@ -47,7 +47,7 @@ bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::
     }
     return false;
 }
-bool checkId(Customer customers[], int customer_count, std::string& id)
+bool checkId(Customer customers[], int customer_count, std::string& id) // done
 {
     for(int i = 0; i < customer_count; i++)
     {
@@ -58,12 +58,12 @@ bool checkId(Customer customers[], int customer_count, std::string& id)
     }
     return false;
 }
-int getCustomersCount(Customer customers[], int size) // get customers count at the beginning of the program
+int getCustomersCount(Customer customers[], int size_of_customers) // get customers count at the beginning of the program
 {
-    if(size != 0)
+    if(size_of_customers != 0)
     {
         int customers_count = 0;
-        for(int i = 0; i < size; i++){
+        for(int i = 0; i < size_of_customers; i++){
             if(!customers[i].Name.empty())
             {
                 customers_count++;
@@ -73,15 +73,56 @@ int getCustomersCount(Customer customers[], int size) // get customers count at 
     }
     else
     {
-        std::cout << "There are no customers! Please add.\n";
+        std::cout << "There are currently no customers on the system!, please add a customers first.\n";
     }
     
 }
 //-------------------------utilities-----------------------------
 
 
+void addNewCustomer(Customer customers[], int size_of_customers, int& customers_count) // done
+{
+    std::string name, phonenum, id;
+    std::cout << "Enter Customer name: ";
+    getline(std::cin, name);
+    std::transform(name.begin(), name.end(), name.begin(), tolower);
+    
+    do 
+    {
+        std::cout << "Enter Customer phone: +";
+        getline(std::cin, phonenum);
+        
+        if(!checkPhoneNumber(phonenum))
+        {
+            std::cout << "Invalid phone number!\n";
+        }
+        else if (checkPhoneNumberRegistered(customers, customers_count, phonenum))
+        {
+            std::cout << "This phone number is already registered!\n";
+        }
 
-void listCustomers(Customer customers[], int customers_count)
+    } while(!checkPhoneNumber(phonenum) && !checkPhoneNumberRegistered(customers, customers_count, phonenum));
+    
+    do
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // ---> sleep for 1 sec.
+        id = generateId();
+
+    } while(checkId(customers, customers_count, id));
+
+
+    for(int i = 0; i < size_of_customers; i++){
+        if(customers[i].Name.empty())
+        {
+            customers[i].Name = name;
+            customers[i].PhoneNumber = phonenum;
+            customers[i].Id = id;
+            customers_count++;
+            break;
+        }   
+    }
+}
+void listCustomers(Customer customers[], int customers_count) // done
 {
     if(customers_count !=0)
     {
@@ -116,9 +157,8 @@ void listCustomers(Customer customers[], int customers_count)
     
                 for (std::string j : customers[i].PreviouslyRentedMovies)
                 {
-                    if (j.empty()) { std::cout << "."; break; }
-                    std::cout << '\n';
-                    std::cout << j;
+                    if (j.empty()) break;
+                    std::cout << j << '\n';
                 }
                 std::cout << "\n";
                 num++;
@@ -128,6 +168,6 @@ void listCustomers(Customer customers[], int customers_count)
     }
     else
     {
-        std::cout << "There are no customers! Please add.\n";
+        std::cout << "There are currently no customers on the system!, please add a customer first.\n";
     }
 }

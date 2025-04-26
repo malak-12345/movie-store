@@ -15,30 +15,32 @@ struct movie {
 
 
 // movie movies[movies_max];
-// int movies_count = getMoviesCount(); //put it in main
 
 
 //-------------------------utilities-----------------------------
-bool isCustomerFound(Customer customers[], int num_of_customers ,std::string& id);
-int getCustomerNum(Customer customers[], int number_of_customers, std::string& id);
-bool isMovieFound(movie movies[], int num_of_movies, std::string& movieName);
-int getMovieNum(movie movies[], int num_of_movies, std::string& movieName);
-bool isMovieRentedByCustomer(Customer customers[], int num_of_customers ,std::string& id, std::string& movieName);
-bool isFull(Customer customers[], int customerNum);
-int getMoviesCount(movie movies[], int size);
+bool isCustomerFound(Customer customers[], int customers_count ,std::string& id); // done
+int getCustomerIndex(Customer customers[], int customers_count, std::string& id); // done
+bool isMovieFound(movie movies[], int movies_count, std::string& movieName); // done
+int getMovieIndex(movie movies[], int movies_count, std::string& movieName); // done
+bool isMovieRentedByCustomer(Customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
+bool isFull(Customer customers[], int customerIndex); // done
+int getMoviesCount(movie movies[], int size_of_movies); // done
 //-------------------------utilities-----------------------------
 
 
-void ListMovies(movie movies[],int num_of_movies);
-void listRented(movie movies[], int num_of_movies);
-int ListUnrented(movie movies[], int movies_count);
+void ListMovies(movie movies[],int movies_count); // done
+void listRented(movie movies[], int movies_count); // done 
+int ListUnrented(movie movies[], int movies_count); // done
 
-bool rate(movie movies[], int num_of_movies, std::string& movieName, Customer customers[], int num_of_customers ,std::string& id);
-bool editRating(movie movies[],int num_of_movies,std::string& movieName, Customer customers[],int num_of_customers,std::string& id);
+bool rate(movie movies[], int movies_count, std::string& movieName, 
+    Customer customers[], int customers_count ,std::string& id); // done
+
+bool editRating(movie movies[], int movies_count, std::string& movieName,
+    Customer customers[], int customers_count, std::string& id); // done
 
 void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies);
 void return_movie(Customer customer[], int cust_num, movie mov[], int mov_num);
 int validate_due(movie& movie, bool isDateChanged, sys_days new_date);
 void ListDueAccounts(movie mov[], int num_of_movies, Customer cust[], int num_of_customers, bool isDateChanged, sys_days new_date);
 
-void MainMenu(Customer customers[], int num_of_customers, movie movies[], int num_of_movies); 
+void MainMenu(Customer customers[], int size_of_customers, movie movies[], int size_of_movies); 
