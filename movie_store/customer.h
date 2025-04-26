@@ -1,15 +1,5 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <iostream>
-#include <algorithm>
-#include <thread>
-#include <chrono>
-#include <limits>
-#include <sstream>
-#include <map>
-#include "Howard_Hinnant/include/date/date.h"
-// #include "date.h"
+#include "utilities.h"
 
 #define limit 8
 #define customer_max 50
@@ -25,15 +15,17 @@ struct Customer
 
 
 // Customer customers[customer_max];
-// int customers_count = 0;
+// int customers_count = getCustomersCount(); // put it in main.
 
 
 //-------------------------utilities-----------------------------
 std::string generateId();
 std::string deleteSpaces(std::string& str);
 bool checkPhoneNumber(std::string& PhoneNumber);
-bool checkId(std::string& id, Customer c[], int size);
+bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::string& PhoneNumber);
+bool checkId(Customer customers[], int customers_count, std::string& id);
+int getCustomersCount(Customer customers[], int size);
 //-------------------------utilities-----------------------------
 
-void listCustomers(Customer customers[], int number_of_customers);
-void addNewCustomer(Customer c[], int number_of_customers);
+void listCustomers(Customer customers[], int customers_count);
+void addNewCustomer(Customer customers[], int size, int& customers_count);
