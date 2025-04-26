@@ -76,13 +76,35 @@ void deleteCustomer(Customer customers[], int& customers_count, std::string& id)
     }
 }
 
-void deleteMovie(movie movies[], int num_of_movies, std::string& name)
+void deleteMovie(movie movies[], int movies_count, std::string& name)
 {
-    for(int i = 0; i< num_of_movies; i++)
+    for(int i = 0; i< movies_count; i++)
     {
-        if(movies[i].Name == name)
-        {
-           
+        if (i < movies_count - 1) {
+            movies[i].Name = movies[movies_count - 1].Name;
+            movies[i].CurrentRenter = movies[movies_count - 1].CurrentRenter;
+            movies[i].AllRatings = movies[movies_count - 1].AllRatings;
+            movies[i].rented = movies[movies_count - 1].rented;
+            movies[i].price = movies[movies_count - 1].price;
+            movies[i].fee = movies[movies_count - 1].fee;
+            movies[i].rating = movies[movies_count - 1].rating;
+            movies[i].RentedCount = movies[movies_count - 1].RentedCount;
+            movies[i].DueDate = movies[movies_count - 1].DueDate;
+            movies[i].due = movies[movies_count - 1].due;
+            //----------------
+            movies[movies_count - 1].Name.clear();
+            movies[movies_count - 1].CurrentRenter.clear();
+            movies[movies_count - 1].AllRatings.clear();
+            movies[movies_count - 1].rented = false;
+            movies[movies_count - 1].price = 0;
+            movies[movies_count - 1].fee = 0;
+            movies[movies_count - 1].rating = 0;
+            movies[movies_count - 1].RentedCount = 0;
+            movies[movies_count - 1].DueDate = date::year(1000) / date::month(10) / date::day(10);
+            movies[movies_count - 1].due = false;
+            movies_count--;
+        }
+        else if (i = movies_count - 1) {
             movies[i].Name.clear();
             movies[i].CurrentRenter.clear();
             movies[i].AllRatings.clear();
@@ -93,9 +115,14 @@ void deleteMovie(movie movies[], int num_of_movies, std::string& name)
             movies[i].RentedCount = 0;
             movies[i].DueDate = date::year(1000) / date::month(10) / date::day(10); //default state for empty, not an actual thing in the language i just decided that
             movies[i].due = false;
+            movies_count--;
             std::cout << "Movie : "<< name << " deleted successfully\n";
             break;
         }
+        else {
+            std::cerr << "error in the movies array, please contact your IT provider";
+        }
+        break;
     }
 }
 
@@ -105,23 +132,23 @@ std::string login()
     do
     {
         std::cout << "Enter username: ";
-        getline(std::cin, login);
+        std::getline(std::cin, login);
         if (login == "0") return "";
         
         std::cout << "Enter password: ";
-        getline(std::cin, passwrd);
+        std::getline(std::cin, passwrd);
         if (passwrd == "0") return "";
         
         if(checkCredentials(login, passwrd) == "admin")
         {
             std::cout << "Welcome, " << login << "!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             return "admin";
         }
         else if(checkCredentials(login, passwrd) == "user")
         {
             std::cout << "Welcome, " << login << "!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             return "user";
         }
         else
@@ -131,53 +158,46 @@ std::string login()
     } while(checkCredentials(login, passwrd) == "");
 }
 
+void add_movie(movie movies[]) {
+    std::string name;
+    int price, fee;
+    std::cout << "enter movie name: ";
+    getline(std::cin, name);
+    std::transform(name.begin(), name.end(), name.begin(), tolower);
+    std::cout << "\nenter movie price per day: ";
+    std::cin >> price;
 
-// in main menu add,   bool isDateChanged, and sys_days new_date 
-bool ChangeDate(sys_days& new_date) {
-    char ans;
-    bool date_good = false;
-    std::cout << "do you wish to set date manually y/n?: ";
-
-    do {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (std::cin.fail()) {
-            std::cerr << "Input error occurred." << std::endl;
-        }
-        else if(!(ans == 'y' || ans == 'Y' || ans == 'n' || ans == 'N')) {
-            std::cout << "Invalid input, please enter a valid choice" << std::endl;
-        }
-        std::cin >> ans;
-    }while (std::cin.fail() || !(ans == 'y' || ans == 'Y' || ans == 'n' || ans == 'N'));
-    if (ans == 'y' || ans == 'Y') {
-        while (!date_good)/*incomplete fail safe*/ {
-            std::string entered_date;
-            std::cout << "specify date in this exact format yyyy-mm-dd : ";
-            getline(std::cin, entered_date);
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            if (entered_date == "0") return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
-            std::istringstream iss(entered_date);
-            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') {
-                today = year(y) / month(m) / day(d); //conerts from date::..... to sys_days
-                date_good = true;
-            }
-            else {
-                std::cerr << "wrong format or invalid date, please try again"
-                    date_good = false;
-            }
-        }
-
-
-        return true;
-    }
-    else {
-        return false;
-    }
+    std::cout << "\nenter due fees per day: ";
 }
 
 
-
-void add_movie(movie movies[], int movies_count) {
-
+// to do while debugging: fix this shitty infinite loop
+// in main menu add,   bool isDateChanged, and sys_days new_date 
+bool ChangeDate(sys_days& new_date) {
+    char ans, y, m, d;
+    char delimiter1, delimiter2;
+    std::string entered_date;
+    std::cout << "do you wish to set date manually y/n?: ";
+    if (yes_no()) {
+        while (true) //infinite loop till broken by return
+        {
+            std::string entered_date;
+            std::cout << "specify date in this exact format yyyy/mm/dd : ";
+            getline(std::cin, entered_date);
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (entered_date == "0") return false; //aborts and exits to main menu
+            std::istringstream iss(entered_date);
+            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') {
+                new_date = year(y) / month(m) / day(d); //converts date::year_month_day to sys_fays, thnx to sir Howard Hinnant
+                return true;
+            }
+            else {
+                std::cerr << "wrong format or invalid date, please try again" << std::endl;
+            }
+        }
+    }
+    else {
+        return false; //aborting
+    }
 }

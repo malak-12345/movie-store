@@ -82,9 +82,9 @@ int getCustomersCount(Customer customers[], int size) // get customers count at 
 
 void addNewCustomer(Customer customers[], int size, int& customers_count){
     std::string name, phonenum, id;
-    std::transform(name.begin(), name.end(), name.begin(), tolower);
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
+    std::transform(name.begin(), name.end(), name.begin(), tolower);
     
     do 
     {

@@ -1,7 +1,5 @@
 #include "admin.h" //thus movie.h and customer.h and date.h are included too
 
-using namespace date;
-using namespace std::chrono;
 
 //-------------------------utilities-----------------------------
 bool isCustomerFound(Customer customers[], int num_of_customers ,std::string& id)
@@ -121,7 +119,7 @@ void ListMovies(movie movies[], int num_of_movies)
         std::cerr << "no movies to display, please add a movie first\n";
     }
 }
-//will always be called before renting and sometimes separately
+
 void listRented(movie movies[], int num_of_movies)
 {
     for (int i=0; i<num_of_movies; i++)
@@ -507,8 +505,9 @@ int validate_due(movie& movie, bool isDateChanged, sys_days new_date) {
 
 
 void MainMenu(Customer customers[], int num_of_customers, movie movies[], int num_of_movies) { 
-    bool valid = false;
+    bool valid = false,isDateChanged = false;
     int choice;
+    sys_days new_date;
     std::string check;
     
     std::string menu[] = {
@@ -546,7 +545,7 @@ void MainMenu(Customer customers[], int num_of_customers, movie movies[], int nu
             std::cout << "press  13: Delete a movie\n"; // done
             std::cout << "press  14: Delete a customer\n"; // done
             std::cout << "press  15: set date manually\n";
-            std::cout << "press  16: log out\n"; // done
+            std::cout << "press  16: switch user account\n"; // done
         }
         std::cout << "press  0: Exit\n";
         std::cout << "\nat any point in time, if you wish to go back to main menu enter \"0\"\n";
@@ -708,7 +707,8 @@ void MainMenu(Customer customers[], int num_of_customers, movie movies[], int nu
             std::this_thread::sleep_for(std::chrono::seconds(3));
             break;
         }
-        case 15: // change date
+        case 15: // done
+            isDateChanged = ChangeDate(new_date);
             break;
         case 16: // logout for admin
             check = login();
