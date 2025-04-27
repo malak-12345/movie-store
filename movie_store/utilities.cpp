@@ -2,20 +2,37 @@
 
 
 //-------------------------general-----------------------------
-bool is_num(double& input)
+void is_num(int& input) 
 {
-	while (true) 
+	while(true)
 	{
 		std::cin >> input;
 		if (std::cin.fail()) 
 		{
-			std::cout << "Invalid input. Please try again\n";
+			std::cout << "Invalid input. Please try again: ";
 			std::cin.clear();
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
 		else 
 		{
-			return true;
+			return;
+		}
+	}
+}
+void is_num(double& input)
+{
+	while (true)
+	{
+		std::cin >> input;
+		if (std::cin.fail())
+		{
+			std::cout << "Invalid input. Please try again: ";
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		}
+		else 
+		{
+			return;
 		}
 	}
 }

@@ -77,8 +77,20 @@ int getCustomersCount(Customer customers[], int size_of_customers) // get custom
     }
     
 }
+bool isEmpty(Customer customers[], int customerIndex) // done
+{
+    int count = 0;
+    for(int i = 0; i < limit; i++)
+    {
+        if(customers[customerIndex].CurrentlyRentedMovies[i].empty()) count++; 
+    } 
+    if(count == limit)
+    {
+        return true;
+    }
+    return false;
+}
 //-------------------------utilities-----------------------------
-
 
 void addNewCustomer(Customer customers[], int size_of_customers, int& customers_count) // done
 {
@@ -121,35 +133,37 @@ void addNewCustomer(Customer customers[], int size_of_customers, int& customers_
             break;
         }   
     }
+    std::cout << "Successfully added " << name << '\n';
 }
 void listCustomers(Customer customers[], int customers_count) // done
 {
     if(customers_count !=0)
     {
         int num = 1;
-        std::cout << "\n-----------------------------\n";
+        std::cout << "\n-----------------------------\n\n";
         for (int i = 0; i < customers_count; i++)
         {
             std::cout << num << ".\n";
             std::cout << "Name: " << customers[i].Name << '\n';
             std::cout << "Customer ID: " << customers[i].Id << '\n';
             std::cout << "Phone Number: " << customers[i].PhoneNumber << '\n';
-    
-            if (!customers[i].CurrentlyRentedMovies[0].empty())
+
+            if(!(isEmpty(customers, i)))
             {
                 std::cout << "Currently Renting: ";
-                for (int j = 0; j < limit; j++)
+                for (std::string j : customers[i].CurrentlyRentedMovies)
                 {
-                    if (customers[i].CurrentlyRentedMovies[j].empty()) { std::cout << "."; break; }
-                    if (j > 0) { std::cout << ", "; }
-                    std::cout << customers[i].CurrentlyRentedMovies[j];
+                    if (!j.empty()) 
+                    { 
+                        std::cout << j << " ";
+                    }
                 }
-                std::cout << "\n";
             }
-            else 
+            else
             {
                 std::cout << "Currently Renting: none\n";
             }
+            std::cout << "\n";
     
             if (!customers[i].PreviouslyRentedMovies.size() == 0)
             {
@@ -157,12 +171,15 @@ void listCustomers(Customer customers[], int customers_count) // done
     
                 for (std::string j : customers[i].PreviouslyRentedMovies)
                 {
-                    if (j.empty()) break;
-                    std::cout << j << '\n';
+                    if (!j.empty())
+                    {
+                        std::cout << j << " ";
+                    }
                 }
                 std::cout << "\n";
-                num++;
             }
+            std::cout << "\n";
+            num++;
         }
         std::cout << "-----------------------------\n";
     }

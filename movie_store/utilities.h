@@ -15,5 +15,6 @@ using namespace std::chrono; //pollutes the entire namespace for the program but
 
 
 //-------------------------general-----------------------------
-bool is_num(double& input);
+void is_num(int& input);
+void is_num(double& input);
 bool yes_no();

@@ -155,18 +155,17 @@ std::string login() // done
         if(checkCredentials(login, passwrd) == "admin")
         {
             std::cout << "Welcome, " << login << "!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
             return "admin";
         }
         else if(checkCredentials(login, passwrd) == "user")
         {
             std::cout << "Welcome, " << login << "!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
             return "user";
         }
         else
         {
             std::cout << "Wrong password or username\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     } while(checkCredentials(login, passwrd) == "");
 }
@@ -185,7 +184,7 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
             std::cout << "This film is already exist!\n";
             continue;
         }
-        std::cout << "\nEnter movie price (EGP) : ";
+        std::cout << "\nEnter movie price per day(EGP) : ";
         is_num(price);
         std::cout << "\nEnter due fees per day (EGP) : ";
         is_num(fee);
@@ -202,6 +201,7 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
             break;
         }
     }
+    std::cout << "Successfully added: " << movieName << '\n';
 }
 
 // to do while debugging: fix this shitty double enter
