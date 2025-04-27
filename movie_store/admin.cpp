@@ -218,8 +218,8 @@ bool ChangeDate(sys_days& new_date) // done
         {
             std::cout << "specify date in this exact format yyyy/mm/dd : ";
             getline(std::cin, entered_date);
+            //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.clear();
-            // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             if (entered_date == "0") return false; //aborts and exits to main menu
             
             std::istringstream iss(entered_date);

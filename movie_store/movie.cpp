@@ -498,6 +498,45 @@ void returnMovie(Customer customers[], int customers_count, std::string& id, mov
     } while(!(ans <= num) || !(ans > 0));
 }
 
+void ListTopRated(movie arr[], const int& mov_count) { //usinng insertion sort, listing top 10 rated
+    movie copied[movies_max];
+    std::copy(arr, arr+mov_count, copied);
+    for (int i = 1; i < mov_count; i++) {
+        movie key = copied[i];
+        int j = i - 1;
+        while (j >= 0 && copied[j].rating < key.rating) {
+            copied[j + 1] = copied[j];
+                j--;
+        }
+        copied[j+1] = key;
+    }
+    for (int k = 0; k < 10;k++) {
+        int num = 0;
+        std::cout << num << ". " << copied[k].Name;
+        num++;
+    }
+}
+
+void ListTopRented(movie arr[], const int& mov_count) { //usinng insertion sort, listing top 10 rented
+    movie copied[movies_max];
+    std::copy(arr, arr + mov_count, copied);
+    for (int i = 1; i < mov_count; i++) {
+        movie key = copied[i];
+        int j = i - 1;
+        while (j >= 0 && copied[j].RentedCount < key.RentedCount) {
+            copied[j + 1] = copied[j];
+            j--;
+        }
+        copied[j + 1] = key;
+    }
+    for (int k = 0; k < 10;k++) {
+        int num = 0;
+        std::cout << num << ". " << copied[k].Name;
+        num++;
+    }
+}
+
+
 int validate_due(movie& movie, bool isDateChanged, sys_days new_date) // done
 {
     auto now = std::chrono::system_clock::now(); // return current system date
@@ -748,8 +787,10 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
             ListDueAccounts(movies, movies_count, customers, customers_count, isDateChanged, new_date);
             break;
         case 11: // top 10 rented
+            ListTopRented(movies, movies_count);
             break;
         case 12: // top 10 rated
+            ListTopRated(movies, movies_count);
             break;
         case 13: // log out for user --- add new movie for admin.
         {

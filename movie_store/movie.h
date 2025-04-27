@@ -41,3 +41,7 @@ void ListDueAccounts(movie movies[],int movies_count, Customer customers[], int 
     bool isDateChanged, sys_days new_date); //done
 
 void MainMenu(Customer customers[], int size_of_customers, movie movies[], int size_of_movies); // almost done
+
+void ListTopRated(movie arr[], const int& mov_count);
+
+void ListTopRented(movie arr[], const int& mov_count);
