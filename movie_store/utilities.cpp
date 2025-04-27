@@ -2,51 +2,48 @@
 
 
 //-------------------------general-----------------------------
-bool is_num(int& input) {
-	while(true){
+bool is_num(double& input)
+{
+	while (true) 
+	{
 		std::cin >> input;
-		if (std::cin.fail()) {
-			std::cout << "Invalid input. Please try again:" << std::endl;
+		if (std::cin.fail()) 
+		{
+			std::cout << "Invalid input. Please try again\n";
 			std::cin.clear();
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
-		else {
+		else 
+		{
 			return true;
-;		}
-	}
-}
-bool is_num(double& input){
-	while (true) {
-		std::cin >> input;
-		if (std::cin.fail()) {
-			std::cout << "Invalid input. Please try again" << std::endl;
-			std::cin.clear();
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		}
-		else {
-			return true;
-			;
 		}
 	}
 }
-
-bool yes_no() {
+bool yes_no() 
+{
 	char ans;
-	do {
+	do 
+	{
 		std::cin >> ans;
 		std::cin.clear();
 		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		if (std::cin.fail()) {
-			std::cerr << "Input error occurred." << std::endl;
+		if (std::cin.fail()) 
+		{
+			std::cerr << "Input error occurred.\n";
+			continue;
 		}
-		else if (!(ans == 'y' || ans == 'Y' || ans == 'n' || ans == 'N')) {
+		else if (!(ans == 'y' || ans == 'Y' || ans == 'n' || ans == 'N')) 
+		{
 			std::cout << "Invalid input, please enter a valid choice" << std::endl;
 		}
 	} while (std::cin.fail() || !(ans == 'y' || ans == 'Y' || ans == 'n' || ans == 'N'));
-	if (ans == 'y' || ans == 'Y') {
+	
+	if (ans == 'y' || ans == 'Y') 
+	{
 		return true;
 	}
-	else {
+	else 
+	{
 		return false; //abort 
 	}
 }

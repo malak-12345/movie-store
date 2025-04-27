@@ -127,9 +127,9 @@ void listCustomers(Customer customers[], int customers_count) // done
     if(customers_count !=0)
     {
         int num = 1;
+        std::cout << "\n-----------------------------\n";
         for (int i = 0; i < customers_count; i++)
         {
-            std::cout << "\n-----------------------------\n";
             std::cout << num << ".\n";
             std::cout << "Name: " << customers[i].Name << '\n';
             std::cout << "Customer ID: " << customers[i].Id << '\n';
@@ -162,9 +162,9 @@ void listCustomers(Customer customers[], int customers_count) // done
                 }
                 std::cout << "\n";
                 num++;
-                std::cout << "-----------------------------\n";
             }
         }
+        std::cout << "-----------------------------\n";
     }
     else
     {

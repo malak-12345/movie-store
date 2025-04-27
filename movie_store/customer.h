@@ -10,11 +10,7 @@ struct Customer
     std::string CurrentlyRentedMovies[limit];
     std::vector<std::string> PreviouslyRentedMovies;
     std::map<std::string, int> rating;
-    // need to make sure the movie name isn't duplicated when adding new movie ---> !isMovieFound();
 };
-
-
-// Customer customers[customer_max];
 
 
 //-------------------------utilities-----------------------------

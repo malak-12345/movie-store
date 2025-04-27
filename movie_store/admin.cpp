@@ -76,13 +76,13 @@ void deleteCustomer(Customer customers[], int& customers_count, std::string& id)
     }
 }
 
-void deleteMovie(movie movies[], int& movies_count, std::string& name) // done
+void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // done
 {
     if(movies_count != 0)
     {
         for(int i = 0; i < movies_count; i++)
         {
-            if(movies[i].Name == name)
+            if(movies[i].Name == movieName)
             {
                 if (i < movies_count - 1) 
                 {
@@ -128,7 +128,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& name) // done
                     std::cerr << "Error in the movies array, please contact your IT provider";
                     break;
                 }
-                std::cout << "Movie : "<< name << " deleted successfully\n";
+                std::cout << "Movie : "<< movieName << " deleted successfully\n";
                 break;
             }
         }
@@ -171,27 +171,49 @@ std::string login() // done
     } while(checkCredentials(login, passwrd) == "");
 }
 
-void add_movie(movie movies[]) {
-    std::string name;
+void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
+{
+    std::string movieName;
     double price, fee;
-    std::cout << "enter movie name: ";
-    getline(std::cin, name);
-    std::transform(name.begin(), name.end(), name.begin(), tolower);
-    std::cout << "\nenter movie price per day: ";
-    is_num(price);
-    std::cout << "\nenter due fees per day: ";
-    is_num(fee);
+    do
+    {
+        std::cout << "Enter movie name: ";
+        getline(std::cin, movieName);
+        std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
+        if(isMovieFound(movies,movies_count,movieName))
+        {
+            std::cout << "This film is already exist!\n";
+            continue;
+        }
+        std::cout << "\nEnter movie price (EGP) : ";
+        is_num(price);
+        std::cout << "\nEnter due fees per day (EGP) : ";
+        is_num(fee);
+    } while(isMovieFound(movies,movies_count,movieName));
+    
+    for(int i = 0; i < size_of_movies; i++)
+    {
+        if(movies[i].Name.empty())
+        {
+            movies[i].Name = movieName;
+            movies[i].price = price;
+            movies[i].fee = fee;
+            movies_count++;
+            break;
+        }
+    }
 }
-
 
 // to do while debugging: fix this shitty double enter
 // in main menu add,   bool isDateChanged, and sys_days new_date 
-bool ChangeDate(sys_days& new_date) {
+bool ChangeDate(sys_days& new_date) // done
+{
     int y, m, d;
     char delimiter1, delimiter2;
     std::string entered_date;
     std::cout << "do you wish to set date manually y/n?: ";
-    if (yes_no()) {
+    if (yes_no()) 
+    {
         while (true) //infinite loop till broken by return
         {
             std::cout << "specify date in this exact format yyyy/mm/dd : ";
@@ -199,17 +221,21 @@ bool ChangeDate(sys_days& new_date) {
             std::cin.clear();
             // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             if (entered_date == "0") return false; //aborts and exits to main menu
+            
             std::istringstream iss(entered_date);
-            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') {
-                new_date = year(y) / month(m) / day(d); //converts date::year_month_day to sys_fays, thnx to sir Howard Hinnant
+            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && y >= 2025 && delimiter1 == '/' && delimiter2 == '/') 
+            {
+                new_date = year(y) / month(m) / day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
                 return true;
             }
-            else {
-                std::cerr << "wrong format or invalid date, please try again" << std::endl;
+            else 
+            {
+                std::cerr << "wrong format or invalid date, please try again\n";
             }
         }
     }
-    else {
+    else 
+    {
         return false; //aborting
     }
 }

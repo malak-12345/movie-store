@@ -10,7 +10,7 @@ struct movie {
     int RentedCount = 0;
     bool rented = false, due = false;
     std::vector<int> AllRatings;
-    date::year_month_day DueDate;
+    date::year_month_day DueDate = year(1000)/month(10)/day(10);
 };
 
 
@@ -40,7 +40,9 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 
 void rent(Customer customers[],int num_of_customers, movie movies[], int num_of_movies);
 void return_movie(Customer customer[], int cust_num, movie mov[], int mov_num);
-int validate_due(movie& movie, bool isDateChanged, sys_days new_date);
-void ListDueAccounts(movie mov[], int num_of_movies, Customer cust[], int num_of_customers, bool isDateChanged, sys_days new_date);
 
-void MainMenu(Customer customers[], int size_of_customers, movie movies[], int size_of_movies); 
+int validate_due(movie& movie, bool isDateChanged, sys_days new_date); // done
+void ListDueAccounts(movie movies[],int movies_count, Customer customers[], int customers_count, 
+    bool isDateChanged, sys_days new_date); //done
+
+void MainMenu(Customer customers[], int size_of_customers, movie movies[], int size_of_movies); // almost done

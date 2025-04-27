@@ -143,7 +143,9 @@ int ListUnrented(movie movies[], int movies_count) // done
         {
             if (!movies[i].rented) 
             {
+                std::cout << "\n-----------------------------\n";
                 std::cout << MovieNum << ". " << movies[i].Name << '\n';
+                std::cout << "-----------------------------\n";
                 MovieNum++;
             }
         }
@@ -452,52 +454,67 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 //      }
 //  }
 
-int validate_due(movie& movie, bool isDateChanged, sys_days new_date) {
-    auto now = std::chrono::system_clock::now();
+int validate_due(movie& movie, bool isDateChanged, sys_days new_date) // done
+{
+    auto now = std::chrono::system_clock::now(); // return current system date
     sys_days today;
-    if (isDateChanged) {
+    if (isDateChanged) 
+    {
         today = new_date;
     }
-    else {
+    else 
+    {
         today = floor<days>(now);
     }
     sys_days due = movie.DueDate;
-    auto today_n = today.time_since_epoch();
-    int today_int = today_n.count();
+    
+    auto today_n = today.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
+    int today_int = today_n.count(); // convert it to int --> 20205d --> 20205
+    
     auto due_n = due.time_since_epoch();
     int due_int = due_n.count();
     int diff=0;
-    if (today > due) {
+    
+    if (today > due) 
+    {
         movie.due = true;
         diff = today_int - due_int;
         return diff;
     }
-    else {
+    else 
+    {
         movie.due = false;
         return 0;
     }
 }
 
- void ListDueAccounts(movie mov[],int num_of_movies, Customer cust[], int num_of_customers, bool isDateChanged, sys_days new_date)
- { //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
-     int num = 1;
-     for (int i = 0; i < num_of_movies;i++) {
-         int days_due = validate_due(mov[i], isDateChanged, new_date);
-         if (mov[i].due = true) {
-             for (int j = 0;j < num_of_customers;j++) {
-                 if (mov[i].CurrentRenter == cust[j].Name) {
-                     std::cout << num << "." << cust[j].Name << std::endl;
-                     std::cout << "id: " << cust[j].Id << std::endl;
-                     std::cout << "phone number: " << cust[j].PhoneNumber << std::endl;
-                     std::cout << "due movie: " << mov[i].Name << std::endl;
-                     std::cout << "movie was due: " << days_due << "days ago.\n" << std::endl;
-                     std::cout << "due fees up till now: " << days_due * mov[i].fee << std::endl;
-                 }
-             }
-             num++;
-         }
-     }
- }
+ void ListDueAccounts(movie movies[],int movies_count, Customer customers[], int customers_count, 
+                        bool isDateChanged, sys_days new_date) // done
+{ //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
+    int num = 1;
+    for (int i = 0; i < movies_count; i++) 
+    {
+        int days_due = validate_due(movies[i], isDateChanged, new_date);
+        if (movies[i].due == true)
+        {
+            for (int j = 0; j < customers_count; j++)
+            {
+                if (movies[i].CurrentRenter == customers[j].Name)
+                {
+                    std::cout << "\n-----------------------------\n";   
+                    std::cout << num << ". " << customers[j].Name << '\n';
+                    std::cout << "id: " << customers[j].Id << '\n';
+                    std::cout << "phone number: " << customers[j].PhoneNumber << '\n';
+                    std::cout << "due movie: " << movies[i].Name << '\n';
+                    std::cout << "movie was due: " << days_due << "days ago.\n";
+                    std::cout << "due fees up till now: " << days_due * movies[i].fee << '\n';
+                    std::cout << "-----------------------------\n";
+                }
+            }
+            num++;
+        }
+    }
+}
 
 
 
@@ -508,10 +525,11 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
     int movies_count = getMoviesCount(movies, size_of_movies);
     bool valid = false,isDateChanged = false;
     int choice;
+    std::string check;
+    
     sys_days new_date, today;
     auto now = std::chrono::system_clock::now();
     today = floor<days>(now);
-    std::string check;
     
     std::string menu[] = {
         "\n-----------------------------\n",
@@ -524,17 +542,21 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
         "press  7: List all movies",
         "press  8: List rented movies",
         "press  9: List unrented movies",
-        "press  10: List top 10 rented movies",
-        "press  11: List top 10 rated movies"
+        "press  10: List due accounts",
+        "press  11: List top 10 rented movies",
+        "press  12: List top 10 rated movies"
     };
     const int menuSize = sizeof(menu)/sizeof(menu[0]);
     
     check = login();
-    while (check=="user" || check=="admin") { //infinite loop till log out or termination
-        if (isDateChanged) {
-            std::cout << "\ncurrent date: " << new_date;
+    while (check=="user" || check=="admin") //infinite loop till log out or termination
+    {
+        if (isDateChanged) 
+        {
+            std::cout << "\n\ncurrent date: " << new_date;
         }
-        else {
+        else 
+        {
             std::cout << "\n\ncurrent date: " << today;
         }
         
@@ -544,15 +566,15 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
         }
         if(check=="user")
         {
-            std::cout << "press  12: Log out\n"; // done
+            std::cout << "press  13: Log out\n"; // done
         }
         else if (check=="admin") 
         {
-            std::cout << "press  12: Add a movie\n";
-            std::cout << "press  13: Delete a movie\n"; // done
-            std::cout << "press  14: Delete a customer\n"; // done
-            std::cout << "press  15: set date manually\n";
-            std::cout << "press  16: switch user account\n"; // done
+            std::cout << "press  13: Add a movie\n";
+            std::cout << "press  14: Delete a movie\n"; // done
+            std::cout << "press  15: Delete a customer\n"; // done
+            std::cout << "press  16: set date manually\n";
+            std::cout << "press  17: switch user account\n"; // done
         }
         std::cout << "press  0: Exit\n";
         std::cout << "\nat any point in time, if you wish to go back to main menu enter \"0\"\n";
@@ -560,7 +582,7 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
         while (!valid) 
         {
             std::cin >> choice;
-            if ((std::cin.good() && choice <= 12 && choice > -1) || (std::cin.good() && check=="admin" && choice <= 16 && choice > -1)) 
+            if ((std::cin.good() && choice <= 13 && choice > -1) || (std::cin.good() && check=="admin" && choice <= 17 && choice > -1)) 
             {
                 valid = true;
             }
@@ -660,11 +682,14 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
         case 9: // list unrented
             ListUnrented(movies, movies_count);
             break;
-        case 10: // top 10 rented
+        case 10: // list due accounts
+            ListDueAccounts(movies, movies_count, customers, customers_count, isDateChanged, new_date);
             break;
-        case 11: // top 10 rated
+        case 11: // top 10 rented
             break;
-        case 12: // log out for user --- add new movie for admin.
+        case 12: // top 10 rated
+            break;
+        case 13: // log out for user --- add new movie for admin.
         {
             if(check=="user")
             {
@@ -672,11 +697,11 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
             }
             else if (check=="admin")
             {
-                // add new movie
+                addNewMovie(movies, size_of_movies, movies_count);
             }
             break;
         }
-        case 13: // delete movie
+        case 14: // delete movie
         {
             std::string movieName;
             std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
@@ -694,7 +719,7 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
             std::this_thread::sleep_for(std::chrono::seconds(2));
             break;
         }
-        case 14: // delete customer
+        case 15: // delete customer
         {
             std::string id;
             std::transform(id.begin(), id.end(), id.begin(), toupper);
@@ -712,10 +737,10 @@ void MainMenu(Customer customers[], int size_of_customers, movie movies[], int s
             std::this_thread::sleep_for(std::chrono::seconds(3));
             break;
         }
-        case 15: // done
+        case 16:
             isDateChanged = ChangeDate(new_date);
             break;
-        case 16: // logout for admin
+        case 17: // logout for admin
             check = login();
             break;
         default:
