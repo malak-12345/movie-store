@@ -11,7 +11,9 @@
 #include "Howard_Hinnant/include/date/date.h"
 using namespace date;
 using namespace std::chrono; //pollutes the entire namespace for the program but it's ok, and way easier than dealing wi chrono and date types
-
+auto now = system_clock::now();
+sys_days today = floor<days>(now);
+year_month_day system_date = today;
 
 
 //-------------------------general-----------------------------
