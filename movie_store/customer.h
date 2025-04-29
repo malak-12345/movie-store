@@ -1,14 +1,16 @@
 #pragma once
-#include "utilities.h"
+#include <string>
+#include <vector>
+#include <map>
 
 #define limit 8
 #define customer_max 50
 
-struct Customer
+struct customer
 {
-    std::string Name, PhoneNumber, Id;
-    std::string CurrentlyRentedMovies[limit];
-    std::vector<std::string> PreviouslyRentedMovies;
+    std::string name, phoneNumber, id;
+    std::string currentlyRentedMovies[limit];
+    std::vector<std::string> previouslyRentedMovies;
     std::map<std::string, int> rating;
 };
 
@@ -16,12 +18,12 @@ struct Customer
 //-------------------------utilities-----------------------------
 std::string generateId(); // done
 std::string deleteSpaces(std::string& str); // done
-bool checkPhoneNumber(std::string& PhoneNumber); // done
-bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::string& PhoneNumber); // done
-bool checkId(Customer customers[], int customers_count, std::string& id); // done
-int getCustomersCount(Customer customers[], int size_of_customers); // done
-bool isEmpty(Customer customers[], int customerIndex); // done
-//-------------------------utilities-----------------------------
+bool checkPhoneNumber(std::string& phoneNumber); // done
+bool checkPhoneNumberRegistered(customer customers[], int customers_count, std::string& phoneNumber); // done
+bool checkId(customer customers[], int customers_count, std::string& id); // done
+int getCustomersCount(customer customers[], int size_of_customers); // done
+bool isCurrentlyRentedFull(customer customers[], int customerIndex); // done
+//---------------------------------------------------------------
 
-void listCustomers(Customer customers[], int customers_count); // done
-void addNewCustomer(Customer customers[], int size_of_customers, int& customers_count); // done
+void listCustomers(customer customers[], int customers_count); // done
+void addNewCustomer(customer customers[], int size_of_customers, int& customers_count); // done

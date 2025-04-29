@@ -1,47 +1,56 @@
 #pragma once
+#include <string>
+#include <vector>
 #include "customer.h"
+#include "Howard_Hinnant/include/date/date.h"
+
 #define movies_max 100
 
 
 struct movie {
-    std::string Name, CurrentRenter;
-    double rating, price, fee; //renting price and fee are per day
-    int RentedCount;
+    std::string name, currentRenter;
+    double price, fee, rating; //renting price and fee are per day
+    int rentedCount;
     bool rented = false, due = false;
-    std::vector<int> AllRatings;
-    date::year_month_day DueDate = year(1000)/month(10)/day(10);
+    std::vector<int> allRatings;
+    date::year_month_day dueDate = date::year(1000) / date::month(10) / date::day(10);
 };
 
 //-------------------------utilities-----------------------------
-bool isCustomerFound(Customer customers[], int customers_count ,std::string& id); // done
-int getCustomerIndex(Customer customers[], int customers_count, std::string& id); // done
+bool isCustomerFound(customer customers[], int customers_count ,std::string& id); // done
+int getCustomerIndex(customer customers[], int customers_count, std::string& id); // done
 bool isMovieFound(movie movies[], int movies_count, std::string& movieName); // done
 int getMovieIndex(movie movies[], int movies_count, std::string& movieName); // done
-bool isMovieRentedByCustomer(Customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
-bool isFull(Customer customers[], int customerIndex); // done
+bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
+bool isCurrentlyRentedEmpty(customer customers[], int customerIndex); // done
 int getMoviesCount(movie movies[], int size_of_movies); // done
-//-------------------------utilities-----------------------------
+void is_num(int& input);
+void is_num(double& input);
+bool yes_no();
+//----------------------------------------------------------------
 
-
-void ListMovies(movie movies[],int movies_count); // done
+void listMovies(movie movies[], int movies_count); // done
 void listRented(movie movies[], int movies_count); // done 
-int ListUnrented(movie movies[], int movies_count); // done
+int listUnrented(movie movies[], int movies_count); // done
 
 bool rate(movie movies[], int movies_count, std::string& movieName, 
-    Customer customers[], int customers_count ,std::string& id); // done
+    customer customers[], int customers_count ,std::string& id); // done
 
 bool editRating(movie movies[], int movies_count, std::string& movieName,
-    Customer customers[], int customers_count, std::string& id); // done
+    customer customers[], int customers_count, std::string& id); // done
 
-void rent(Customer customers[], const int& customers_count, movie movies[], int& movies_count, year_month_day system_date);
-void returnMovie(Customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, bool isDateChanged, sys_days new_date);
+void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
+    date::year_month_day system_date);
 
-int validate_due(movie& movie, bool isDateChanged, sys_days new_date); // done
-void ListDueAccounts(movie movies[],int movies_count, Customer customers[], int customers_count, 
-    bool isDateChanged, sys_days new_date); //done
+void returnMovie(customer customers[], int customers_count, std::string& id, movie movies[], 
+    int movies_count, bool isDateChanged, date::sys_days new_date);
 
-void MainMenu(Customer customers[], int size_of_customers, movie movies[], int size_of_movies); // almost done
+int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date); // done
 
-void ListTopRated(movie arr[], const int& mov_count);
+void listDueAccounts(movie movies[], int movies_count, customer customers[], int customers_count, 
+    bool isDateChanged, date::sys_days new_date); //done
 
-void ListTopRented(movie arr[], const int& mov_count);
+    
+void listTopRated(movie movies[], int movies_count);
+    
+void listTopRented(movie movies[], int movies_count);

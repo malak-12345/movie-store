@@ -1,33 +1,34 @@
 #include "customer.h"
+#include <iostream>
+#include <algorithm>
+#include <thread>
+#include <chrono>
 
 //-------------------------utilities-----------------------------
 std::string generateId() // done
 {
-    std::string Id = "C#";
+    std::string id = "C#";
     srand(time(0)); // changes seed
     for (int i = 1; i <= 4; i++)
     {
-        Id += std::to_string(rand() % 10); // generates number from 0 -> 9 and adds it
+        id += std::to_string(rand() % 10); // generates number from 0 -> 9 and adds it
     }
-    return Id;
+    return id;
 }
 std::string deleteSpaces(std::string& str) //done
 {
     str.erase(remove(str.begin(),str.end(), ' '), str.end());
     return str;
 }
-bool checkPhoneNumber(std::string& PhoneNumber) // done
+bool checkPhoneNumber(std::string& phoneNumber) // done
 {
-    PhoneNumber = deleteSpaces(PhoneNumber);
+    phoneNumber = deleteSpaces(phoneNumber);
     
-    if (PhoneNumber.length() >= 7 && PhoneNumber.length() <= 15)
+    if (phoneNumber.length() >= 7 && phoneNumber.length() <= 15)
     {
-        for(const char& i : PhoneNumber)
+        for(const char& digit : phoneNumber)
         {
-            if(!std::isdigit(i))
-            {
-                return false;
-            }
+            if(!std::isdigit(digit)) return false;
         }
         return true;
     }
@@ -36,35 +37,36 @@ bool checkPhoneNumber(std::string& PhoneNumber) // done
         return false;
     }
 }
-bool checkPhoneNumberRegistered(Customer customers[], int customers_count, std::string& PhoneNumber) // done
+bool checkPhoneNumberRegistered(customer customers[], int customers_count, std::string& phoneNumber) // done
 {
     for(int i = 0; i < customers_count; i++)
     {
-        if((customers[i].PhoneNumber == PhoneNumber))
+        if((customers[i].phoneNumber == phoneNumber))
         {
             return true;
         }
     }
     return false;
 }
-bool checkId(Customer customers[], int customer_count, std::string& id) // done
+bool checkId(customer customers[], int customer_count, std::string& id) // done
 {
     for(int i = 0; i < customer_count; i++)
     {
-        if(customers[i].Id == id)
+        if(customers[i].id == id)
         {
             return true;
         }
     }
     return false;
 }
-int getCustomersCount(Customer customers[], int size_of_customers) // get customers count at the beginning of the program
+int getCustomersCount(customer customers[], int size_of_customers) // get customers count at the beginning of the program
 {
     if(size_of_customers != 0)
     {
         int customers_count = 0;
-        for(int i = 0; i < size_of_customers; i++){
-            if(!customers[i].Name.empty())
+        for(int i = 0; i < size_of_customers; i++)
+        {
+            if(!customers[i].name.empty())
             {
                 customers_count++;
             }
@@ -77,12 +79,12 @@ int getCustomersCount(Customer customers[], int size_of_customers) // get custom
     }
     
 }
-bool isEmpty(Customer customers[], int customerIndex) // done
+bool isCurrentlyRentedFull(customer customers[], int customerIndex) // done
 {
     int count = 0;
     for(int i = 0; i < limit; i++)
     {
-        if(customers[customerIndex].CurrentlyRentedMovies[i].empty()) count++; 
+        if(customers[customerIndex].currentlyRentedMovies[i].empty()) count++; 
     } 
     if(count == limit)
     {
@@ -90,11 +92,11 @@ bool isEmpty(Customer customers[], int customerIndex) // done
     }
     return false;
 }
-//-------------------------utilities-----------------------------
+//---------------------------------------------------------------
 
-void addNewCustomer(Customer customers[], int size_of_customers, int& customers_count) // done
+void addNewCustomer(customer customers[], int size_of_customers, int& customers_count) // done
 {
-    std::string name, phonenum, id;
+    std::string name, phoneNumber, id;
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
     std::transform(name.begin(), name.end(), name.begin(), tolower);
@@ -102,18 +104,18 @@ void addNewCustomer(Customer customers[], int size_of_customers, int& customers_
     do 
     {
         std::cout << "Enter Customer phone: +";
-        getline(std::cin, phonenum);
+        getline(std::cin, phoneNumber);
         
-        if(!checkPhoneNumber(phonenum))
+        if(!checkPhoneNumber(phoneNumber))
         {
             std::cout << "Invalid phone number!\n";
+            continue;
         }
-        else if (checkPhoneNumberRegistered(customers, customers_count, phonenum))
+        else if (checkPhoneNumberRegistered(customers, customers_count, phoneNumber))
         {
             std::cout << "This phone number is already registered!\n";
         }
-
-    } while(!checkPhoneNumber(phonenum) && !checkPhoneNumberRegistered(customers, customers_count, phonenum));
+    } while(!checkPhoneNumber(phoneNumber) || checkPhoneNumberRegistered(customers, customers_count, phoneNumber));
     
     do
     {
@@ -123,39 +125,40 @@ void addNewCustomer(Customer customers[], int size_of_customers, int& customers_
     } while(checkId(customers, customers_count, id));
 
 
-    for(int i = 0; i < size_of_customers; i++){
-        if(customers[i].Name.empty())
+    for(int i = 0; i < size_of_customers; i++)
+    {
+        if(customers[i].name.empty())
         {
-            customers[i].Name = name;
-            customers[i].PhoneNumber = phonenum;
-            customers[i].Id = id;
+            customers[i].name = name;
+            customers[i].phoneNumber = phoneNumber;
+            customers[i].id = id;
             customers_count++;
             break;
         }   
     }
-    std::cout << "Successfully added " << name << '\n';
+    std::cout << "Successfully added: " << name << '\n';
 }
-void listCustomers(Customer customers[], int customers_count) // done
+void listCustomers(customer customers[], int customers_count) // done
 {
-    if(customers_count !=0)
+    if(customers_count != 0)
     {
         int num = 1;
         std::cout << "\n-----------------------------\n\n";
         for (int i = 0; i < customers_count; i++)
         {
             std::cout << num << ".\n";
-            std::cout << "Name: " << customers[i].Name << '\n';
-            std::cout << "Customer ID: " << customers[i].Id << '\n';
-            std::cout << "Phone Number: " << customers[i].PhoneNumber << '\n';
+            std::cout << "Name: " << customers[i].name << '\n';
+            std::cout << "Customer ID: " << customers[i].id << '\n';
+            std::cout << "Phone Number: " << customers[i].phoneNumber << '\n';
 
-            if(!(isEmpty(customers, i)))
+            if(!isCurrentlyRentedFull(customers, i))
             {
                 std::cout << "Currently Renting: ";
-                for (std::string j : customers[i].CurrentlyRentedMovies)
+                for (std::string movie : customers[i].currentlyRentedMovies)
                 {
-                    if (!j.empty()) 
+                    if (!movie.empty()) 
                     { 
-                        std::cout << j << " ";
+                        std::cout << movie << " ";
                     }
                 }
             }
@@ -165,16 +168,13 @@ void listCustomers(Customer customers[], int customers_count) // done
             }
             std::cout << "\n";
     
-            if (!customers[i].PreviouslyRentedMovies.size() == 0)
+            if (!customers[i].previouslyRentedMovies.size() == 0)
             {
-                std::cout << "has rented: ";
+                std::cout << "Has rented: ";
     
-                for (std::string j : customers[i].PreviouslyRentedMovies)
+                for (std::string movie : customers[i].previouslyRentedMovies)
                 {
-                    if (!j.empty())
-                    {
-                        std::cout << j << " ";
-                    }
+                    std::cout << movie << " ";
                 }
                 std::cout << "\n";
             }
@@ -185,6 +185,6 @@ void listCustomers(Customer customers[], int customers_count) // done
     }
     else
     {
-        std::cout << "There are currently no customers on the system!, please add a customer first.\n";
+        std::cout << "There are currently no customers on the system! Please add a customer first.\n";
     }
 }

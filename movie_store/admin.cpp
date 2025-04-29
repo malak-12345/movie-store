@@ -1,7 +1,11 @@
 ﻿#include "admin.h"
+#include <iostream>
+#include <algorithm>
+#include <thread>
+#include <chrono>
 
 std::string ADMIN = "admin";
-std::string ADMIN_PSSWRD = "admin"; // very safe ;) __ i can see😂
+std::string ADMIN_PSSWRD = "admin";
 
 std::string USER = "user";
 std::string USER_PSSWRD = "user";
@@ -19,44 +23,44 @@ std::string checkCredentials(std::string& login, std::string& passwrd) // done
     return "";
 }
 
-void deleteCustomer(Customer customers[], int& customers_count, std::string& id) // done
+void deleteCustomer(customer customers[], int& customers_count, std::string& id) // done
 {
     if(customers_count != 0)
     {
         for (int i = 0; i < customers_count; i++) 
         {
-            if (customers[i].Id == id) 
+            if (customers[i].id == id) 
             {
                 if(i < customers_count-1)
                 {
-                    customers[i].Name = customers[customers_count-1].Name;
-                    customers[i].PhoneNumber = customers[customers_count-1].PhoneNumber;
-                    customers[i].Id = customers[customers_count-1].Id;
-                    customers[i].PreviouslyRentedMovies = customers[customers_count-1].PreviouslyRentedMovies;
+                    customers[i].name = customers[customers_count-1].name;
+                    customers[i].phoneNumber = customers[customers_count-1].phoneNumber;
+                    customers[i].id = customers[customers_count-1].id;
+                    customers[i].previouslyRentedMovies = customers[customers_count-1].previouslyRentedMovies;
                     for(int j = 0; j < limit; j++)
                     {
-                        customers[i].CurrentlyRentedMovies[j] = customers[customers_count-1].CurrentlyRentedMovies[j];
+                        customers[i].currentlyRentedMovies[j] = customers[customers_count-1].currentlyRentedMovies[j];
                     }
                     
-                    customers[customers_count-1].Name.clear();
-                    customers[customers_count-1].Id.clear();
-                    customers[customers_count-1].PhoneNumber.clear();
-                    customers[customers_count-1].PreviouslyRentedMovies.clear();
+                    customers[customers_count-1].name.clear();
+                    customers[customers_count-1].id.clear();
+                    customers[customers_count-1].phoneNumber.clear();
+                    customers[customers_count-1].previouslyRentedMovies.clear();
                     for(int j = 0; j < limit; j++)
                     {
-                        customers[customers_count-1].CurrentlyRentedMovies[j].clear();
+                        customers[customers_count-1].currentlyRentedMovies[j].clear();
                     }
                     customers_count--;
                 }
                 else if (i == customers_count-1)
                 {
-                    customers[i].Name.clear();
-                    customers[i].Id.clear();
-                    customers[i].PhoneNumber.clear();
-                    customers[i].PreviouslyRentedMovies.clear();
+                    customers[i].name.clear();
+                    customers[i].id.clear();
+                    customers[i].phoneNumber.clear();
+                    customers[i].previouslyRentedMovies.clear();
                     for(int j = 0; j < limit; j++)
                     {
-                        customers[i].CurrentlyRentedMovies[j].clear();
+                        customers[i].currentlyRentedMovies[j].clear();
                     }
                     customers_count--;
                 }
@@ -82,44 +86,44 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
     {
         for(int i = 0; i < movies_count; i++)
         {
-            if(movies[i].Name == movieName)
+            if(movies[i].name == movieName)
             {
                 if (i < movies_count - 1) 
                 {
-                    movies[i].Name = movies[movies_count - 1].Name;
-                    movies[i].CurrentRenter = movies[movies_count - 1].CurrentRenter;
-                    movies[i].AllRatings = movies[movies_count - 1].AllRatings;
+                    movies[i].name = movies[movies_count - 1].name;
+                    movies[i].currentRenter = movies[movies_count - 1].currentRenter;
+                    movies[i].allRatings = movies[movies_count - 1].allRatings;
                     movies[i].rented = movies[movies_count - 1].rented;
                     movies[i].price = movies[movies_count - 1].price;
                     movies[i].fee = movies[movies_count - 1].fee;
                     movies[i].rating = movies[movies_count - 1].rating;
-                    movies[i].RentedCount = movies[movies_count - 1].RentedCount;
-                    movies[i].DueDate = movies[movies_count - 1].DueDate;
+                    movies[i].rentedCount = movies[movies_count - 1].rentedCount;
+                    movies[i].dueDate = movies[movies_count - 1].dueDate;
                     movies[i].due = movies[movies_count - 1].due;
                     //----------------
-                    movies[movies_count - 1].Name.clear();
-                    movies[movies_count - 1].CurrentRenter.clear();
-                    movies[movies_count - 1].AllRatings.clear();
+                    movies[movies_count - 1].name.clear();
+                    movies[movies_count - 1].currentRenter.clear();
+                    movies[movies_count - 1].allRatings.clear();
                     movies[movies_count - 1].rented = false;
                     movies[movies_count - 1].price = 0;
                     movies[movies_count - 1].fee = 0;
                     movies[movies_count - 1].rating = 0;
-                    movies[movies_count - 1].RentedCount = 0;
-                    movies[movies_count - 1].DueDate = date::year(1000) / date::month(10) / date::day(10);
+                    movies[movies_count - 1].rentedCount = 0;
+                    movies[movies_count - 1].dueDate = date::year(1000) / date::month(10) / date::day(10);
                     movies[movies_count - 1].due = false;
                     movies_count--;
                 }
                 else if (i == movies_count - 1) 
                 {
-                    movies[i].Name.clear();
-                    movies[i].CurrentRenter.clear();
-                    movies[i].AllRatings.clear();
+                    movies[i].name.clear();
+                    movies[i].currentRenter.clear();
+                    movies[i].allRatings.clear();
                     movies[i].rented = false;
                     movies[i].price = 0;
                     movies[i].fee = 0;
                     movies[i].rating = 0;
-                    movies[i].RentedCount = 0;
-                    movies[i].DueDate = date::year(1000) / date::month(10) / date::day(10); //default state for empty, not an actual thing in the language i just decided that
+                    movies[i].rentedCount = 0;
+                    movies[i].dueDate = date::year(1000) / date::month(10) / date::day(10); //default state for empty, not an actual thing in the language i just decided that
                     movies[i].due = false;
                     movies_count--;
                 }
@@ -135,7 +139,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
     }
     else
     {
-        std::cout << "There are currently no movies on the system!, please add a movie first.\n";
+        std::cout << "There are currently no movies on the system! Please add a movie first.\n";
     }
 }
 
@@ -155,17 +159,18 @@ std::string login() // done
         if(checkCredentials(login, passwrd) == "admin")
         {
             std::cout << "Welcome, " << login << "!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(2));
             return "admin";
         }
         else if(checkCredentials(login, passwrd) == "user")
         {
             std::cout << "Welcome, " << login << "!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(2));
             return "user";
         }
         else
         {
-            std::cout << "Wrong password or username\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::cout << "Wrong password or username!\n\n";
         }
     } while(checkCredentials(login, passwrd) == "");
 }
@@ -192,9 +197,9 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
     
     for(int i = 0; i < size_of_movies; i++)
     {
-        if(movies[i].Name.empty())
+        if(movies[i].name.empty())
         {
-            movies[i].Name = movieName;
+            movies[i].name = movieName;
             movies[i].price = price;
             movies[i].fee = fee;
             movies_count++;
@@ -204,9 +209,7 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
     std::cout << "Successfully added: " << movieName << '\n';
 }
 
-// to do while debugging: fix this shitty double enter
-// in main menu add,   bool isDateChanged, and sys_days new_date 
-bool ChangeDate(sys_days& new_date) // done
+bool ChangeDate(date::sys_days& new_date) // done
 {
     int y, m, d;
     char delimiter1, delimiter2;
@@ -218,14 +221,13 @@ bool ChangeDate(sys_days& new_date) // done
         {
             std::cout << "specify date in this exact format yyyy/mm/dd : ";
             getline(std::cin, entered_date);
-            //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.clear();
             if (entered_date == "0") return false; //aborts and exits to main menu
             
             std::istringstream iss(entered_date);
             if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && y >= 2025 && delimiter1 == '/' && delimiter2 == '/') 
             {
-                new_date = year(y) / month(m) / day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
+                new_date = date::year(y) / date::month(m) / date::day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
                 return true;
             }
             else 
