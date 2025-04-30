@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "payment.h"
 
 #define limit 8
 #define customer_max 50
@@ -12,6 +13,7 @@ struct customer
     std::string currentlyRentedMovies[limit];
     std::vector<std::string> previouslyRentedMovies;
     std::map<std::string, int> rating;
+    creditCard creditcard;
 };
 
 

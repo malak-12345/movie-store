@@ -1,11 +1,17 @@
 #pragma once
 #include <string>
+#include "customer.h"
 
 struct creditCard {
-    std::string creditCard, ccv, date;
+    std::string cardNumber, ccv, date;
 };
 
-std::string deleteSpaces(std::string& str);
+
+bool validateCCV(std::string& ccv); // done
+bool isDigit(std::string& str); // done
+bool isCreditCardRegistered(customer customers[], int customers_count, std::string& creditCard); // done
 
 //Luhn algorithm
-bool validateCreditCard(std::string creditCard);
+bool validateCreditCard(std::string& creditCard); // done
+
+void addCreditCard(customer customers[], int customers_count, std::string& id);
