@@ -134,14 +134,16 @@
     <ClCompile Include="admin.cpp" />
     <ClCompile Include="customer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainmenu.cpp" />
     <ClCompile Include="movie.cpp" />
-    <ClCompile Include="utilities.cpp" />
+    <ClCompile Include="payment.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="admin.h" />
     <ClInclude Include="customer.h" />
+    <ClInclude Include="mainmenu.h" />
     <ClInclude Include="movie.h" />
-    <ClInclude Include="utilities.h" />
+    <ClInclude Include="payment.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

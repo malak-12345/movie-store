@@ -1,6 +1,7 @@
 #pragma once
 #include "customer.h"
 #include "movie.h"
+#include "payment.h"
 
 #define t 2
 

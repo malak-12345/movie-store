@@ -109,7 +109,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
                     movies[movies_count - 1].fee = 0;
                     movies[movies_count - 1].rating = 0;
                     movies[movies_count - 1].rentedCount = 0;
-                    movies[movies_count - 1].dueDate = date::year(1000) / date::month(10) / date::day(10);
+                    movies[movies_count - 1].dueDate = date::year(3000) / date::month(10) / date::day(10);
                     movies[movies_count - 1].due = false;
                     movies_count--;
                 }
@@ -178,7 +178,7 @@ std::string login() // done
 void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
 {
     std::string movieName;
-    double price, fee;
+    double price = 0, fee = 0;
     do
     {
         std::cout << "Enter movie name: ";
