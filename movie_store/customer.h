@@ -2,10 +2,14 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "payment.h"
+
 
 #define limit 8
 #define customer_max 50
+
+struct creditCard {
+    std::string cardNumber, ccv, date;
+};
 
 struct customer
 {

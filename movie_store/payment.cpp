@@ -1,8 +1,8 @@
-#include "payment.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include "payment.h"
 #include "movie.h"
 
 bool validateCCV(std::string& ccv) // done
@@ -40,7 +40,7 @@ bool validateCreditCard(std::string& creditCard) // done
             creditCardNum.push_back((creditCard[i] - '0')); // converts a char into int.
         }
         
-        for(int i = creditCard.length() - 2; i >= 0; i -= 2)
+        for(size_t i = creditCard.length() - 2; i >= 0; i -= 2)
         {
             int temp = creditCardNum[i];
             temp *= 2;
@@ -121,7 +121,7 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
         {
             std::cout << "Wrong date or format!\n";
         }
-    } while((!y >= 2025 || !y >= 25) || (!m > 0 || !m <= 12) || (!del == '/'));
+    } while((!(y >= 2025) || !(y >= 25)) || (!(m > 0) || !(m <= 12)) || (!(del == '/')));
 
     customers[customerIndex].creditcard.cardNumber = card;
     customers[customerIndex].creditcard.ccv = ccv;

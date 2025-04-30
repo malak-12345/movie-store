@@ -2,9 +2,7 @@
 #include <string>
 #include "customer.h"
 
-struct creditCard {
-    std::string cardNumber, ccv, date;
-};
+
 
 
 bool validateCCV(std::string& ccv); // done

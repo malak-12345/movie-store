@@ -514,7 +514,8 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
 void returnMovie(customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, 
     bool isDateChanged, date::sys_days new_date) // done
 {
-    int num = 1, movieIndex, ans, cash, diff, index = 0;
+    int num = 1, movieIndex, ans, diff, index = 0;
+    double cash;
     std::string movieName;
     int customerIndex = getCustomerIndex(customers, customers_count, id);
 

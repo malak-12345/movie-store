@@ -8,12 +8,12 @@
 
 
 struct movie {
-    std::string name, currentRenter;
+    std::string name, currentRenter = "none";
     double price, fee, rating; //renting price and fee are per day
     int rentedCount;
     bool rented = false, due = false;
     std::vector<int> allRatings;
-    date::year_month_day dueDate = date::year(1000) / date::month(10) / date::day(10);
+    date::year_month_day dueDate = date::year(3000) / date::month(10) / date::day(10);
 };
 
 //-------------------------utilities-----------------------------
