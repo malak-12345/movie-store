@@ -561,12 +561,12 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
                 std::cout << "pay up or else? y/n: ";
                 if (yes_no()) 
                 {
-                    if(!pay(customers, customers_count, id)) 
-                    {
-                        std::cout << "Canceling transaction!\n";
-                        std::this_thread::sleep_for(std::chrono::seconds(1));
-                        return;
-                    }    
+                    // if(!pay(customers, customers_count, id)) 
+                    // {
+                    //     std::cout << "Canceling transaction!\n";
+                    //     std::this_thread::sleep_for(std::chrono::seconds(1));
+                    //     return;
+                    // }    
                 }
                 else 
                 {
@@ -574,12 +574,12 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
                     if (yes_no()) 
                     {
                         std::cout << "Smart lad, say hi to your family for me\n";
-                        if(!pay(customers, customers_count, id)) 
-                        {
-                            std::cout << "Canceling transaction!\n";
-                            std::this_thread::sleep_for(std::chrono::seconds(1));
-                            return;
-                        }    
+                        // if(!pay(customers, customers_count, id)) 
+                        // {
+                        //     std::cout << "Canceling transaction!\n";
+                        //     std::this_thread::sleep_for(std::chrono::seconds(1));
+                        //     return;
+                        // }    
                     }
                     else 
                     {
@@ -730,9 +730,7 @@ int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date)
 
     diff = due_int - today_int;
     if (diff == 0) return 1; //if rented till the end of the day, counts as a day
-    else {
     return diff;
-    }
 }
 
 void listDueAccounts(movie movies[],int movies_count, customer customers[], int customers_count, 

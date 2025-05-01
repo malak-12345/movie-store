@@ -177,29 +177,40 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
     std::cout << "Successfully added credit card\n\n";
 }
 
-void create_SC(customer cust[], int customers_count, std::string& id) {
+void create_SC(customer cust[], int customers_count, std::string& id) 
+{
     std::string passwrd, again;
     int Index = getCustomerIndex(cust, customers_count, id);
-    if (!cust[Index].SC) {
+    if (!cust[Index].SC) 
+    {
         cust[Index].SC = true;
-        do {
-            std::cout << "create a strong password: ";
+        do
+        {
+            std::cout << "create a strong password (no spaces): ";
             getline(std::cin, passwrd);
+        } while(passwrd.find(" ") != passwrd.npos); // continues asking if space is found
+        do
+        {
             std::cout << "re-enter the password: ";
             getline(std::cin, again);
         } while (passwrd != again);
+        cust[Index].SC_passwrd = passwrd;
     }
-    else {
-        std::cerr << "this account already has a SC card\n";
+    else 
+    {
+        std::cerr << "This account already has a SC card\n";
     }
 }
 void set_SC_passwrd(customer cust[], int customers_count, std::string& id) {
     std::string passwrd, old_passwrd;
     int Index = getCustomerIndex(cust, customers_count, id);
-    if (cust[Index].SC) {
+    
+    if (cust[Index].SC) 
+    {
         std::cout << "enter previous password: ";
         getline(std::cin, old_passwrd);
-        while (old_passwrd != cust[Index].SC_passwrd) {
+        while (old_passwrd != cust[Index].SC_passwrd) 
+        {
             if (old_passwrd == "0") return;
             std::cerr << "wrong password, try again";
             std::cout << "enter previous password: ";
@@ -207,12 +218,17 @@ void set_SC_passwrd(customer cust[], int customers_count, std::string& id) {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             getline(std::cin, old_passwrd);
         }
-        std::cout << "enter New password: ";
-        getline(std::cin, passwrd);
+        do
+        {
+            std::cout << "enter New password (no spaces): ";
+            getline(std::cin, passwrd);
+        } while (passwrd.find(" ") != passwrd.npos);
+        
         cust[Index].SC_passwrd = passwrd;
         std::cout << "password changed successfully\n";
     }
-    else {
+    else 
+    {
         std::cerr << "this account doesn't have a SC card, make one first\n";
     }
 }
@@ -234,14 +250,17 @@ int generate_coins() { // from 1 to 10
     return coins;
 }
 
-double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date) {
+double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date) 
+{
     int fee_days = validateDue(mov, isDateChanged, new_date);
     int price_days = calc_rental_days(mov, isDateChanged, new_date);
     double amount = 0;
-    if (mov.due) {
+    if (mov.due) 
+    {
         amount = mov.price * price_days + mov.fee * fee_days;
     }
-    else {
+    else 
+    {
         amount = mov.price * price_days;
     }
     return amount;
@@ -253,37 +272,49 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
     std::string SC_password, ccv, date;;
+    
     double SC_amount, cash_ceditcard, in_coins;
     double amount = amount2pay(mov, isDateChanged, new_date); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
+    
     cash_ceditcard = amount;
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
-    std::cout << "1. in cash = " << cash_ceditcard << "\n2. via credit card = " << cash_ceditcard << "\n3. via SC card = " << SC_amount << "\n4. redeem coins";
-    if (mov.due) {
+    std::cout << "1. in cash = " << cash_ceditcard << "\n2. via credit card = " << cash_ceditcard 
+              << "\n3. via SC card = " << SC_amount << "\n4. redeem coins";
+    if (mov.due) 
+    {
         std::cout << " (unavailable)"; // for coins i mean
         std::cout << "\n enter choice\n";
-        do {
+        do 
+        {
             is_num(ans);
             if (ans == 0) return false;
         } while (ans < 4 && ans > -1);
     }
-    else {
+    else 
+    {
         std::cout << " = " << in_coins; // for coins
         std::cout << "\n enter choice\n";
-        do {
+        do 
+        {
             is_num(ans);
             if (ans == 0) return false;
         } while (ans < 5 && ans > -1);
     }
-    while (true) {
-        switch (ans) {
+    while (true) 
+    {
+        switch (ans)
+        {
         case 1:
+        {
             std::cout << "Opening cash register!\n";
             std::this_thread::sleep_for(std::chrono::seconds(1));
             std::cout << "thanks for choosing our store!\n";
             std::this_thread::sleep_for(std::chrono::seconds(1));
             break;
+        }
         case 2:
+        {
             if (!customers[customerIndex].creditcard.cardNumber.empty())
             {
                 std::cout << "Paying with: " << customers[customerIndex].creditcard.cardNumber << '\n';
@@ -351,43 +382,56 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                 }
             }
             break;
+        }
         case 3:
-            if (customers[customerIndex].SC) {
-                std::cout << "enter password: ";
+        {
+            if (customers[customerIndex].SC) 
+            {
+                std::cout << "Enter password: ";
                 getline(std::cin, SC_password);
-                while (customers[customerIndex].SC_passwrd != SC_password) {
+                while (customers[customerIndex].SC_passwrd != SC_password) 
+                {
                     std::cerr << "wrong password try again: ";
                     getline(std::cin, SC_password);
                 }
             }
-            else {
-                std::cout << "no SC card detected, would you like to make one y/n? ";
-                if (yes_no()) {
+            else 
+            {
+                std::cout << "No SC card detected, would you like to make one y/n? ";
+                if (yes_no()) 
+                {
                     create_SC(customers, customers_count, id);
                     charge_SC(customers, customers_count, id);
                 }
-                else {
+                else 
+                {
                     std::cerr << "\nthen pay in another way\n";
                     break;
                 }
             }
-            if (customers[customerIndex].SC_balance > SC_amount) {
+            if (customers[customerIndex].SC_balance > SC_amount) 
+            {
                 std::cout << "\nTransaction completed!\n\n";
                 return true;
             }
-            else {
+            else 
+            {
                 std::cout << "\nnot enough balance in your SC card, use a different method\n\n";
             }
             break;
+        }
         case 4: //no need for extra safety
+        {
             if (customers[customerIndex].coins > in_coins) {
                 std::cout << "\nTransaction completed!\n\n";
                 return true;
             }
-            else {
+            else 
+            {
                 std::cout << "\nnot enough coins, use a different method\n\n";
             }
             break;
+        }
         }
     }
 }

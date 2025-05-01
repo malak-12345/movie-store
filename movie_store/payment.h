@@ -2,6 +2,7 @@
 #include <string>
 #include "customer.h"
 
+struct movie; // forward declaration to fix movie is not found
 
 bool isDigit(std::string& str); // done
 
