@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "customer.h"
+#include "payment.h"
 #include "Howard_Hinnant/include/date/date.h"
 
 #define movies_max 100
@@ -22,11 +23,10 @@ int getCustomerIndex(customer customers[], int customers_count, std::string& id)
 bool isMovieFound(movie movies[], int movies_count, std::string& movieName); // done
 int getMovieIndex(movie movies[], int movies_count, std::string& movieName); // done
 bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
-bool isCurrentlyRentedEmpty(customer customers[], int customerIndex); // done
 int getMoviesCount(movie movies[], int size_of_movies); // done
-void is_num(int& input);
-void is_num(double& input);
-bool yes_no();
+void is_num(int& input); // done
+void is_num(double& input); // done
+bool yes_no(); // done
 //----------------------------------------------------------------
 
 void listMovies(movie movies[], int movies_count); // done
@@ -43,7 +43,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
     date::year_month_day system_date);
 
 void returnMovie(customer customers[], int customers_count, std::string& id, movie movies[], 
-    int movies_count, bool isDateChanged, date::sys_days new_date);
+    int movies_count, bool isDateChanged, date::sys_days new_date); // done
 
 int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date); // done
 

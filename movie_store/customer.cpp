@@ -22,8 +22,6 @@ std::string deleteSpaces(std::string& str) //done
 }
 bool checkPhoneNumber(std::string& phoneNumber) // done
 {
-    phoneNumber = deleteSpaces(phoneNumber);
-    
     if (phoneNumber.length() >= 7 && phoneNumber.length() <= 15)
     {
         for(const char& digit : phoneNumber)
@@ -79,7 +77,7 @@ int getCustomersCount(customer customers[], int size_of_customers) // get custom
     }
     
 }
-bool isCurrentlyRentedFull(customer customers[], int customerIndex) // done
+bool isCurrentlyRentedEmpty(customer customers[], int customerIndex) // done
 {
     int count = 0;
     for(int i = 0; i < limit; i++)
@@ -100,12 +98,15 @@ void addNewCustomer(customer customers[], int size_of_customers, int& customers_
     std::cout << "Enter Customer name: ";
     getline(std::cin, name);
     std::transform(name.begin(), name.end(), name.begin(), tolower);
+    name = deleteSpaces(name);
+    if(name == "0") return;
     
     do 
     {
         std::cout << "Enter Customer phone: +";
         getline(std::cin, phoneNumber);
-        
+        phoneNumber = deleteSpaces(phoneNumber);
+        if(phoneNumber == "0") return;
         if(!checkPhoneNumber(phoneNumber))
         {
             std::cout << "Invalid phone number!\n";
@@ -151,7 +152,7 @@ void listCustomers(customer customers[], int customers_count) // done
             std::cout << "Customer ID: " << customers[i].id << '\n';
             std::cout << "Phone Number: " << customers[i].phoneNumber << '\n';
 
-            if(!isCurrentlyRentedFull(customers, i))
+            if(!isCurrentlyRentedEmpty(customers, i))
             {
                 std::cout << "Currently Renting: ";
                 for (std::string movie : customers[i].currentlyRentedMovies)
