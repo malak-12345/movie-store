@@ -177,6 +177,227 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
     std::cout << "Successfully added credit card\n\n";
 }
 
+void create_SC(customer cust[], int customers_count, std::string& id) {
+    std::string passwrd, again;
+    int Index = getCustomerIndex(cust, customers_count, id);
+    if (!cust[Index].SC) {
+        cust[Index].SC = true;
+        do {
+            std::cout << "create a strong password: ";
+            getline(std::cin, passwrd);
+            std::cout << "re-enter the password: ";
+            getline(std::cin, again);
+        } while (passwrd != again);
+    }
+    else {
+        std::cerr << "this account already has a SC card\n";
+    }
+}
+void set_SC_passwrd(customer cust[], int customers_count, std::string& id) {
+    std::string passwrd, old_passwrd;
+    int Index = getCustomerIndex(cust, customers_count, id);
+    if (cust[Index].SC) {
+        std::cout << "enter previous password: ";
+        getline(std::cin, old_passwrd);
+        while (old_passwrd != cust[Index].SC_passwrd) {
+            if (old_passwrd == "0") return;
+            std::cerr << "wrong password, try again";
+            std::cout << "enter previous password: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            getline(std::cin, old_passwrd);
+        }
+        std::cout << "enter New password: ";
+        getline(std::cin, passwrd);
+        cust[Index].SC_passwrd = passwrd;
+        std::cout << "password changed successfully\n";
+    }
+    else {
+        std::cerr << "this account doesn't have a SC card, make one first\n";
+    }
+}
+
+void charge_SC(customer cust[], int customers_count, std::string& id) {
+    int Index = getCustomerIndex(cust, customers_count, id);
+    double amount;
+
+    std::cout << "enter amount you want to charge with: ";
+    is_num(amount); // if 0 nothing will happen, and will go back to main menu
+    cust[Index].SC_balance += amount;
+}
+
+// if payment == true, cust[index].coins += generate_coins();
+int generate_coins() { // from 1 to 10
+    int coins = 1;
+    srand(time(0));
+    coins += rand() % 10;
+    return coins;
+}
+
+double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date) {
+    int fee_days = validateDue(mov, isDateChanged, new_date);
+    int price_days = calc_rental_days(mov, isDateChanged, new_date);
+    double amount = 0;
+    if (mov.due) {
+        amount = mov.price * price_days + mov.fee * fee_days;
+    }
+    else {
+        amount = mov.price * price_days;
+    }
+    return amount;
+}
+
+
+
+bool pay(double cashRegister, customer customers[], int customers_count, std::string& id, movie& mov, bool isDateChanged, date::sys_days new_date) {
+    int customerIndex = getCustomerIndex(customers, customers_count, id);
+    int ans;
+    std::string SC_password, ccv, date;;
+    double SC_amount, cash_ceditcard, in_coins;
+    double amount = amount2pay(mov, isDateChanged, new_date); //due status is set now
+    SC_amount = amount * 0.9; //10% discount on all movies
+    cash_ceditcard = amount;
+    in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
+    std::cout << "1. in cash = " << cash_ceditcard << "\n2. via credit card = " << cash_ceditcard << "\n3. via SC card = " << SC_amount << "\n4. redeem coins";
+    if (mov.due) {
+        std::cout << " (unavailable)"; // for coins i mean
+        std::cout << "\n enter choice\n";
+        do {
+            is_num(ans);
+            if (ans == 0) return false;
+        } while (ans < 4 && ans > -1);
+    }
+    else {
+        std::cout << " = " << in_coins; // for coins
+        std::cout << "\n enter choice\n";
+        do {
+            is_num(ans);
+            if (ans == 0) return false;
+        } while (ans < 5 && ans > -1);
+    }
+    while (true) {
+        switch (ans) {
+        case 1:
+            std::cout << "Opening cash register!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::cout << "thanks for choosing our store!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            break;
+        case 2:
+            if (!customers[customerIndex].creditcard.cardNumber.empty())
+            {
+                std::cout << "Paying with: " << customers[customerIndex].creditcard.cardNumber << '\n';
+                do
+                {
+                    std::cout << "Enter ccv: ";
+                    getline(std::cin, ccv);
+                    std::cin.clear();
+                    ccv = deleteSpaces(ccv);
+
+                    if (ccv == "0") return false; // exiting to main menu
+                    if (customers[customerIndex].creditcard.ccv != ccv)
+                    {
+                        std::cout << "Wrong ccv!\n";
+                    }
+                } while (customers[customerIndex].creditcard.ccv != ccv);
+
+                date::year_month yy_mm;
+                date::year y;
+                date::month m;
+                int y_val, m_val;
+                char del;
+                do
+                {
+                    std::cout << "Enter expiry date: year/month: ";
+
+                    getline(std::cin, date);
+                    std::cin.clear();
+                    date = deleteSpaces(date);
+
+                    if (ccv == "0") return false;
+
+                    std::istringstream iss(date);
+                    if (iss >> std::setw(2) >> y_val >> del >> std::setw(2) >> m_val && del == '/')
+                    {
+                        y = date::year(y_val);
+                        y += date::years(2000);
+                        m = date::month(m_val);
+                        if (m.ok())
+                        {
+                            yy_mm = y / m;
+                            if (yy_mm == customers[customerIndex].creditcard.yy_mm)
+                            {
+                                std::cout << "Transaction completed!\n\n";
+                            }
+                        }
+                        else
+                        {
+                            std::cout << "Wrong date or format!\n";
+                        }
+                    }
+                } while (yy_mm != customers[customerIndex].creditcard.yy_mm);
+            }
+            else
+            {
+                std::cout << "You don't have a credit card. Do you want to add one? (y/n): ";
+                if (yes_no())
+                {
+                    addCreditCard(customers, customers_count, id);
+                    std::cout << "Transaction completed!\n\n";
+                }
+                else
+                {
+                    return false; // exiting to main menu
+                }
+            }
+            break;
+        case 3:
+            if (customers[customerIndex].SC) {
+                std::cout << "enter password: ";
+                getline(std::cin, SC_password);
+                while (customers[customerIndex].SC_passwrd != SC_password) {
+                    std::cerr << "wrong password try again: ";
+                    getline(std::cin, SC_password);
+                }
+            }
+            else {
+                std::cout << "no SC card detected, would you like to make one y/n? ";
+                if (yes_no()) {
+                    create_SC(customers, customers_count, id);
+                    charge_SC(customers, customers_count, id);
+                }
+                else {
+                    std::cerr << "\nthen pay in another way\n";
+                    break;
+                }
+            }
+            if (customers[customerIndex].SC_balance > SC_amount) {
+                std::cout << "\nTransaction completed!\n\n";
+                return true;
+            }
+            else {
+                std::cout << "\nnot enough balance in your SC card, use a different method\n\n";
+            }
+            break;
+        case 4: //no need for extra safety
+            if (customers[customerIndex].coins > in_coins) {
+                std::cout << "\nTransaction completed!\n\n";
+                return true;
+            }
+            else {
+                std::cout << "\nnot enough coins, use a different method\n\n";
+            }
+            break;
+        }
+    }
+}
+
+
+
+
+
+
+/*
 bool pay(customer customers[], int customers_count, std::string& id)
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
@@ -249,7 +470,7 @@ bool pay(customer customers[], int customers_count, std::string& id)
             }
             else
             {
-                std::cout << "You don't have a credit card. Do you want to enter? (y/n): ";
+                std::cout << "You don't have a credit card. Do you want to add one? (y/n): ";
                 if(yes_no())
                 {
                     addCreditCard(customers, customers_count, id);
@@ -264,3 +485,5 @@ bool pay(customer customers[], int customers_count, std::string& id)
     } while (ans != 1 && ans != 2);
     return true; // continuing
 }
+
+*/

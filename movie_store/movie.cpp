@@ -454,27 +454,27 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
             std::cout << "today is: " << system_date << '\n';
             while (!date_good)/*incomplete fail safe*/ 
             {
-                std::cout << "specify due date in this exact format yyyy/mm/dd : ";
+                std::cout << "specify return date in this exact format yyyy/mm/dd : ";
                 getline(std::cin, entered_date);
                 std::cin.clear();
                 if (entered_date == "0") return; //aborts and exits to main menu
 
                 std::istringstream iss(entered_date);
-                if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && date::year(y) >= system_date.year() && delimiter1 == '/' && delimiter2 == '/')
+                if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') //this is correct don't worry
                 {
                     movies[i].dueDate = date::year(y) / date::month(m) / date::day(d);
-                    if(movies[i].dueDate > system_date)
+                    if(movies[i].dueDate >= system_date)
                     {
                         date_good = true;
                     }
                     else {
-                        std::cerr << "entered due date is invalid, please try again\n";
+                        std::cerr << "entered return date is invalid, please try again\n";
                         date_good = false;
                     }
                 }
                 else
                 {
-                    std::cerr << "entered due date is invalid, please try again\n";
+                    std::cerr << "entered return date is invalid, please try again\n";
                     date_good = false;
                 }
             }
@@ -705,6 +705,33 @@ int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date) // do
     {
         movie.due = false;
         return 0;
+    }
+}
+
+int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date)
+{
+    date::sys_days today, due = movie.dueDate;
+    if (isDateChanged)
+    {
+        today = new_date;
+    }
+    else
+    {
+        auto now = std::chrono::system_clock::now(); // return current system date
+        today = date::floor<date::days>(now);
+    }
+
+    auto today_n = today.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
+    int today_int = today_n.count(); // convert it to int --> 20205d --> 20205
+
+    auto due_n = due.time_since_epoch();
+    int due_int = due_n.count();
+    int diff = 0;
+
+    diff = due_int - today_int;
+    if (diff == 0) return 1; //if rented till the end of the day, counts as a day
+    else {
+    return diff;
     }
 }
 
