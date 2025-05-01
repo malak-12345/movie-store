@@ -184,6 +184,8 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
         std::cout << "Enter movie name: ";
         getline(std::cin, movieName);
         std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
+        movieName = deleteSpaces(movieName);
+        if(movieName == "0") return;
         if(isMovieFound(movies,movies_count,movieName))
         {
             std::cout << "This film is already exist!\n";
@@ -211,6 +213,11 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
 
 bool ChangeDate(date::sys_days& new_date) // done
 {
+    date::sys_days today;
+    auto now = std::chrono::system_clock::now();
+    today = date::floor<date::days>(now);
+    date::year_month_day system_date = today;
+
     int y, m, d;
     char delimiter1, delimiter2;
     std::string entered_date;
@@ -222,10 +229,11 @@ bool ChangeDate(date::sys_days& new_date) // done
             std::cout << "specify date in this exact format yyyy/mm/dd : ";
             getline(std::cin, entered_date);
             std::cin.clear();
+            entered_date = deleteSpaces(entered_date);
             if (entered_date == "0") return false; //aborts and exits to main menu
             
             std::istringstream iss(entered_date);
-            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && y >= 2025 && delimiter1 == '/' && delimiter2 == '/') 
+            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && date::year(y) >= system_date.year() && delimiter1 == '/' && delimiter2 == '/') 
             {
                 new_date = date::year(y) / date::month(m) / date::day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
                 return true;

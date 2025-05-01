@@ -58,15 +58,6 @@ bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::str
     
     return false;
 }
-bool isCurrentlyRentedEmpty(customer customers[], int customerIndex) // done
-{
-    for(int i = 0; i < limit; i++)
-    {
-        if(customers[customerIndex].currentlyRentedMovies[i].empty()) return true; 
-    } 
-    
-    return false;
-}
 int getMoviesCount(movie movies[], int size_of_movies) // done
 {
     if(size_of_movies != 0)
@@ -137,11 +128,11 @@ bool yes_no()
 			std::cerr << "Input error occurred.\n";
 			continue;
 		}
-		else if (!(tolower(ans) == 'y' || tolower(ans) == 'n')) 
+		else if (!((tolower(ans) == 'y') || (tolower(ans) == 'n'))) 
 		{
 			std::cout << "Invalid input, please enter a valid choice: ";
 		}
-	} while (std::cin.fail() || !(tolower(ans) == 'y' || tolower(ans) == 'n'));
+	} while (std::cin.fail() || !((tolower(ans) == 'y') || (tolower(ans) == 'n')));
 	
 	if (tolower(ans) == 'y')
 	{
@@ -271,6 +262,8 @@ bool rate(movie movies[], int movies_count, std::string& movieName,
             
             switch (rating)
             {
+            case 0:
+                return false;
             case 1:
                 movies[movieIndex].allRatings.push_back(1);
                 customers[customerIndex].rating.insert({movieName, 1}); 
@@ -366,6 +359,7 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
             std::cin >> rating;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if(rating == 0) return false;
             if (rating >= 1 && rating <= 5)
             {
                 //update allRatings vector
@@ -466,7 +460,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                 if (entered_date == "0") return; //aborts and exits to main menu
 
                 std::istringstream iss(entered_date);
-                if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && y >= 2025 && delimiter1 == '/' && delimiter2 == '/')
+                if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && date::year(y) >= system_date.year() && delimiter1 == '/' && delimiter2 == '/')
                 {
                     movies[i].dueDate = date::year(y) / date::month(m) / date::day(d);
                     if(movies[i].dueDate > system_date)
@@ -519,88 +513,108 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
     std::string movieName;
     int customerIndex = getCustomerIndex(customers, customers_count, id);
 
-    for (std::string movie : customers[customerIndex].currentlyRentedMovies)
+    if(!isCurrentlyRentedEmpty(customers, customerIndex))
     {
-        if(!movie.empty())
+        for (std::string movie : customers[customerIndex].currentlyRentedMovies)
         {
-            std::cout << num << ". " << movie << '\n';
-            num++;
+            if(!movie.empty())
+            {
+                std::cout << num << ". " << movie << '\n';
+                num++;
+            }
         }
-    }
-    do
-    {
-        std::cout << "Enter number of the movie you wish to return: ";
-        is_num(ans);
-        if ((ans <= num) && (ans > 0))
+        do
         {
-            num = 1;
-            for (std::string movie : customers[customerIndex].currentlyRentedMovies)
+            std::cout << "Enter number of the movie you wish to return: ";
+            is_num(ans);
+            if(ans == 0) return;
+            if ((ans <= num) && (ans > 0))
             {
-                if(!movie.empty())
+                num = 1;
+                for (std::string movie : customers[customerIndex].currentlyRentedMovies)
                 {
-                    if(ans == num)
+                    if(!movie.empty())
                     {
-                        movieName = movie;
-                        break;
+                        if(ans == num)
+                        {
+                            movieName = movie;
+                            break;
+                        }
+                        num++;
                     }
-                    num++;
+                    index++;
                 }
-                index++;
-            }
-
-            movieIndex = getMovieIndex(movies, movies_count, movieName);
-            diff = validateDue(movies[movieIndex], isDateChanged, new_date);
-            if (movies[movieIndex].due) 
-            {
-                cash = movies[movieIndex].price + movies[movieIndex].fee * diff;
-                std::cout << "considering that the movie is due: " << diff << " days, the amount to pay is: " << cash << '\n';  
-            }
-            else 
-            {
-                cash = movies[movieIndex].price;
-                std::cout << "amount to pay is: " << cash << '\n';
-            }
-            std::cout << "(this is in an italian accent)\n";
-            std::cout << "pay up or else? y/n: ";
-            if (yes_no()) 
-            {
-                std::cout << "Good boy\n";
-            }
-            else 
-            {
-                std::cout << "you have a beautiful family, it'd be a shame if anything happens to them.\nyou sure you still don't want to pay up? y/n: ";
-                if (yes_no()) 
+    
+                movieIndex = getMovieIndex(movies, movies_count, movieName);
+                diff = validateDue(movies[movieIndex], isDateChanged, new_date);
+                if (movies[movieIndex].due) 
                 {
-                    std::cout << "Smart lad, say hi to your family for me\n";
+                    cash = movies[movieIndex].price + movies[movieIndex].fee * diff;
+                    std::cout << "considering that the movie is due: " << diff << " days, the amount to pay is: " << cash << '\n';  
                 }
                 else 
                 {
-                    std::cout << "Remember that it was YOU who made this choice\n";
-                    return;
+                    cash = movies[movieIndex].price;
+                    std::cout << "amount to pay is: " << cash << '\n';
                 }
-            }
-            std::cout << "Would you like to rate the movie? y/n: ";
-            if (yes_no())
-            {
-                bool check = rate(movies, movies_count, movieName, customers, customers_count, id);
-                
-                while (!check)
+                std::cout << "(this is in an italian accent)\n";
+                std::cout << "pay up or else? y/n: ";
+                if (yes_no()) 
                 {
-                    check = rate(movies, movies_count, movieName, customers, customers_count, id);
+                    if(!pay(customers, customers_count, id)) 
+                    {
+                        std::cout << "Canceling transaction!\n";
+                        std::this_thread::sleep_for(std::chrono::seconds(1));
+                        return;
+                    }    
                 }
+                else 
+                {
+                    std::cout << "you have a beautiful family, it'd be a shame if anything happens to them.\nyou sure you still don't want to pay up? y/n: ";
+                    if (yes_no()) 
+                    {
+                        std::cout << "Smart lad, say hi to your family for me\n";
+                        if(!pay(customers, customers_count, id)) 
+                        {
+                            std::cout << "Canceling transaction!\n";
+                            std::this_thread::sleep_for(std::chrono::seconds(1));
+                            return;
+                        }    
+                    }
+                    else 
+                    {
+                        std::cout << "Remember that it was YOU who made this choice\n";
+                        return;
+                    }
+                }
+                std::cout << "Would you like to rate the movie? y/n: ";
+                if (yes_no())
+                {
+                    bool check = rate(movies, movies_count, movieName, customers, customers_count, id);
+                    
+                    while (!check)
+                    {
+                        check = rate(movies, movies_count, movieName, customers, customers_count, id);
+                    }
+                }
+                movies[movieIndex].rented = false;
+                movies[movieIndex].currentRenter.clear();
+                movies[movieIndex].due = false;
+                movies[movieIndex].dueDate = date::year(3000) / date::month(10) / date::day(10);
+                customers[customerIndex].currentlyRentedMovies[index].clear();
+                customers[customerIndex].previouslyRentedMovies.push_back(movies[movieIndex].name);
             }
-            movies[movieIndex].rented = false;
-            movies[movieIndex].currentRenter.clear();
-            movies[movieIndex].due = false;
-            movies[movieIndex].dueDate = date::year(3000) / date::month(10) / date::day(10);
-            customers[customerIndex].currentlyRentedMovies[index].clear();
-            customers[customerIndex].previouslyRentedMovies.push_back(movies[movieIndex].name);
-        }
-        else 
-        {
-            std::cerr << "Invalid choice, please try again\n";
-        }
-    } while(!(ans <= num) || !(ans > 0));
+            else 
+            {
+                std::cerr << "Invalid choice, please try again\n";
+            }
+        } while((ans > num) || (ans <= 0));
+    }
+    else
+    {
+        std::cout << "You don't have rented movies to return!\n";
+    }
+ 
 }
 
 void listTopRated(movie movies[], int movies_count) //using insertion sort, listing top 10 rated

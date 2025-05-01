@@ -2,13 +2,14 @@
 #include <string>
 #include <vector>
 #include <map>
-
+#include "Howard_Hinnant/include/date/date.h"
 
 #define limit 8
 #define customer_max 50
 
 struct creditCard {
-    std::string cardNumber, ccv, date;
+    std::string cardNumber, ccv;
+    date::year_month yy_mm;
 };
 
 struct customer
@@ -30,7 +31,7 @@ bool checkPhoneNumber(std::string& phoneNumber); // done
 bool checkPhoneNumberRegistered(customer customers[], int customers_count, std::string& phoneNumber); // done
 bool checkId(customer customers[], int customers_count, std::string& id); // done
 int getCustomersCount(customer customers[], int size_of_customers); // done
-bool isCurrentlyRentedFull(customer customers[], int customerIndex); // done
+bool isCurrentlyRentedEmpty(customer customers[], int customerIndex); // done
 //---------------------------------------------------------------
 
 void listCustomers(customer customers[], int customers_count); // done
