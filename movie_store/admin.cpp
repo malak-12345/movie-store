@@ -123,7 +123,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
                     movies[i].fee = 0;
                     movies[i].rating = 0;
                     movies[i].rentedCount = 0;
-                    movies[i].dueDate = date::year(1000) / date::month(10) / date::day(10); //default state for empty, not an actual thing in the language i just decided that
+                    movies[i].dueDate = date::year(3000) / date::month(10) / date::day(10); //default state for empty, not an actual thing in the language i just decided that
                     movies[i].due = false;
                     movies_count--;
                 }

@@ -460,7 +460,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
             std::cout << "today is: " << system_date << '\n';
             while (!date_good)/*incomplete fail safe*/ 
             {
-                std::cout << "specify due date in this exact format yyyy/mm/dd : ";
+                std::cout << "specify return date in this exact format yyyy/mm/dd : ";
                 getline(std::cin, entered_date);
                 std::cin.clear();
                 if (entered_date == "0") return; //aborts and exits to main menu

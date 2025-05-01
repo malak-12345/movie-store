@@ -18,6 +18,8 @@ struct customer
     std::vector<std::string> previouslyRentedMovies;
     std::map<std::string, int> rating;
     creditCard creditcard;
+    bool store_card;
+    int coins;
 };
 
 
