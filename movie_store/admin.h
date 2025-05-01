@@ -10,3 +10,5 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName); // 
 std::string login(); // done
 void addNewMovie(movie movies[], int size_of_movies, int& movies_count); // done
 bool ChangeDate(date::sys_days& new_date); // done
+
+//double cashRegister;

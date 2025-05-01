@@ -11,4 +11,10 @@ bool isCreditCardRegistered(customer customers[], int customers_count, std::stri
 bool validateCreditCard(std::string& creditCard); // done
 
 void addCreditCard(customer customers[], int customers_count, std::string& id); // done
-bool pay(customer customers[], int customers_count, std::string& id);
+void create_SC(customer cust[], int customers_count, std::string& id);
+void set_SC_passwrd(customer cust[], int customers_count, std::string& id);
+void charge_SC(customer cust[], int customers_count, std::string& id);
+int generate_coins();
+double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date);
+bool pay(double cashRegister, customer customers[], int customers_count, std::string& id, movie& mov, bool isDateChanged, date::sys_days new_date);
+//bool pay(customer customers[], int customers_count, std::string& id);

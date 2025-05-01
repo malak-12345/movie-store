@@ -14,13 +14,13 @@ struct creditCard {
 
 struct customer
 {
-    std::string name, phoneNumber, id;
+    std::string name, phoneNumber, id, SC_passwrd = "password";
     std::string currentlyRentedMovies[limit];
     std::vector<std::string> previouslyRentedMovies;
     std::map<std::string, int> rating;
     creditCard creditcard;
-    bool store_card;
-    int coins;
+    bool SC = false;
+    int coins = 0, SC_balance = 0;
 };
 
 
