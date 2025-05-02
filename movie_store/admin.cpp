@@ -10,6 +10,12 @@ std::string ADMIN_PSSWRD = "admin";
 std::string USER = "user";
 std::string USER_PSSWRD = "user";
 
+double cashRegister = 50.0;
+auto now = std::chrono::system_clock::now();
+date::sys_days new_date, today = date::floor<date::days>(now);
+date::year_month_day system_date = today;
+
+
 std::string checkCredentials(std::string& login, std::string& passwrd) // done
 {
     if(login == ADMIN && passwrd == ADMIN_PSSWRD)
@@ -86,7 +92,8 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
     {
         for(int i = 0; i < movies_count; i++)
         {
-            if(movies[i].name == movieName)
+            std::transform(movies[i].name.begin(), movies[i].name.end(), movies[i].name.begin(), tolower);
+            if(deleteSpaces(movies[i].name) == movieName)
             {
                 if (i < movies_count - 1) 
                 {
@@ -159,13 +166,13 @@ std::string login() // done
         if(checkCredentials(login, passwrd) == "admin")
         {
             std::cout << "Welcome, " << login << "!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             return "admin";
         }
         else if(checkCredentials(login, passwrd) == "user")
         {
             std::cout << "Welcome, " << login << "!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             return "user";
         }
         else
@@ -177,25 +184,25 @@ std::string login() // done
 
 void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
 {
-    std::string movieName;
+    std::string movieName, check;
     double price = 0, fee = 0;
     do
     {
         std::cout << "Enter movie name: ";
         getline(std::cin, movieName);
-        std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
-        movieName = deleteSpaces(movieName);
+        check = deleteSpaces(movieName);
+        
         if(movieName == "0") return;
-        if(isMovieFound(movies,movies_count,movieName))
+        if(isMovieFound(movies,movies_count, check))
         {
             std::cout << "This film is already exist!\n";
             continue;
         }
-        std::cout << "\nEnter movie price per day(EGP) : ";
+        std::cout << "\nEnter movie price per day (EGP) : ";
         is_num(price);
         std::cout << "\nEnter due fees per day (EGP) : ";
         is_num(fee);
-    } while(isMovieFound(movies,movies_count,movieName));
+    } while(isMovieFound(movies,movies_count,check) || check.empty());
     
     for(int i = 0; i < size_of_movies; i++)
     {
@@ -213,11 +220,6 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
 
 bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
 {
-    date::sys_days today;
-    auto now = std::chrono::system_clock::now();
-    today = date::floor<date::days>(now);
-    date::year_month_day system_date = today;
-
     int y, m, d;
     char delimiter1, delimiter2;
     std::string entered_date;
@@ -252,7 +254,7 @@ bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date pri
 
 
 
-void viewCashRegister(double cashRegister) {
+void viewCashRegister(double& cashRegister) {
     std::cout << cashRegister << "$ in the register would you like to withdraw them y/n? ";
     if (yes_no()) {
         cashRegister = 0.0;

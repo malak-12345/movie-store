@@ -9,9 +9,9 @@
 
 
 struct movie {
-    std::string name, currentRenter = "none";
-    double price, fee, rating; //renting price and fee are per day
-    int rentedCount, rentalDays;
+    std::string name = "none", currentRenter = "none";
+    double price = 0, fee = 0, rating = 0; //renting price and fee are per day
+    int rentedCount = 0, rentalDays = 0;
     bool rented = false, due = false;
     std::vector<int> allRatings;
     date::year_month_day dueDate = date::year(3000) / date::month(10) / date::day(10);
@@ -34,28 +34,32 @@ void listRented(movie movies[], int movies_count); // done
 int listUnrented(movie movies[], int movies_count); // done
 
 bool rate(movie movies[], int movies_count, std::string& movieName, 
-    customer customers[], int customers_count ,std::string& id); // done
+          customer customers[], int customers_count ,std::string& id); // done
 
 bool editRating(movie movies[], int movies_count, std::string& movieName,
-    customer customers[], int customers_count, std::string& id); // done
+                customer customers[], int customers_count, std::string& id); // done
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::year_month_day system_date, bool isDateChanged, date::sys_days new_date);
 
-void returnMovie(double cashRegister, customer customers[], int customers_count, std::string& id, movie movies[],
-    int movies_count, bool isDateChanged, date::sys_days new_date); // done
+void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id);
+
+void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
+    bool isDateChanged, date::sys_days new_date);
+
 
 int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date); // done
 
 int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date);
 
 void listDueAccounts(movie movies[], int movies_count, customer customers[], int customers_count, 
-    bool isDateChanged, date::sys_days new_date); //done
+                     bool isDateChanged, date::sys_days new_date); //done
 
     
-void listTopRated(movie movies[], int movies_count);
+void listTopRated(movie movies[], int movies_count); // done
     
+
 void listTopRented(movie movies[], int movies_count);
 
 void save_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name);
 
 void load_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name);
+
