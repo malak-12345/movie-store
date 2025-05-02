@@ -104,7 +104,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
         case 0: // exit
             return;
         case 1: // rent
-            rent(customers, customers_count, movies, movies_count, system_date);
+            rent(customers, customers_count, movies, movies_count, system_date, isDateChanged, new_date);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 2: // rate
@@ -199,7 +199,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 }
             } while(!isCustomerFound(customers,customers_count,id));
             if(id == "0") break;
-            returnMovie(customers,customers_count,id, movies, movies_count, isDateChanged, new_date);
+            returnMovie(cashRegister, customers, customers_count, id, movies, movies_count, isDateChanged, new_date);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }            

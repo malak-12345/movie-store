@@ -253,7 +253,7 @@ int generate_coins() { // from 1 to 10
 double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date) 
 {
     int fee_days = validateDue(mov, isDateChanged, new_date);
-    int price_days = calc_rental_days(mov, isDateChanged, new_date);
+    int price_days = mov.rentalDays;
     double amount = 0;
     if (mov.due) 
     {
@@ -308,6 +308,7 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
         case 1:
         {
             std::cout << "Opening cash register!\n";
+            cashRegister += cash_ceditcard;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             std::cout << "thanks for choosing our store!\n";
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -358,6 +359,7 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                             yy_mm = y / m;
                             if (yy_mm == customers[customerIndex].creditcard.yy_mm)
                             {
+                                cashRegister += cash_ceditcard;
                                 std::cout << "Transaction completed!\n\n";
                             }
                         }
@@ -374,6 +376,7 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                 if (yes_no())
                 {
                     addCreditCard(customers, customers_count, id);
+                    cashRegister += cash_ceditcard;
                     std::cout << "Transaction completed!\n\n";
                 }
                 else
@@ -411,6 +414,8 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
             }
             if (customers[customerIndex].SC_balance > SC_amount) 
             {
+                customers[customerIndex].SC_balance -= SC_amount;
+                cashRegister += SC_amount;
                 std::cout << "\nTransaction completed!\n\n";
                 return true;
             }
@@ -423,6 +428,8 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
         case 4: //no need for extra safety
         {
             if (customers[customerIndex].coins > in_coins) {
+                customers[customerIndex].coins -= in_coins;
+                // no cash is taken so register not needed here
                 std::cout << "\nTransaction completed!\n\n";
                 return true;
             }

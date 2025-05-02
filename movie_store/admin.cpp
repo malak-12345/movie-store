@@ -211,7 +211,7 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
     std::cout << "Successfully added: " << movieName << '\n';
 }
 
-bool ChangeDate(date::sys_days& new_date) // done
+bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
 {
     date::sys_days today;
     auto now = std::chrono::system_clock::now();
@@ -247,5 +247,15 @@ bool ChangeDate(date::sys_days& new_date) // done
     else 
     {
         return false; //aborting
+    }
+}
+
+
+
+void viewCashRegister(double cashRegister) {
+    std::cout << cashRegister << "$ in the register would you like to withdraw them y/n? ";
+    if (yes_no()) {
+        cashRegister = 0.0;
+        std::cout << "cash register emptied successfully.\n";
     }
 }

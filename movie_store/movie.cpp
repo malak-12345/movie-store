@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <sstream>
+#include <fstream>
 
 
 //-------------------------utilities-----------------------------
@@ -394,7 +395,7 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 }
 
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::year_month_day system_date)
+void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::year_month_day system_date, bool isDateChanged, date::sys_days new_date)
 {
     bool repeat = true, date_good = false;
     int selected, customerIndex, match = 1;
@@ -487,6 +488,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
                         movies[i].rented = true;
                         movies[i].rentedCount++;
+                        movies[i].rentalDays = calc_rental_days(movies[i], isDateChanged, new_date);
                         movies[i].currentRenter = name;
                         return;
                     }
@@ -505,7 +507,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
     }
 }
 
-void returnMovie(customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, 
+void returnMovie(double cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
     bool isDateChanged, date::sys_days new_date) // done
 {
     int num = 1, movieIndex, ans, diff, index = 0;
@@ -561,25 +563,24 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
                 std::cout << "pay up or else? y/n: ";
                 if (yes_no()) 
                 {
-                    // if(!pay(customers, customers_count, id)) 
-                    // {
-                    //     std::cout << "Canceling transaction!\n";
-                    //     std::this_thread::sleep_for(std::chrono::seconds(1));
-                    //     return;
-                    // }    
+                     if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex], isDateChanged, new_date))
+                     {
+                         std::cout << "Canceling transaction!\n";
+                         std::this_thread::sleep_for(std::chrono::seconds(1));
+                         return;
+                     }    
                 }
                 else 
                 {
                     std::cout << "you have a beautiful family, it'd be a shame if anything happens to them.\nyou sure you still don't want to pay up? y/n: ";
                     if (yes_no()) 
                     {
-                        std::cout << "Smart lad, say hi to your family for me\n";
-                        // if(!pay(customers, customers_count, id)) 
-                        // {
-                        //     std::cout << "Canceling transaction!\n";
-                        //     std::this_thread::sleep_for(std::chrono::seconds(1));
-                        //     return;
-                        // }    
+                        if (!pay(cashRegister, customers, customers_count, id, movies[movieIndex], isDateChanged, new_date))
+                        {
+                            std::cout << "Canceling transaction!\n";
+                            std::this_thread::sleep_for(std::chrono::seconds(1));
+                            return;
+                        }
                     }
                     else 
                     {
@@ -760,4 +761,91 @@ void listDueAccounts(movie movies[],int movies_count, customer customers[], int 
     }
     if(num == 1) std::cout << "There are no due accounts!\n";
     std::cout << "-----------------------------\n";
+}
+
+
+
+
+void save_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name) {
+    std::ofstream outfile(file_name);
+
+    if (outfile.is_open()) {
+        outfile << cashRegister << std::endl;
+        outfile << mov_count << std::endl;
+        for (int i = 0; i < mov_count; i++) {
+            outfile << mov[i].name << std::endl;
+            outfile << mov[i].price << std::endl;
+            outfile << mov[i].fee << std::endl;
+            outfile << mov[i].rentedCount << std::endl;
+            outfile << std::boolalpha << mov[i].rented << std::endl;
+            outfile << mov[i].currentRenter << std::endl;
+            outfile << std::boolalpha << mov[i].due << std::endl;
+            outfile << mov[i].rentalDays << std::endl;
+            outfile << mov[i].dueDate << std::endl;
+            outfile << mov[i].rating << std::endl;
+            outfile << mov[i].allRatings.size() << std::endl;
+            outfile << "{" << std::endl;
+            for (int rating : mov[i].allRatings) {
+                outfile << rating << std::endl;
+            }
+            outfile << "}" << std::endl;
+        }
+        outfile.close();
+        std::cout << "Data successfully saved" << std::endl;
+    }
+    else {
+        std::cerr << "Unable to open file " << file_name << "please try saving manually before terminating the program,\nif the problem persists please contact your IT provider" << std::endl;
+    }
+}
+
+void load_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name) {
+    std::ifstream infile(file_name);
+    if (infile.is_open()) {
+        infile >> cashRegister;
+        infile >> mov_count;
+        for (int i = 0; i < mov_count; i++) {
+            std::getline(infile >> std::ws, mov[i].name); //BTW std::ws gets rid of any leading whitespaces
+            infile >> mov[i].price;
+            infile >> mov[i].fee;
+            infile >> mov[i].rentedCount;
+            infile >> std::boolalpha >> mov[i].rented;
+            std::getline(infile >> std::ws, mov[i].currentRenter);
+            infile >> std::boolalpha >> mov[i].due;
+            infile >> mov[i].rentalDays;
+            //_________________________
+            std::string DueDate_str;
+            int y, m, d;
+            char delimiter1, delimiter2;
+            infile >> DueDate_str;
+            std::istringstream iss(DueDate_str);
+            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '-' && delimiter2 == '-')
+            {
+                mov[i].dueDate = date::year(y) / date::month(m) / date::day(d);
+            }
+            else
+            {
+                std::cerr << "wrong due date format, while reading movie: " << mov[i].name << std::endl;
+            }
+            //__________________________
+            infile >> mov[i].rating;
+            int ratings_size;
+            infile >> ratings_size;
+            mov[i].allRatings.resize(ratings_size);
+            std::string opening_brace;
+            if (std::getline(infile >> std::ws, opening_brace) && opening_brace == "{") {
+                for (int j = 0; j < ratings_size; j++) {
+                    infile >> mov[i].allRatings[j];
+                }
+                std::string closing_brace;
+                std::getline(infile >> std::ws, closing_brace);
+            }
+            else {
+                std::cerr << "error taking in all ratings vector for movie: " << mov[i].name << std::endl;
+            }
+        }
+        infile.close();
+    }
+    else {
+        std::cerr << "Unable to open file " << file_name << " for reading, contact your IT provider" << std::endl;
+    }
 }
