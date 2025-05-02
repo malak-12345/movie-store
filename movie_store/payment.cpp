@@ -1,3 +1,6 @@
+#include "payment.h"
+#include "movie.h"
+#include "admin.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -5,8 +8,6 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
-#include "payment.h"
-#include "movie.h"
 #include "Howard_Hinnant/include/date/date.h"
 
 
@@ -115,17 +116,13 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
         }
     } while(!validateCCV(ccv));
 
-    date::sys_days today;
-    auto now = std::chrono::system_clock::now();
-    today = date::floor<date::days>(now);
-    date::year_month_day system_date = today;
-
     date::year y;
     date::month m;
     date::year_month yy_mm;
     int y_val, m_val;
     char del;
     bool valid = false;
+
     while(!valid)
     {
         std::cout << "Enter expiry date: year/month: ";
@@ -255,11 +252,11 @@ double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date)
     int fee_days = validateDue(mov, isDateChanged, new_date);
     int price_days = calc_rental_days(mov, isDateChanged, new_date);
     double amount = 0;
-    if (mov.due) 
+    if (mov.due)
     {
         amount = mov.price * price_days + mov.fee * fee_days;
     }
-    else 
+    else
     {
         amount = mov.price * price_days;
     }
@@ -268,50 +265,46 @@ double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date)
 
 
 
-bool pay(double cashRegister, customer customers[], int customers_count, std::string& id, movie& mov, bool isDateChanged, date::sys_days new_date) {
+bool pay(double& cashRegister, customer customers[], int customers_count, 
+         std::string& id, movie& movie, bool isDateChanged, date::sys_days new_date) 
+{
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
     std::string SC_password, ccv, date;;
     
     double SC_amount, cash_ceditcard, in_coins;
-    double amount = amount2pay(mov, isDateChanged, new_date); //due status is set now
+    double amount = amount2pay(movie, isDateChanged, new_date); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
     
     cash_ceditcard = amount;
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
+    std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
     std::cout << "1. in cash = " << cash_ceditcard << "\n2. via credit card = " << cash_ceditcard 
               << "\n3. via SC card = " << SC_amount << "\n4. redeem coins";
-    if (mov.due) 
+    if (movie.due) 
     {
-        std::cout << " (unavailable)"; // for coins i mean
-        std::cout << "\n enter choice\n";
-        do 
-        {
-            is_num(ans);
-            if (ans == 0) return false;
-        } while (ans < 4 && ans > -1);
+        std::cout << "(unavailable)!\n"; // for coins i mean
     }
     else 
     {
-        std::cout << " = " << in_coins; // for coins
-        std::cout << "\n enter choice\n";
-        do 
-        {
-            is_num(ans);
-            if (ans == 0) return false;
-        } while (ans < 5 && ans > -1);
+        std::cout << " = " << in_coins << '\n'; // for coins
     }
-    while (true) 
+    do
     {
+        std::cout << "Enter choice: ";
+        is_num(ans);
+        if (ans == 0) return false;
+
         switch (ans)
         {
         case 1:
         {
-            std::cout << "Opening cash register!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            std::cout << "thanks for choosing our store!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            break;
+            std::cout << "Opening cash register....\n";
+            std::this_thread::sleep_for(std::chrono::seconds(t));
+            cashRegister += amount;
+            std::cout << "Thanks for choosing our store!\n\n";
+            std::this_thread::sleep_for(std::chrono::seconds(t));
+            return true;
         }
         case 2:
         {
@@ -322,7 +315,6 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                 {
                     std::cout << "Enter ccv: ";
                     getline(std::cin, ccv);
-                    std::cin.clear();
                     ccv = deleteSpaces(ccv);
 
                     if (ccv == "0") return false; // exiting to main menu
@@ -337,12 +329,12 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                 date::month m;
                 int y_val, m_val;
                 char del;
+                
                 do
                 {
                     std::cout << "Enter expiry date: year/month: ";
 
                     getline(std::cin, date);
-                    std::cin.clear();
                     date = deleteSpaces(date);
 
                     if (ccv == "0") return false;
@@ -358,7 +350,12 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                             yy_mm = y / m;
                             if (yy_mm == customers[customerIndex].creditcard.yy_mm)
                             {
+                                std::this_thread::sleep_for(std::chrono::seconds(t));
                                 std::cout << "Transaction completed!\n\n";
+                                cashRegister += amount;
+                                std::cout << "Thanks for choosing our store!\n\n";
+                                std::this_thread::sleep_for(std::chrono::seconds(t));
+                                return true;
                             }
                         }
                         else
@@ -374,7 +371,12 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                 if (yes_no())
                 {
                     addCreditCard(customers, customers_count, id);
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
                     std::cout << "Transaction completed!\n\n";
+                    cashRegister += amount;
+                    std::cout << "Thanks for choosing our store!\n\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
+                    return true;
                 }
                 else
                 {
@@ -402,6 +404,12 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
                 {
                     create_SC(customers, customers_count, id);
                     charge_SC(customers, customers_count, id);
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
+                    std::cout << "\nTransaction completed!\n\n";
+                    cashRegister += SC_amount;
+                    std::cout << "Thanks for choosing our store!\n\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
+                    return true;
                 }
                 else 
                 {
@@ -411,7 +419,11 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
             }
             if (customers[customerIndex].SC_balance > SC_amount) 
             {
+                std::this_thread::sleep_for(std::chrono::seconds(t));
                 std::cout << "\nTransaction completed!\n\n";
+                cashRegister += SC_amount;
+                std::cout << "Thanks for choosing our store!\n\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
                 return true;
             }
             else 
@@ -422,18 +434,26 @@ bool pay(double cashRegister, customer customers[], int customers_count, std::st
         }
         case 4: //no need for extra safety
         {
-            if (customers[customerIndex].coins > in_coins) {
+            if (customers[customerIndex].coins > in_coins) 
+            {
+                std::this_thread::sleep_for(std::chrono::seconds(t));
                 std::cout << "\nTransaction completed!\n\n";
+                cashRegister += amount;
+                std::cout << "Thanks for choosing our store!\n\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
                 return true;
             }
             else 
             {
-                std::cout << "\nnot enough coins, use a different method\n\n";
+                std::cout << "\nNot enough coins, use a different method\n\n";
             }
             break;
         }
+        default:
+            std::cout << "Invalid choice!\n";
+            break;
         }
-    }
+    } while (ans > 4 || ans <= -1);
 }
 
 

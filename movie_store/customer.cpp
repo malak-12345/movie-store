@@ -95,10 +95,13 @@ bool isCurrentlyRentedEmpty(customer customers[], int customerIndex) // done
 void addNewCustomer(customer customers[], int size_of_customers, int& customers_count) // done
 {
     std::string name, phoneNumber, id;
-    std::cout << "Enter Customer name: ";
-    getline(std::cin, name);
-    std::transform(name.begin(), name.end(), name.begin(), tolower);
-    name = deleteSpaces(name);
+    do
+    {
+        std::cout << "Enter Customer name: ";
+        getline(std::cin, name);
+        if(deleteSpaces(name).empty()) std::cout << "Invalid name!\n";
+        
+    }while(deleteSpaces(name).empty());
     if(name == "0") return;
     
     do 
@@ -139,6 +142,49 @@ void addNewCustomer(customer customers[], int size_of_customers, int& customers_
     }
     std::cout << "Successfully added: " << name << '\n';
 }
+void displayCustomer(customer customers[], int customers_count, int customerIndex) // done
+{
+    if(customers_count != 0)
+    {
+        std::cout << "\n-----------------------------\n\n";
+        std::cout << "Name: " << customers[customerIndex].name << '\n';
+        std::cout << "Customer ID: " << customers[customerIndex].id << '\n';
+        std::cout << "Phone Number: " << customers[customerIndex].phoneNumber << '\n';
+
+        if(!isCurrentlyRentedEmpty(customers, customerIndex))
+            {
+                std::cout << "Currently Renting: ";
+                for (std::string movie : customers[customerIndex].currentlyRentedMovies)
+                {
+                    if (!movie.empty()) 
+                    { 
+                        std::cout << movie << " ";
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "Currently Renting: none\n";
+            }
+            std::cout << "\n";
+    
+            if (!customers[customerIndex].previouslyRentedMovies.size() == 0)
+            {
+                std::cout << "Has rented: ";
+    
+                for (std::string movie : customers[customerIndex].previouslyRentedMovies)
+                {
+                    std::cout << movie << " ";
+                }
+                std::cout << '\n';
+            }
+            std::cout << "\n-----------------------------\n\n";
+    }
+    else
+    {
+        std::cout << "There are currently no customers on the system! Please add a customer first.\n";
+    }
+}
 void listCustomers(customer customers[], int customers_count) // done
 {
     if(customers_count != 0)
@@ -150,7 +196,7 @@ void listCustomers(customer customers[], int customers_count) // done
             std::cout << num << ".\n";
             std::cout << "Name: " << customers[i].name << '\n';
             std::cout << "Customer ID: " << customers[i].id << '\n';
-            std::cout << "Phone Number: " << customers[i].phoneNumber << '\n';
+            std::cout << "Phone Number: +" << customers[i].phoneNumber << '\n';
 
             if(!isCurrentlyRentedEmpty(customers, i))
             {

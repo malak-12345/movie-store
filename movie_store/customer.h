@@ -37,4 +37,5 @@ bool isCurrentlyRentedEmpty(customer customers[], int customerIndex); // done
 //---------------------------------------------------------------
 
 void listCustomers(customer customers[], int customers_count); // done
+void displayCustomer(customer customers[], int customers_count, int customerIndex); // done
 void addNewCustomer(customer customers[], int size_of_customers, int& customers_count); // done

@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <sstream>
+#include "admin.h"
 
 
 //-------------------------utilities-----------------------------
@@ -32,7 +33,8 @@ bool isMovieFound(movie movies[], int movies_count, std::string& movieName) // d
 {
     for(int i = 0; i < movies_count; i++)
     {
-        if(movies[i].name == movieName) return true;
+        std::transform(movies[i].name.begin(), movies[i].name.end(), movies[i].name.begin(), tolower);
+        if(deleteSpaces(movies[i].name) == movieName) return true;
     }
     return false;
 } 
@@ -41,10 +43,8 @@ int getMovieIndex(movie movies[], int movies_count, std::string& movieName) // d
     int movieIndex = 0;
     for(int i = 0; i < movies_count; i++)
     {
-        if(movies[i].name == movieName)
-        {
-            return movieIndex;
-        }
+        std::transform(movies[i].name.begin(), movies[i].name.end(), movies[i].name.begin(), tolower);
+        if(deleteSpaces(movies[i].name) == movieName) return movieIndex;
         movieIndex++;
     }
 }
@@ -53,9 +53,12 @@ bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::str
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     for (int i = 0; i < limit; i++)
     {
-        if(customers[customerIndex].currentlyRentedMovies[i] == movieName) return true;
+        std::transform(customers[customerIndex].currentlyRentedMovies[i].begin(), 
+                       customers[customerIndex].currentlyRentedMovies[i].end(), 
+                       customers[customerIndex].currentlyRentedMovies[i].begin(), tolower);
+        
+        if(deleteSpaces(customers[customerIndex].currentlyRentedMovies[i]) == movieName) return true;
     }
-    
     return false;
 }
 int getMoviesCount(movie movies[], int size_of_movies) // done
@@ -238,7 +241,7 @@ int listUnrented(movie movies[], int movies_count) // done
 
 
 bool rate(movie movies[], int movies_count, std::string& movieName, 
-            customer customers[], int customers_count ,std::string& id) // done
+          customer customers[], int customers_count ,std::string& id) // done
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     
@@ -287,7 +290,7 @@ bool rate(movie movies[], int movies_count, std::string& movieName,
             
             default:
                 std::cout << "Wrong rating! please pick a rating from above!\n";
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::this_thread::sleep_for(std::chrono::seconds(t));
                 return false;
             }
             std::cout << "Thanks for your rating!\n";
@@ -377,7 +380,7 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
             else
             {
                 std::cout << "Wrong rating! please pick a rating from above!\n";
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::this_thread::sleep_for(std::chrono::seconds(t));
                 return false; // for main menu
             }
         }
@@ -394,36 +397,19 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 }
 
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::year_month_day system_date)
+void rent(customer customers[], int customers_count, std::string& id, movie movies[], 
+          int movies_count, date::year_month_day system_date) // done
 {
     bool repeat = true, date_good = false;
-    int selected, customerIndex, match = 1;
-    std::string name, id, entered_date;
+    int selected, match = 1;
+    std::string entered_date;
     int y, m, d;
     char delimiter1, delimiter2;
+    int customerIndex = getCustomerIndex(customers, customers_count, id);
 
     std::cout << "\n\n";
     int unrented_movies_count = listUnrented(movies, movies_count);
     if(unrented_movies_count == 1) return;
-
-    do
-    {
-        std::cout << "Enter customer id: ";
-        std::getline(std::cin, id);
-        std::cin.clear();
-        std::transform(id.begin(), id.end(), id.begin(), toupper); // c# ---> C#
-        
-        if (id == "0") return; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
-        if (isCustomerFound(customers, customers_count, id))
-        {
-            customerIndex = getCustomerIndex(customers, customers_count, id);
-            name = customers[customerIndex].name;
-        }
-        else
-        {
-            std::cerr << "Wrong id, please try again\n";
-        }
-    } while (!isCustomerFound(customers, customers_count, id));
 
     std::cout << "Pick a movie number: ";
     while (repeat)
@@ -456,7 +442,6 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
             {
                 std::cout << "specify return date in this exact format yyyy/mm/dd : ";
                 getline(std::cin, entered_date);
-                std::cin.clear();
                 if (entered_date == "0") return; //aborts and exits to main menu
 
                 std::istringstream iss(entered_date);
@@ -487,7 +472,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
                         movies[i].rented = true;
                         movies[i].rentedCount++;
-                        movies[i].currentRenter = name;
+                        movies[i].currentRenter = customers[customerIndex].name;;
                         return;
                     }
                 }            
@@ -505,8 +490,8 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
     }
 }
 
-void returnMovie(customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, 
-    bool isDateChanged, date::sys_days new_date) // done
+void returnMovie(customer customers[], int customers_count, std::string& id, movie movies[], 
+                 int movies_count, bool isDateChanged, date::sys_days new_date) // done
 {
     int num = 1, movieIndex, ans, diff, index = 0;
     double cash;
@@ -527,8 +512,11 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
         {
             std::cout << "Enter number of the movie you wish to return: ";
             is_num(ans);
+            std::cout << num << '\n';
+            std::cout << (ans >= num) << '\n';
+            std::cout << (ans <= 0) << '\n';
             if(ans == 0) return;
-            if ((ans <= num) && (ans > 0))
+            if ((ans < num) && (ans > 0))
             {
                 num = 1;
                 for (std::string movie : customers[customerIndex].currentlyRentedMovies)
@@ -555,18 +543,18 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
                 else 
                 {
                     cash = movies[movieIndex].price;
-                    std::cout << "amount to pay is: " << cash << '\n';
+                    std::cout << "amount to pay is: " << cash << "\n\n";
                 }
                 std::cout << "(this is in an italian accent)\n";
                 std::cout << "pay up or else? y/n: ";
                 if (yes_no()) 
                 {
-                    // if(!pay(customers, customers_count, id)) 
-                    // {
-                    //     std::cout << "Canceling transaction!\n";
-                    //     std::this_thread::sleep_for(std::chrono::seconds(1));
-                    //     return;
-                    // }    
+                    if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex], isDateChanged, new_date)) 
+                    {
+                        std::cout << "Canceling transaction!\n";
+                        std::this_thread::sleep_for(std::chrono::seconds(t));
+                        return;
+                    }    
                 }
                 else 
                 {
@@ -574,12 +562,12 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
                     if (yes_no()) 
                     {
                         std::cout << "Smart lad, say hi to your family for me\n";
-                        // if(!pay(customers, customers_count, id)) 
-                        // {
-                        //     std::cout << "Canceling transaction!\n";
-                        //     std::this_thread::sleep_for(std::chrono::seconds(1));
-                        //     return;
-                        // }    
+                        if(!pay(cashRegister ,customers, customers_count, id, movies[movieIndex], isDateChanged, new_date)) 
+                        {
+                            std::cout << "Canceling transaction!\n";
+                            std::this_thread::sleep_for(std::chrono::seconds(t));
+                            return;
+                        }    
                     }
                     else 
                     {
@@ -608,7 +596,7 @@ void returnMovie(customer customers[], int customers_count, std::string& id, mov
             {
                 std::cerr << "Invalid choice, please try again\n";
             }
-        } while((ans > num) || (ans <= 0));
+        } while((ans >= num) || (ans <= 0));
     }
     else
     {
@@ -674,7 +662,6 @@ void listTopRented(movie movies[], int movies_count) //using insertion sort, lis
     }
 }
 
-
 int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date) // done
 {
     date::sys_days today, due = movie.dueDate;
@@ -734,7 +721,7 @@ int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date)
 }
 
 void listDueAccounts(movie movies[],int movies_count, customer customers[], int customers_count, 
-                        bool isDateChanged, date::sys_days new_date) // done
+                     bool isDateChanged, date::sys_days new_date) // done
 { //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
     int num = 1;
     std::cout << "\n-----------------------------\n";   
