@@ -65,22 +65,15 @@ bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::str
 }
 int getMoviesCount(movie movies[], int size_of_movies) // done
 {
-    if(size_of_movies != 0)
+    int movies_count = 0;
+    for (int i = 0; i < size_of_movies; i++)
     {
-        int movies_count = 0;
-        for (int i = 0; i < size_of_movies; i++)
+        if(movies[i].name != "none")
         {
-            if(movies[i].name != "none")
-            {
-                movies_count++;
-            }
+            movies_count++;
         }
-        return movies_count;
     }
-    else
-    {
-        std::cout << "There are currently no movies on the system! Please add a movie first.\n";
-    }
+    return movies_count;
 }
 void is_num(int& input) 
 {
@@ -516,9 +509,6 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
         {
             std::cout << "Enter number of the movie you wish to return: ";
             is_num(ans);
-            std::cout << num << '\n';
-            std::cout << (ans >= num) << '\n';
-            std::cout << (ans <= 0) << '\n';
             if(ans == 0) return;
             if ((ans < num) && (ans > 0))
             {
@@ -530,15 +520,16 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                         if(ans == num)
                         {
                             movieName = movie;
+                            num++; // this is where the bug is fixed.
                             break;
                         }
-                        num++;
                     }
                     index++;
                 }
-    
+
                 movieIndex = getMovieIndex(movies, movies_count, movieName);
                 diff = validateDue(movies[movieIndex], isDateChanged, new_date);
+
                 if (movies[movieIndex].due) 
                 {
                     cash = movies[movieIndex].price + movies[movieIndex].fee * diff;
@@ -607,7 +598,6 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
     {
         std::cout << "You don't have rented movies to return!\n";
     }
- 
 }
 
 void listTopRated(movie movies[], int movies_count) //using insertion sort, listing top 10 rated

@@ -211,6 +211,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             {
                 std::cout << "Enter customer id: ";
                 getline(std::cin, id);
+                id = deleteSpaces(id);
                 std::transform(id.begin(), id.end(), id.begin(), toupper);
                 
                 if(id == "0") break;

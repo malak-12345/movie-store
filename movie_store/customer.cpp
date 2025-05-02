@@ -64,7 +64,6 @@ int getCustomersCount(customer customers[], int size_of_customers) // get custom
     int customers_count = 0;
     for (int i = 0; i < size_of_customers; i++)
     {
-        //if (!(deleteSpaces(customers[i].name).empty()))
         if (customers[i].name != "none")
         {
             customers_count++;
