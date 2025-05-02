@@ -59,23 +59,15 @@ bool checkId(customer customers[], int customer_count, std::string& id) // done
 }
 int getCustomersCount(customer customers[], int size_of_customers) // get customers count at the beginning of the program
 {
-    if(size_of_customers != 0)
+    int customers_count = 0;
+    for(int i = 0; i < size_of_customers; i++)
     {
-        int customers_count = 0;
-        for(int i = 0; i < size_of_customers; i++)
+        if(!(deleteSpaces(customers[i].name).empty()))
         {
-            if(!customers[i].name.empty())
-            {
-                customers_count++;
-            }
+            customers_count++;
         }
-        return customers_count;
     }
-    else
-    {
-        std::cout << "There are currently no customers on the system!, please add a customers first.\n";
-    }
-    
+    return customers_count;
 }
 bool isCurrentlyRentedEmpty(customer customers[], int customerIndex) // done
 {
