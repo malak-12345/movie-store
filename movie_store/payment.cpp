@@ -38,7 +38,7 @@ bool validateCCV(std::string& ccv) // done
 //Luhn algorithm
 bool validateCreditCard(std::string& creditCard) // done
 {
-    if(isDigit(creditCard) && ((creditCard.length() == 15) || (creditCard.length() == 16))) 
+    if(isDigit(creditCard) && (creditCard.length() == 16)) 
     {
         std::vector<int> creditCardNum;
         for(int i = 0; i < creditCard.length(); i++)
@@ -87,7 +87,6 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
     {
         std::cout << "Enter your credit card number: ";
         getline(std::cin, card);
-        std::cin.clear();
         card = deleteSpaces(card);
 
         if(card == "0") return;
@@ -106,7 +105,6 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
     {
         std::cout << "Enter CCV: ";
         getline(std::cin, ccv);
-        std::cin.clear();
         ccv = deleteSpaces(ccv);
         
         if(ccv == "0") return;
@@ -118,7 +116,7 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
 
     date::year y;
     date::month m;
-    date::year_month_day yy_mm;
+    date::year_month yy_mm;
     int y_val, m_val;
     char del;
     bool valid = false;
@@ -127,7 +125,6 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
     {
         std::cout << "Enter expiry date: year/month: ";
         getline(std::cin, date);
-        std::cin.clear();
         date = deleteSpaces(date);
 
         if(date == "0") return;
@@ -140,7 +137,7 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
             m = date::month(m_val);
             if(m.ok())
             {
-                yy_mm = y / m / date::day(1);
+                yy_mm = y / m;
             }
             else
             {
@@ -158,7 +155,6 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
         
         if(yy_mm.year() >= system_date.year())
         {
-            std::cout << y <<"/"<< m << '\n'; //check if changes mess things up
             valid = true;
         }
         else
@@ -271,16 +267,15 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
     bool paid = false;
-    std::string SC_password, ccv, date;;
+    std::string SC_password, ccv, date;
     
-    double SC_amount, cash_ceditcard, in_coins;
+    double SC_amount, in_coins;
     double amount = amount2pay(movie, isDateChanged, new_date); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
     
-    cash_ceditcard = amount;
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
     std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
-    std::cout << "1. in cash = " << cash_ceditcard << "$\n2. via credit card = " << cash_ceditcard 
+    std::cout << "1. in cash = " << amount << "$\n2. via credit card = " << amount
               << "$\n3. via SC card = " << SC_amount << "$\n4. redeem coins";
     if (movie.due) 
     {
@@ -288,7 +283,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     }
     else 
     {
-        std::cout << " = " << in_coins << '$\n'; // for coins
+        std::cout << " = " << in_coins << "$\n"; // for coins
     }
     do
     {
@@ -301,16 +296,16 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         case 1:
         {
             std::cout << "Opening cash register!\n";
-            cashRegister += cash_ceditcard;
+            cashRegister += amount;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             std::cout << "thanks for choosing our store!\n";
-            paid = true;
             std::this_thread::sleep_for(std::chrono::seconds(1));
+            paid = true;
             break;
         }
         case 2:
         {
-            if (customers[customerIndex].creditcard.cardNumber != "none")
+            if (deleteSpaces(customers[customerIndex].creditcard.cardNumber).empty())
             {
                 std::cout << "Paying with: " << customers[customerIndex].creditcard.cardNumber << '\n';
                 do
@@ -326,7 +321,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                     }
                 } while (customers[customerIndex].creditcard.ccv != ccv);
 
-                date::year_month_day yy_mm;
+                date::year_month yy_mm;
                 date::year y;
                 date::month m;
                 int y_val, m_val;
@@ -349,14 +344,14 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                         m = date::month(m_val);
                         if (m.ok())
                         {
-                            yy_mm = y / m / date::day(1);
+                            yy_mm = y / m;
                             if (yy_mm == customers[customerIndex].creditcard.yy_mm)
                             {
-                                cashRegister += cash_ceditcard;
+                                cashRegister += amount;
                                 std::cout << "Transaction completed!\n\n";
                                 std::cout << "Thanks for choosing our store!\n\n";
-                                paid = true;
                                 std::this_thread::sleep_for(std::chrono::seconds(t));
+                                paid = true;
                                 return true;
                             }
                         }
@@ -373,11 +368,11 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 if (yes_no())
                 {
                     addCreditCard(customers, customers_count, id);
-                    cashRegister += cash_ceditcard;
+                    cashRegister += amount;
                     std::cout << "Transaction completed!\n\n";
                     std::cout << "Thanks for choosing our store!\n\n";
-                    paid = true;
                     std::this_thread::sleep_for(std::chrono::seconds(t));
+                    paid = true;
                     return true;
                 }
                 else
@@ -438,8 +433,6 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             if (customers[customerIndex].coins > in_coins) 
             {
                 customers[customerIndex].coins -= in_coins;
-                // no cash is taken so register not needed here
-                cashRegister += amount;
                 paid = true;
                 std::cout << "\nTransaction completed!\n\n";
                 std::cout << "Thanks for choosing our store!\n\n";

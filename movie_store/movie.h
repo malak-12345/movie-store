@@ -9,7 +9,7 @@
 
 
 struct movie {
-    std::string name = "none", currentRenter = "none";
+    std::string name, currentRenter;
     double price = 0, fee = 0, rating = 0; //renting price and fee are per day
     int rentedCount = 0, rentalDays = 0;
     bool rented = false, due = false;
@@ -40,7 +40,8 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
                 customer customers[], int customers_count, std::string& id); // done
 
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id);
+void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
+          date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id);
 
 void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
     bool isDateChanged, date::sys_days new_date);
@@ -59,7 +60,7 @@ void listTopRated(movie movies[], int movies_count); // done
 
 void listTopRented(movie movies[], int movies_count);
 
-void save_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name);
+void save_movies(double cashRegister, movie movies[], int movies_count, const std::string& file_name);
 
-void load_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name);
+void load_movies(double& cashRegister, movie movies[], int& movies_count, const std::string& file_name);
 

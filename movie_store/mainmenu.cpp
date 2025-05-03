@@ -130,7 +130,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 getline(std::cin, movieName);
                 movieName = deleteSpaces(movieName);
                 std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
-                
+
                 if(movieName == "0") break;
                 if(!isMovieFound(movies,movies_count,movieName))
                 {
@@ -221,6 +221,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 }
             } while(!isCustomerFound(customers,customers_count,id));
             if(id == "0") break;
+            
             returnMovie(cashRegister, customers, customers_count, id, movies, movies_count, isDateChanged, new_date);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
@@ -287,7 +288,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             }
             else if (version == "admin")
             {
-                addNewMovie(movies, size_of_movies);
+                addNewMovie(movies, size_of_movies,movies_count);
                 std::this_thread::sleep_for(std::chrono::seconds(t));
             }
             break;

@@ -90,10 +90,12 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
 {
     if(movies_count != 0)
     {
+        std::string name;
         for(int i = 0; i < movies_count; i++)
         {
-            std::transform(movies[i].name.begin(), movies[i].name.end(), movies[i].name.begin(), tolower);
-            if(deleteSpaces(movies[i].name) == movieName)
+            name = movies[i].name;
+            std::transform(name.begin(), name.end(), name.begin(), tolower);
+            if(deleteSpaces(name) == movieName)
             {
                 if (i < movies_count - 1) 
                 {
@@ -182,9 +184,8 @@ std::string login() // done
     } while(checkCredentials(login, passwrd) == "");
 }
 
-void addNewMovie(movie movies[], int size_of_movies) // done
+void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
 {
-    extern int movies_count;
     std::string movieName, check;
     double price = 0, fee = 0;
     do
@@ -192,9 +193,10 @@ void addNewMovie(movie movies[], int size_of_movies) // done
         std::cout << "Enter movie name: ";
         getline(std::cin, movieName);
         check = deleteSpaces(movieName);
+        (check.begin(), check.end(), check.begin(), tolower);
         
         if(movieName == "0") return;
-        if(isMovieFound(movies,movies_count, check))
+        if(isMovieFound(movies,movies_count,check))
         {
             std::cout << "This movie already exists!\n";
             continue;
@@ -203,11 +205,11 @@ void addNewMovie(movie movies[], int size_of_movies) // done
         is_num(price);
         std::cout << "\nEnter due fees per day (EGP) : ";
         is_num(fee);
-    } while(isMovieFound(movies,movies_count,check) || check == "none");
+    } while(isMovieFound(movies,movies_count,check) || check.empty());
     
     for(int i = 0; i < size_of_movies; i++)
     {
-        if(movies[i].name == "none")
+        if(movies[i].name.empty())
         {
             movies[i].name = movieName;
             movies[i].price = price;
@@ -252,15 +254,5 @@ bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date pri
     else 
     {
         return false; //aborting
-    }
-}
-
-
-
-void viewCashRegister(double& cashRegister) {
-    std::cout << cashRegister << "$ in the register would you like to withdraw them y/n? ";
-    if (yes_no()) {
-        cashRegister = 0.0;
-        std::cout << "cash register emptied successfully.\n";
     }
 }

@@ -33,33 +33,34 @@ int getCustomerIndex(customer customers[], int customers_count, std::string& id)
 }
 bool isMovieFound(movie movies[], int movies_count, std::string& movieName) // done
 {
+    std::string name;
     for(int i = 0; i < movies_count; i++)
     {
-        std::transform(movies[i].name.begin(), movies[i].name.end(), movies[i].name.begin(), tolower);
-        if(deleteSpaces(movies[i].name) == movieName) return true;
+        name = movies[i].name; 
+        std::transform(name.begin(), name.end(), name.begin(), tolower);
+        if(deleteSpaces(name) == movieName) return true;
     }
     return false;
 } 
 int getMovieIndex(movie movies[], int movies_count, std::string& movieName) // done
 {
     int movieIndex = 0;
+    std::string name;
     for(int i = 0; i < movies_count; i++)
     {
-        std::transform(movies[i].name.begin(), movies[i].name.end(), movies[i].name.begin(), tolower);
-        if(deleteSpaces(movies[i].name) == movieName) return movieIndex;
+        name = movies[i].name; 
+        std::transform(name.begin(), name.end(), name.begin(), tolower);
+        if(deleteSpaces(name) == movieName) return movieIndex;
         movieIndex++;
     }
 }
 bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName) // done
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
-    for (int i = 0; i < limit; i++)
+    for (std::string movie : customers[customerIndex].currentlyRentedMovies)
     {
-        std::transform(customers[customerIndex].currentlyRentedMovies[i].begin(), 
-                       customers[customerIndex].currentlyRentedMovies[i].end(), 
-                       customers[customerIndex].currentlyRentedMovies[i].begin(), tolower);
-        
-        if(deleteSpaces(customers[customerIndex].currentlyRentedMovies[i]) == movieName) return true;
+        std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
+        if(deleteSpaces(movie) == movieName) return true;
     }
     return false;
 }
@@ -68,10 +69,7 @@ int getMoviesCount(movie movies[], int size_of_movies) // done
     int movies_count = 0;
     for (int i = 0; i < size_of_movies; i++)
     {
-        if(movies[i].name != "none")
-        {
-            movies_count++;
-        }
+        if(!(movies[i].name.empty())) movies_count++;
     }
     return movies_count;
 }
@@ -242,11 +240,11 @@ bool rate(movie movies[], int movies_count, std::string& movieName,
     
     if (isMovieRentedByCustomer(customers, customers_count, id, movieName))
     {
-        if(!customers[customerIndex].rating.count(movieName))
+        int movieIndex = getMovieIndex(movies, movies_count, movieName);
+        if(!customers[customerIndex].rating.count(movies[movieIndex].name))
         {
             int rating = 0, a = 0, b = 0, c = 0, d = 0, e = 0;
-            int movieIndex = getMovieIndex(movies, movies_count, movieName);
-            std::cout << "\n\nRating: " << movieName << "\n\n";
+            std::cout << "\n\nRating: " << movies[movieIndex].name << "\n\n";
             std::cout << "1: *\n" <<
                          "2: **\n" <<
                          "3: ***\n" <<
@@ -261,26 +259,27 @@ bool rate(movie movies[], int movies_count, std::string& movieName,
             switch (rating)
             {
             case 0:
-                return false;
+                std::cout << "Returning to main menu!\n";
+                return true;
             case 1:
                 movies[movieIndex].allRatings.push_back(1);
-                customers[customerIndex].rating.insert({movieName, 1}); 
+                customers[customerIndex].rating.insert({movies[movieIndex].name, 1}); 
                 break;                    
             case 2:
                 movies[movieIndex].allRatings.push_back(2);
-                customers[customerIndex].rating.insert({movieName, 2});  
+                customers[customerIndex].rating.insert({movies[movieIndex].name, 2});  
                 break;                    
             case 3:
                 movies[movieIndex].allRatings.push_back(3);
-                customers[customerIndex].rating.insert({movieName, 3}); 
+                customers[customerIndex].rating.insert({movies[movieIndex].name, 3}); 
                 break;                    
             case 4:
                 movies[movieIndex].allRatings.push_back(4);
-                customers[customerIndex].rating.insert({movieName, 4}); 
+                customers[customerIndex].rating.insert({movies[movieIndex].name, 4}); 
                 break;                    
             case 5:
                 movies[movieIndex].allRatings.push_back(5);
-                customers[customerIndex].rating.insert({movieName, 5}); 
+                customers[customerIndex].rating.insert({movies[movieIndex].name, 5}); 
                 break;
             
             default:
@@ -342,11 +341,11 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
     
     if (isMovieRentedByCustomer(customers, customers_count, id, movieName))
     {
-        if(customers[customerIndex].rating.count(movieName))
+        int movieIndex = getMovieIndex(movies, movies_count, movieName);
+        if(customers[customerIndex].rating.count(movies[movieIndex].name))
         {
             int rating = 0;
-            int movieIndex = getMovieIndex(movies, movies_count, movieName);
-            std::cout << "\n\nRating: " << movieName << "\n\n";
+            std::cout << "\n\nRating: " << movies[movieIndex].name << "\n\n";
             std::cout << "1: *\n" <<
                          "2: **\n" <<
                          "3: ***\n" <<
@@ -363,13 +362,13 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
                 //update allRatings vector
                 for(int i = 0; i < movies[movieIndex].allRatings.size(); i++)
                 {
-                    if (movies[movieIndex].allRatings[i] == customers[customerIndex].rating.at(movieName))
+                    if (movies[movieIndex].allRatings[i] == customers[customerIndex].rating.at(movies[movieIndex].name))
                     {
                         movies[movieIndex].allRatings[i] = rating;
                         break;
                     }
                 }
-                customers[customerIndex].rating.at(movieName) = rating;
+                customers[customerIndex].rating.at(movies[movieIndex].name) = rating;
                 std::cout << "Thanks for your rating!\n";
             }
             else
@@ -393,7 +392,8 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 
 
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id)
+void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
+          date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id)
 {
     bool repeat = true, date_good = false;
     int selected, match = 1;
@@ -437,6 +437,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
             {
                 std::cout << "specify return date in this exact format yyyy/mm/dd : ";
                 getline(std::cin, entered_date);
+                entered_date = deleteSpaces(entered_date);
                 if (entered_date == "0") return; //aborts and exits to main menu
 
                 std::istringstream iss(entered_date);
@@ -447,7 +448,8 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                     {
                         date_good = true;
                     }
-                    else {
+                    else
+                    {
                         std::cerr << "entered return date is invalid, please try again\n";
                         date_good = false;
                     }
@@ -458,11 +460,11 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                     date_good = false;
                 }
             }
-            if (isCurrentlyRentedEmpty(customers, customerIndex))
+            if (isCurrentlyRentedAvailable(customers, customerIndex) != "full")
             {
                 for (int k = 0; k < limit; k++)
                 {
-                    if (customers[customerIndex].currentlyRentedMovies[k] == "none")
+                    if (customers[customerIndex].currentlyRentedMovies[k].empty())
                     {
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
                         movies[i].rented = true;
@@ -488,14 +490,14 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
 
 
 void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
-    bool isDateChanged, date::sys_days new_date) // done
+                 bool isDateChanged, date::sys_days new_date) // done
 {
-    int num = 1, movieIndex, ans, diff, index = 0;
+    int num = 1, found, movieIndex, ans, diff, index = 0;
     double cash;
     std::string movieName;
     int customerIndex = getCustomerIndex(customers, customers_count, id);
 
-    if(!isCurrentlyRentedEmpty(customers, customerIndex))
+    if(isCurrentlyRentedAvailable(customers, customerIndex) != "empty")
     {
         for (std::string movie : customers[customerIndex].currentlyRentedMovies)
         {
@@ -509,10 +511,11 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
         {
             std::cout << "Enter number of the movie you wish to return: ";
             is_num(ans);
+            // std::cout << "num = " << num << '\n';
             if(ans == 0) return;
             if ((ans < num) && (ans > 0))
             {
-                num = 1;
+                num = 1; // reset counter to get the selected movie.
                 for (std::string movie : customers[customerIndex].currentlyRentedMovies)
                 {
                     if(!movie.empty())
@@ -520,13 +523,15 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                         if(ans == num)
                         {
                             movieName = movie;
-                            num++; // this is where the bug is fixed.
-                            break;
+                            // std::cout << movie << '\n';
+                            // std::cout << num << '\n';
+                            // std::cout << index << '\n';
+                            found = index;
                         }
+                        num++;
                     }
                     index++;
                 }
-
                 movieIndex = getMovieIndex(movies, movies_count, movieName);
                 diff = validateDue(movies[movieIndex], isDateChanged, new_date);
 
@@ -584,8 +589,9 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                 movies[movieIndex].rented = false;
                 movies[movieIndex].currentRenter.clear();
                 movies[movieIndex].due = false;
+                movies[movieIndex].rentalDays = 0;
                 movies[movieIndex].dueDate = date::year(3000) / date::month(10) / date::day(10);
-                customers[customerIndex].currentlyRentedMovies[index].clear();
+                customers[customerIndex].currentlyRentedMovies[found].clear();
                 customers[customerIndex].previouslyRentedMovies.push_back(movies[movieIndex].name);
             }
             else 
@@ -745,28 +751,29 @@ void listDueAccounts(movie movies[],int movies_count, customer customers[], int 
 }
 
 
-
-
-void save_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name) {
+void save_movies(double cashRegister, movie movies[], int movies_count, const std::string& file_name) 
+{
     std::ofstream outfile(file_name);
-
-    if (outfile.is_open()) {
+    if (outfile.is_open()) 
+    {
         outfile << cashRegister << std::endl;
-        outfile << mov_count << std::endl;
-        for (int i = 0; i < mov_count; i++) {
-            outfile << mov[i].name << std::endl;
-            outfile << mov[i].price << std::endl;
-            outfile << mov[i].fee << std::endl;
-            outfile << mov[i].rentedCount << std::endl;
-            outfile << std::boolalpha << mov[i].rented << std::endl;
-            outfile << mov[i].currentRenter << std::endl;
-            outfile << std::boolalpha << mov[i].due << std::endl;
-            outfile << mov[i].rentalDays << std::endl;
-            outfile << mov[i].dueDate << std::endl;
-            outfile << mov[i].rating << std::endl;
-            outfile << mov[i].allRatings.size() << std::endl;
+        outfile << movies_count << std::endl;
+        for (int i = 0; i < movies_count; i++) 
+        {
+            outfile << movies[i].name << std::endl;
+            outfile << movies[i].price << std::endl;
+            outfile << movies[i].fee << std::endl;
+            outfile << movies[i].rentedCount << std::endl;
+            outfile << std::boolalpha << movies[i].rented << std::endl;
+            outfile << movies[i].currentRenter << std::endl;
+            outfile << std::boolalpha << movies[i].due << std::endl;
+            outfile << movies[i].rentalDays << std::endl;
+            outfile << movies[i].dueDate << std::endl;
+            outfile << movies[i].rating << std::endl;
+            outfile << movies[i].allRatings.size() << std::endl;
             outfile << "{" << std::endl;
-            for (int rating : mov[i].allRatings) {
+            for (int rating : movies[i].allRatings) 
+            {
                 outfile << rating << std::endl;
             }
             outfile << "}" << std::endl;
@@ -774,64 +781,108 @@ void save_movies(double cashRegister, movie mov[], int mov_count, const std::str
         outfile.close();
         std::cout << "Movies Data successfully saved" << std::endl;
     }
-    else {
+    else 
+    {
         std::cerr << "Unable to open file " << file_name << "please try saving manually before terminating the program,\nif the problem persists please contact your IT provider" << std::endl;
     }
 }
 
-void load_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name) {
+void load_movies(double& cashRegister, movie movies[], int& mov_count, const std::string& file_name) 
+{
     std::ifstream infile(file_name);
-    if (infile.is_open()) {
-        if (file_empty(infile)) {
+    if (infile.is_open()) 
+    {
+        if (file_empty(infile)) 
+        {
             std::cerr << "no movie data to load\n";
             return;
         }
         infile >> cashRegister;
+        infile.clear();
+        infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
         infile >> mov_count;
-        for (int i = 0; i < mov_count; i++) {
-            std::getline(infile >> std::ws, mov[i].name); //BTW std::ws gets rid of any leading whitespaces
-            infile >> mov[i].price;
-            infile >> mov[i].fee;
-            infile >> mov[i].rentedCount;
-            infile >> std::boolalpha >> mov[i].rented;
-            std::getline(infile >> std::ws, mov[i].currentRenter);
-            infile >> std::boolalpha >> mov[i].due;
-            infile >> mov[i].rentalDays;
+        infile.clear();
+        infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        for (int i = 0; i < mov_count; i++) 
+        {
+            std::getline(infile, movies[i].name); //BTW std::ws gets rid of any leading whitespaces
+            
+            infile >> movies[i].price;
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            
+            infile >> movies[i].fee;
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            infile >> movies[i].rentedCount;
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            infile >> std::boolalpha >> movies[i].rented;
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            std::getline(infile, movies[i].currentRenter); // std::ws causes it to take the previous value which is true or false
+
+            // std::cout << "rented by: "<<movies[i].currentRenter << '\n'; // for testing
+            // std::cout << "true: " << movies[i].currentRenter.empty() << '\n'; // it gives not empty with std::ws
+
+            infile >> std::boolalpha >> movies[i].due;
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            infile >> movies[i].rentalDays;
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             //_________________________
             std::string DueDate_str;
             int y, m, d;
             char delimiter1, delimiter2;
-            infile >> DueDate_str;
+            std::getline(infile, DueDate_str);
+
             std::istringstream iss(DueDate_str);
             if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '-' && delimiter2 == '-')
             {
-                mov[i].dueDate = date::year(y) / date::month(m) / date::day(d);
+                movies[i].dueDate = date::year(y) / date::month(m) / date::day(d);
             }
             else
             {
-                std::cerr << "wrong due date format, while reading movie: " << mov[i].name << std::endl;
+                std::cerr << "wrong due date format, while reading movie: " << movies[i].name << std::endl;
             }
             //__________________________
-            infile >> mov[i].rating;
+            infile >> movies[i].rating;
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
             int ratings_size;
             infile >> ratings_size;
-            mov[i].allRatings.resize(ratings_size);
+            infile.clear();
+            infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
             std::string opening_brace;
-            if (std::getline(infile >> std::ws, opening_brace) && opening_brace == "{") {
-                for (int j = 0; j < ratings_size; j++) {
-                    infile >> mov[i].allRatings[j];
+            if (std::getline(infile, opening_brace) && opening_brace == "{") {
+                for (int j = 0; j < ratings_size; j++) 
+                {
+                    infile >> movies[i].allRatings[j];
+                    infile.clear();
+                    infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 }
                 std::string closing_brace;
-                std::getline(infile >> std::ws, closing_brace);
+                std::getline(infile, closing_brace);
             }
-            else {
-                std::cerr << "error taking in all ratings vector for movie: " << mov[i].name << std::endl;
+            else 
+            {
+                std::cerr << "error taking in all ratings vector for movie: " << movies[i].name << std::endl;
             }
         }
         infile.close();
         std::cout << "loaded movies successfully\n";
     }
-    else {
+    else 
+    {
         std::cerr << "Unable to open file " << file_name << " for reading, contact your IT provider" << std::endl;
     }
 }
