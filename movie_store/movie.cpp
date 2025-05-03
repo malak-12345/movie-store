@@ -60,7 +60,7 @@ bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::str
     for (std::string movie : customers[customerIndex].currentlyRentedMovies)
     {
         std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
-        if(deleteSpaces(movie) == movieName) return true;
+        if(deleteSpaces(movie) == deleteSpaces(movieName)) return true;
     }
     return false;
 }
@@ -532,6 +532,8 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                     }
                     index++;
                 }
+                std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
+                movieName = deleteSpaces(movieName);
                 movieIndex = getMovieIndex(movies, movies_count, movieName);
                 diff = validateDue(movies[movieIndex], isDateChanged, new_date);
 
@@ -859,6 +861,7 @@ void load_movies(double& cashRegister, movie movies[], int& mov_count, const std
 
             int ratings_size;
             infile >> ratings_size;
+            movies[i].allRatings.resize(ratings_size);
             infile.clear();
             infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 

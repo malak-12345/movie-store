@@ -283,7 +283,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     }
     else 
     {
-        std::cout << " = " << in_coins << "$\n"; // for coins
+        std::cout << " = " << in_coins << " coins\n"; // for coins
     }
     do
     {
