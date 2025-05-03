@@ -8,7 +8,7 @@
 #define customer_max 50
 
 struct creditCard {
-    std::string cardNumber, ccv;
+    std::string cardNumber = "none", ccv = "none";
     date::year_month_day yy_mm = date::year(3000) / date::month(10) / date::day(1);
 };
 
@@ -33,6 +33,7 @@ bool checkPhoneNumberRegistered(customer customers[], int customers_count, std::
 bool checkId(customer customers[], int customers_count, std::string& id); // done
 int getCustomersCount(customer customers[], int size_of_customers); // done
 bool isCurrentlyRentedEmpty(customer customers[], int customerIndex); // done
+bool file_empty(std::ifstream& file);
 //---------------------------------------------------------------
 
 void listCustomers(customer customers[], int customers_count); // done

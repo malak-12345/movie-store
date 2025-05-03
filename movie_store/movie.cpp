@@ -462,7 +462,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
             {
                 for (int k = 0; k < limit; k++)
                 {
-                    if (customers[customerIndex].currentlyRentedMovies[k].empty())
+                    if (customers[customerIndex].currentlyRentedMovies[k] == "none")
                     {
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
                         movies[i].rented = true;
@@ -554,7 +554,7 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                 }
                 else 
                 {
-                    std::cout << "you have a beautiful family, it'd be a shame if anything happens to them.\nyou sure you still don't want to pay up? y/n: ";
+                    std::cout << "you have a beautiful family, it'd be a shame if anything happens to them.\nare you going to pay up now? y/n: ";
                     if (yes_no()) 
                     {
                         std::cout << "Smart lad, say hi to your family for me\n";
@@ -772,7 +772,7 @@ void save_movies(double cashRegister, movie mov[], int mov_count, const std::str
             outfile << "}" << std::endl;
         }
         outfile.close();
-        std::cout << "Data successfully saved" << std::endl;
+        std::cout << "Movies Data successfully saved" << std::endl;
     }
     else {
         std::cerr << "Unable to open file " << file_name << "please try saving manually before terminating the program,\nif the problem persists please contact your IT provider" << std::endl;
@@ -782,6 +782,10 @@ void save_movies(double cashRegister, movie mov[], int mov_count, const std::str
 void load_movies(double cashRegister, movie mov[], int mov_count, const std::string& file_name) {
     std::ifstream infile(file_name);
     if (infile.is_open()) {
+        if (file_empty(infile)) {
+            std::cerr << "no movie data to load\n";
+            return;
+        }
         infile >> cashRegister;
         infile >> mov_count;
         for (int i = 0; i < mov_count; i++) {
@@ -825,6 +829,7 @@ void load_movies(double cashRegister, movie mov[], int mov_count, const std::str
             }
         }
         infile.close();
+        std::cout << "loaded movies successfully\n";
     }
     else {
         std::cerr << "Unable to open file " << file_name << " for reading, contact your IT provider" << std::endl;

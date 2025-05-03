@@ -17,7 +17,8 @@ int customers_count;
 int movies_count;
 int main()
 {
-    c[0].name = "loai";
+    //c[0].name = "loai";
+    
     load_movies(cashRegister, m, movies_count, "movies_data");
     load_customers(c, customers_count, "customers_data");
     customers_count = getCustomersCount(c, customer_max);

@@ -78,7 +78,7 @@ bool isCurrentlyRentedEmpty(customer customers[], int customerIndex) // done
     int count = 0;
     for(int i = 0; i < limit; i++)
     {
-        if(customers[customerIndex].currentlyRentedMovies[i].empty()) count++; 
+        if(customers[customerIndex].currentlyRentedMovies[i] == "none") count++;
     } 
     if(count == limit)
     {
@@ -86,6 +86,16 @@ bool isCurrentlyRentedEmpty(customer customers[], int customerIndex) // done
     }
     return false;
 }
+
+bool file_empty(std::ifstream& file) {
+    if (file.peek() == std::ifstream::traits_type::eof() || file.peek() == 0) {
+    return true; // peeks at first character without touching it, if it equals eof (aka file is empty/ u reached its end) it returns true
+    }
+    else {
+        return false;
+    }
+}//btw eof stands for end of file
+
 //---------------------------------------------------------------
 
 void addNewCustomer(customer customers[], int size_of_customers, int& customers_count) // done
@@ -127,7 +137,7 @@ void addNewCustomer(customer customers[], int size_of_customers, int& customers_
 
     for(int i = 0; i < size_of_customers; i++)
     {
-        if(customers[i].name.empty())
+        if(customers[i].name == "none")
         {
             customers[i].name = name;
             customers[i].phoneNumber = phoneNumber;
@@ -199,7 +209,7 @@ void listCustomers(customer customers[], int customers_count) // done
                 std::cout << "Currently Renting: ";
                 for (std::string movie : customers[i].currentlyRentedMovies)
                 {
-                    if (!movie.empty()) 
+                    if (movie != "none")
                     { 
                         std::cout << movie << " ";
                     }
@@ -273,7 +283,7 @@ void save_customers(customer cust[], int cust_count, const std::string& file_nam
             //__________
         }
         outfile.close();
-        std::cout << "Data successfully saved" << std::endl;
+        std::cout << "Customers Data successfully saved" << std::endl;
     }
     else {
         std::cerr << "Unable to open file " << file_name << "please try saving manually before terminating the program,\nif the problem persists please contact your IT provider" << std::endl;
@@ -285,6 +295,10 @@ void save_customers(customer cust[], int cust_count, const std::string& file_nam
 void load_customers(customer cust[], int cust_count, const std::string& file_name) {
     std::ifstream infile(file_name);
     if (infile.is_open()) {
+        if (file_empty(infile)) {
+            std::cerr << "no customer data to load\n";
+            return;
+        }
         infile >> cust_count;
         for (int i = 0; i < cust_count; i++) {
             std::getline(infile >> std::ws, cust[i].id);
@@ -309,6 +323,7 @@ void load_customers(customer cust[], int cust_count, const std::string& file_nam
             else
             {
                 std::cerr << "wrong date format, while reading customer: " << cust[i].id << std::endl;
+                return;
             }
             //__________________________
             int previouslyRentedMovies_size;
@@ -356,6 +371,7 @@ void load_customers(customer cust[], int cust_count, const std::string& file_nam
             }
         }
         infile.close();
+        std::cout << "loaded customers successfully\n";
     }
     else {
         std::cerr << "Unable to open file " << file_name << " for reading, contact your IT provider" << std::endl;

@@ -270,6 +270,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
+    bool paid = false;
     std::string SC_password, ccv, date;;
     
     double SC_amount, cash_ceditcard, in_coins;
@@ -279,15 +280,15 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     cash_ceditcard = amount;
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
     std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
-    std::cout << "1. in cash = " << cash_ceditcard << "\n2. via credit card = " << cash_ceditcard 
-              << "\n3. via SC card = " << SC_amount << "\n4. redeem coins";
+    std::cout << "1. in cash = " << cash_ceditcard << "$\n2. via credit card = " << cash_ceditcard 
+              << "$\n3. via SC card = " << SC_amount << "$\n4. redeem coins";
     if (movie.due) 
     {
         std::cout << "(unavailable)!\n"; // for coins i mean
     }
     else 
     {
-        std::cout << " = " << in_coins << '\n'; // for coins
+        std::cout << " = " << in_coins << '$\n'; // for coins
     }
     do
     {
@@ -303,12 +304,13 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             cashRegister += cash_ceditcard;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             std::cout << "thanks for choosing our store!\n";
+            paid = true;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             break;
         }
         case 2:
         {
-            if (!customers[customerIndex].creditcard.cardNumber.empty())
+            if (customers[customerIndex].creditcard.cardNumber != "none")
             {
                 std::cout << "Paying with: " << customers[customerIndex].creditcard.cardNumber << '\n';
                 do
@@ -353,6 +355,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                                 cashRegister += cash_ceditcard;
                                 std::cout << "Transaction completed!\n\n";
                                 std::cout << "Thanks for choosing our store!\n\n";
+                                paid = true;
                                 std::this_thread::sleep_for(std::chrono::seconds(t));
                                 return true;
                             }
@@ -373,6 +376,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                     cashRegister += cash_ceditcard;
                     std::cout << "Transaction completed!\n\n";
                     std::cout << "Thanks for choosing our store!\n\n";
+                    paid = true;
                     std::this_thread::sleep_for(std::chrono::seconds(t));
                     return true;
                 }
@@ -402,10 +406,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 {
                     create_SC(customers, customers_count, id);
                     charge_SC(customers, customers_count, id);
-                    std::this_thread::sleep_for(std::chrono::seconds(t));
-                    std::cout << "\nTransaction completed!\n\n";
-                    cashRegister += SC_amount;
-                    std::cout << "Thanks for choosing our store!\n\n";
+                    std::cout << "\nSC card created successfully!\n\n";
                     std::this_thread::sleep_for(std::chrono::seconds(t));
                     return true;
                 }
@@ -419,6 +420,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             {
                 customers[customerIndex].SC_balance -= SC_amount;
                 cashRegister += SC_amount;
+                paid = true; //not really necessary but what the heck,keep it just in case
                 std::cout << "\nTransaction completed!\n\n";
                 std::cout << "Thanks for choosing our store!\n\n";
                 std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -437,8 +439,9 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             {
                 customers[customerIndex].coins -= in_coins;
                 // no cash is taken so register not needed here
-                std::cout << "\nTransaction completed!\n\n";
                 cashRegister += amount;
+                paid = true;
+                std::cout << "\nTransaction completed!\n\n";
                 std::cout << "Thanks for choosing our store!\n\n";
                 std::this_thread::sleep_for(std::chrono::seconds(t));
                 return true;
@@ -453,7 +456,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             std::cout << "Invalid choice!\n";
             break;
         }
-    } while (ans > 4 || ans <= -1);
+    } while (ans > 4 || ans <= -1 || !paid);
 }
 
 
