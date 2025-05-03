@@ -85,8 +85,8 @@ int takeInput(std::string version)
 
 void MainMenu(customer customers[], int size_of_customers, movie movies[], int size_of_movies)
 {
-    int customers_count = getCustomersCount(customers, size_of_customers);
-    int movies_count = getMoviesCount(movies, size_of_movies);
+    extern int customers_count;
+    extern int movies_count;
     bool isDateChanged = false;
     std::string version;
     
@@ -117,7 +117,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             } while (!isCustomerFound(customers, customers_count, id));
             if(id == "0") break;
 
-            rent(customers, customers_count, id, movies, movies_count, system_date);
+            rent(customers, customers_count, movies, movies_count, system_date, isDateChanged, new_date, id);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         } 
@@ -221,13 +221,13 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 }
             } while(!isCustomerFound(customers,customers_count,id));
             if(id == "0") break;
-            
-            returnMovie(customers,customers_count,id, movies, movies_count, isDateChanged, new_date);
+            returnMovie(cashRegister, customers, customers_count, id, movies, movies_count, isDateChanged, new_date);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }            
         case 5: // list all customer
             listCustomers(customers, customers_count);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 6: // display a customer
         {
@@ -257,21 +257,27 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             break;
         case 8: // list all movies
             listMovies(movies, movies_count);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 9: // list rented
             listRented(movies, movies_count);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 10: // list unrented
             listUnrented(movies, movies_count);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 11: // list due accounts
             listDueAccounts(movies, movies_count, customers, customers_count, isDateChanged, new_date);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 12: // top 10 rented
             listTopRented(movies, movies_count);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 13: // top 10 rated
             listTopRated(movies, movies_count);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 14: // log out for user --- add new movie for admin.
         {
@@ -281,7 +287,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             }
             else if (version == "admin")
             {
-                addNewMovie(movies, size_of_movies, movies_count);
+                addNewMovie(movies, size_of_movies);
                 std::this_thread::sleep_for(std::chrono::seconds(t));
             }
             break;

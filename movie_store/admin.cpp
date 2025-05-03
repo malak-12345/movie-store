@@ -10,7 +10,7 @@ std::string ADMIN_PSSWRD = "admin";
 std::string USER = "user";
 std::string USER_PSSWRD = "user";
 
-double cashRegister = 50.0;
+double cashRegister = 0.0;
 auto now = std::chrono::system_clock::now();
 date::sys_days new_date, today = date::floor<date::days>(now);
 date::year_month_day system_date = today;
@@ -182,8 +182,9 @@ std::string login() // done
     } while(checkCredentials(login, passwrd) == "");
 }
 
-void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
+void addNewMovie(movie movies[], int size_of_movies) // done
 {
+    extern int movies_count;
     std::string movieName, check;
     double price = 0, fee = 0;
     do
@@ -195,30 +196,32 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
         if(movieName == "0") return;
         if(isMovieFound(movies,movies_count, check))
         {
-            std::cout << "This film is already exist!\n";
+            std::cout << "This movie already exists!\n";
             continue;
         }
         std::cout << "\nEnter movie price per day (EGP) : ";
         is_num(price);
         std::cout << "\nEnter due fees per day (EGP) : ";
         is_num(fee);
-    } while(isMovieFound(movies,movies_count,check) || check.empty());
+    } while(isMovieFound(movies,movies_count,check) || check == "none");
     
     for(int i = 0; i < size_of_movies; i++)
     {
-        if(movies[i].name.empty())
+        if(movies[i].name == "none")
         {
             movies[i].name = movieName;
             movies[i].price = price;
             movies[i].fee = fee;
             movies_count++;
-            break;
+            std::cout << "Successfully added: " << movieName << '\n';
+            return;
         }
     }
-    std::cout << "Successfully added: " << movieName << '\n';
+    std::cerr << "you have reached maximum movie capacity!!\n"; // if the return doesn't happen, ie there are no empty slots
+    std::this_thread::sleep_for(std::chrono::seconds(t));
 }
 
-bool ChangeDate(date::sys_days& new_date) // done
+bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
 {
     int y, m, d;
     char delimiter1, delimiter2;
@@ -249,5 +252,15 @@ bool ChangeDate(date::sys_days& new_date) // done
     else 
     {
         return false; //aborting
+    }
+}
+
+
+
+void viewCashRegister(double& cashRegister) {
+    std::cout << cashRegister << "$ in the register would you like to withdraw them y/n? ";
+    if (yes_no()) {
+        cashRegister = 0.0;
+        std::cout << "cash register emptied successfully.\n";
     }
 }
