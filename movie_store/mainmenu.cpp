@@ -351,7 +351,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 break;
             }
             
-            deleteMovie(movies, movies_count, movieName);
+            deleteMovie(movies, movies_count, movieName, customers, customers_count);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }
@@ -378,7 +378,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 break;
             }
             
-            deleteCustomer(customers, customers_count, id);
+            deleteCustomer(customers, customers_count, id, movies, movies_count);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }

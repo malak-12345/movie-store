@@ -189,6 +189,7 @@ void displayCustomer(customer customers[], int customers_count, int customerInde
         std::cout << "Name: " << customers[customerIndex].name << '\n';
         std::cout << "Customer ID: " << customers[customerIndex].id << '\n';
         std::cout << "Phone Number: " << customers[customerIndex].phoneNumber << '\n';
+        std::cout << "Coins: " << customers[customerIndex].coins << '\n';
 
         if(isCurrentlyRentedAvailable(customers, customerIndex) != "empty")
         {
@@ -237,6 +238,7 @@ void listCustomers(customer customers[], int customers_count) // done
             std::cout << "Name: " << customers[i].name << '\n';
             std::cout << "Customer ID: " << customers[i].id << '\n';
             std::cout << "Phone Number: +" << customers[i].phoneNumber << '\n';
+            std::cout << "Coins: " << customers[i].coins << '\n';
 
             if(isCurrentlyRentedAvailable(customers, i) != "empty")
             {

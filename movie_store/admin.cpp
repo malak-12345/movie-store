@@ -29,7 +29,7 @@ std::string checkCredentials(std::string& login, std::string& passwrd) // done
     return "";
 }
 
-void deleteCustomer(customer customers[], int& customers_count, std::string& id) // done
+void deleteCustomer(customer customers[], int& customers_count, std::string& id, movie movies[], int movies_count) // done
 {
     if(customers_count != 0)
     {
@@ -43,19 +43,46 @@ void deleteCustomer(customer customers[], int& customers_count, std::string& id)
                     customers[i].phoneNumber = customers[customers_count-1].phoneNumber;
                     customers[i].id = customers[customers_count-1].id;
                     customers[i].previouslyRentedMovies = customers[customers_count-1].previouslyRentedMovies;
+                    customers[i].rating = customers[customers_count-1].rating;
+                    customers[i].coins = customers[customers_count-1].coins;
+                    customers[i].creditcard = customers[customers_count-1].creditcard;
+                    customers[i].SC = customers[customers_count-1].SC;
+                    customers[i].SC_balance = customers[customers_count-1].SC_balance;
+                    customers[i].SC_passwrd = customers[customers_count-1].SC_passwrd;
                     for(int j = 0; j < limit; j++)
                     {
-                        customers[i].currentlyRentedMovies[j] = customers[customers_count-1].currentlyRentedMovies[j];
+                        if(!(customers[i].currentlyRentedMovies[j].empty()))
+                        {
+                            std::string movie = customers[i].currentlyRentedMovies[j];
+                            std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
+                            movie = deleteSpaces(movie);
+                            int movieIndex = getMovieIndex(movies, movies_count, movie);
+
+                            movies[movieIndex].rented = false;
+                            movies[movieIndex].due = false;
+                            movies[movieIndex].currentRenter.clear();
+                            movies[movieIndex].dueDate = date::year(3000)/10/10;
+                            customers[i].currentlyRentedMovies[j] = customers[customers_count-1].currentlyRentedMovies[j];
+                        }
                     }
-                    
+                    //--------------clear last element--------------
                     customers[customers_count-1].name.clear();
                     customers[customers_count-1].id.clear();
                     customers[customers_count-1].phoneNumber.clear();
                     customers[customers_count-1].previouslyRentedMovies.clear();
+                    customers[customers_count-1].rating.clear();
+                    customers[customers_count-1].coins = 0;
+                    customers[customers_count-1].creditcard.cardNumber.clear();
+                    customers[customers_count-1].creditcard.ccv.clear();
+                    customers[customers_count-1].creditcard.yy_mm = date::year(3000)/10;
+                    customers[customers_count-1].SC = false;
+                    customers[customers_count-1].SC_balance = 0;
+                    customers[customers_count-1].SC_passwrd.clear();
                     for(int j = 0; j < limit; j++)
                     {
-                        customers[customers_count-1].currentlyRentedMovies[j].clear();
+                        customers[customers_count - 1].currentlyRentedMovies[j].clear();
                     }
+
                     customers_count--;
                 }
                 else if (i == customers_count-1)
@@ -64,9 +91,29 @@ void deleteCustomer(customer customers[], int& customers_count, std::string& id)
                     customers[i].id.clear();
                     customers[i].phoneNumber.clear();
                     customers[i].previouslyRentedMovies.clear();
+                    customers[i].rating.clear();
+                    customers[i].coins = 0;
+                    customers[i].creditcard.cardNumber.clear();
+                    customers[i].creditcard.ccv.clear();
+                    customers[i].creditcard.yy_mm = date::year(3000)/10;
+                    customers[i].SC = false;
+                    customers[i].SC_balance = 0;
+                    customers[i].SC_passwrd.clear();
                     for(int j = 0; j < limit; j++)
                     {
-                        customers[i].currentlyRentedMovies[j].clear();
+                        if(!(customers[i].currentlyRentedMovies[j].empty()))
+                        {
+                            std::string movie = customers[i].currentlyRentedMovies[j];
+                            std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
+                            movie = deleteSpaces(movie);
+                            int movieIndex = getMovieIndex(movies, movies_count, movie);
+
+                            movies[movieIndex].rented = false;
+                            movies[movieIndex].due = false;
+                            movies[movieIndex].currentRenter.clear();
+                            movies[movieIndex].dueDate = date::year(3000)/10/10;
+                            customers[i].currentlyRentedMovies[j].clear();
+                        }
                     }
                     customers_count--;
                 }
@@ -86,7 +133,7 @@ void deleteCustomer(customer customers[], int& customers_count, std::string& id)
     }
 }
 
-void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // done
+void deleteMovie(movie movies[], int& movies_count, std::string& movieName, customer customers[], int customers_count) // done
 {
     if(movies_count != 0)
     {
@@ -95,9 +142,24 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
         {
             name = movies[i].name;
             std::transform(name.begin(), name.end(), name.begin(), tolower);
-            if(deleteSpaces(name) == movieName)
+            name = deleteSpaces(name);
+            if(name == movieName)
             {
-                if (i < movies_count - 1) 
+                for(int j = 0; j < customers_count; j++)
+                {
+                    for(int k = 0; k < limit; k++)
+                    {
+                        std::string movie = customers[j].currentlyRentedMovies[k];
+                        std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
+                        if(deleteSpaces(movie) == name)
+                        {
+                            customers[j].currentlyRentedMovies[k].clear();
+                            break;
+                        }
+                    }
+                }
+                
+                if (i < movies_count - 1)
                 {
                     movies[i].name = movies[movies_count - 1].name;
                     movies[i].currentRenter = movies[movies_count - 1].currentRenter;
@@ -109,7 +171,8 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
                     movies[i].rentedCount = movies[movies_count - 1].rentedCount;
                     movies[i].dueDate = movies[movies_count - 1].dueDate;
                     movies[i].due = movies[movies_count - 1].due;
-                    //----------------
+                    movies[i].rentalDays = movies[movies_count - 1].rentalDays;
+                    //--------------clear last element--------------
                     movies[movies_count - 1].name.clear();
                     movies[movies_count - 1].currentRenter.clear();
                     movies[movies_count - 1].allRatings.clear();
@@ -120,6 +183,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
                     movies[movies_count - 1].rentedCount = 0;
                     movies[movies_count - 1].dueDate = date::year(3000) / date::month(10) / date::day(10);
                     movies[movies_count - 1].due = false;
+                    movies[movies_count - 1].rentalDays = 0;
                     movies_count--;
                 }
                 else if (i == movies_count - 1) 
@@ -134,6 +198,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
                     movies[i].rentedCount = 0;
                     movies[i].dueDate = date::year(3000) / date::month(10) / date::day(10); //default state for empty, not an actual thing in the language i just decided that
                     movies[i].due = false;
+                    movies[i].rentalDays = 0;
                     movies_count--;
                 }
                 else 
@@ -141,7 +206,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName) // d
                     std::cerr << "Error in the movies array, please contact your IT provider";
                     break;
                 }
-                std::cout << "Movie : "<< movieName << " deleted successfully\n";
+                std::cout << "Movie deleted successfully!\n";
                 break;
             }
         }

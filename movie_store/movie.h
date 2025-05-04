@@ -31,7 +31,9 @@ bool yes_no(); // done
 //----------------------------------------------------------------
 
 void listMovies(movie movies[], int movies_count); // done
+
 void listRented(movie movies[], int movies_count); // done 
+
 int listUnrented(movie movies[], int movies_count); // done
 
 void calc_rating(movie& movie, int rating); // done
@@ -56,10 +58,8 @@ int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date);
 void listDueAccounts(movie movies[], int movies_count, customer customers[], int customers_count, 
                      bool isDateChanged, date::sys_days new_date); //done
 
-    
 void listTopRated(movie movies[], int movies_count); // done
     
-
 void listTopRented(movie movies[], int movies_count);
 
 void save_movies(double cashRegister, movie movies[], int movies_count, const std::string& file_name);

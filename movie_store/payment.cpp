@@ -123,19 +123,19 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
 
     while(!valid)
     {
-        std::cout << "Enter expiry date: year/month: ";
+        std::cout << "Enter expiry date: yy/mm: ";
         getline(std::cin, date);
         date = deleteSpaces(date);
 
         if(date == "0") return;
 
         std::istringstream iss(date);
-        if(iss >> std::setw(2) >> y_val >> del >> std::setw(2) >> m_val && (del == '/'))
+        if(iss >> y_val >> del >> m_val && (del == '/'))
         {
             y = date::year(y_val);
             y += date::years(2000);
             m = date::month(m_val);
-            if(m.ok())
+            if(m.ok() && y >= system_date.year())
             {
                 yy_mm = y / m;
             }
@@ -151,16 +151,6 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
             std::cout << "Wrong date or format!\n";
             valid = false;
             continue;
-        }
-        
-        if(yy_mm.year() >= system_date.year())
-        {
-            valid = true;
-        }
-        else
-        {
-            std::cout << "Wrong date!\n";
-            valid = false;
         }
     }
 
@@ -194,6 +184,7 @@ void create_SC(customer cust[], int customers_count, std::string& id)
         std::cerr << "This account already has a SC card\n";
     }
 }
+
 void set_SC_passwrd(customer cust[], int customers_count, std::string& id) {
     std::string passwrd, old_passwrd;
     int Index = getCustomerIndex(cust, customers_count, id);
@@ -236,10 +227,11 @@ void charge_SC(customer cust[], int customers_count, std::string& id) {
 }
 
 // if payment == true, cust[index].coins += generate_coins();
-int generate_coins() { // from 1 to 10
+int generate_coins() // from 1 to 10
+{
     int coins = 1;
     srand(time(0));
-    coins += rand() % 10;
+    coins += (rand() % 10);
     return coins;
 }
 
@@ -259,8 +251,6 @@ double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date)
     return amount;
 }
 
-
-
 bool pay(double& cashRegister, customer customers[], int customers_count, 
          std::string& id, movie& movie, bool isDateChanged, date::sys_days new_date) 
 {
@@ -277,9 +267,10 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
     std::cout << "1. in cash = " << amount << "$\n2. via credit card = " << amount
               << "$\n3. via SC card = " << SC_amount << "$\n4. redeem coins";
+
     if (movie.due) 
     {
-        std::cout << "(unavailable)!\n"; // for coins i mean
+        std::cout << "(unavailable)\n"; // for coins i mean
     }
     else 
     {
@@ -297,10 +288,10 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         {
             std::cout << "Opening cash register!\n";
             cashRegister += amount;
+            paid = true;
             std::this_thread::sleep_for(std::chrono::seconds(t));
             std::cout << "thanks for choosing our store!\n";
             std::this_thread::sleep_for(std::chrono::seconds(t));
-            paid = true;
             break;
         }
         case 2:
@@ -329,16 +320,16 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 
                 do
                 {
-                    std::cout << "Enter expiry date: year/month: ";
+                    std::cout << "Enter expiry date: yy/mm: ";
 
                     getline(std::cin, date);
                     date = deleteSpaces(date);
 
-                    if (ccv == "0") return false;
+                    if (date == "0") return false;
 
                     std::istringstream iss(date);
-                    if (iss >> std::setw(2) >> y_val >> del >> std::setw(2) >> m_val && del == '/')
-                    {
+                    if (iss >> y_val >> del >> m_val && del == '/')
+                    {   
                         y = date::year(y_val);
                         y += date::years(2000);
                         m = date::month(m_val);
@@ -348,11 +339,15 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                             if (yy_mm == customers[customerIndex].creditcard.yy_mm)
                             {
                                 cashRegister += amount;
+                                paid = true;
                                 std::cout << "Transaction completed!\n\n";
                                 std::cout << "Thanks for choosing our store!\n\n";
                                 std::this_thread::sleep_for(std::chrono::seconds(t));
-                                paid = true;
                                 return true;
+                            }
+                            else
+                            {
+                                std::cout << "Wrong date or format!\n";
                             }
                         }
                         else
@@ -369,15 +364,15 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 {
                     addCreditCard(customers, customers_count, id);
                     cashRegister += amount;
+                    paid = true;
                     std::cout << "Transaction completed!\n\n";
                     std::cout << "Thanks for choosing our store!\n\n";
                     std::this_thread::sleep_for(std::chrono::seconds(t));
-                    paid = true;
                     return true;
                 }
                 else
                 {
-                    return false; // exiting to main menu
+                    std::cout << "\nchoose a different method to pay\n";
                 }
             }
             break;
@@ -388,6 +383,8 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             {
                 std::cout << "Enter password: ";
                 getline(std::cin, SC_password);
+
+                if(SC_password == "0") return false;
                 while (customers[customerIndex].SC_passwrd != SC_password) 
                 {
                     std::cerr << "wrong password try again: ";
@@ -403,11 +400,10 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                     charge_SC(customers, customers_count, id);
                     std::cout << "\nSC card created successfully!\n\n";
                     std::this_thread::sleep_for(std::chrono::seconds(t));
-                    return true;
                 }
                 else 
                 {
-                    std::cerr << "\nthen pay in another way\n";
+                    std::cerr << "\nchoose a different method to pay\n";
                     break;
                 }
             }
@@ -429,7 +425,6 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
         case 4: //no need for extra safety
         {
-
             if (customers[customerIndex].coins > in_coins) 
             {
                 customers[customerIndex].coins -= in_coins;
@@ -446,7 +441,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             break;
         }
         default:
-            std::cout << "Invalid choice!\n";
+            std::cout << "\nInvalid choice!\n";
             break;
         }
     } while (ans > 4 || ans <= -1 || !paid);

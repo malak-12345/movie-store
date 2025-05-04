@@ -496,10 +496,11 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                     if (customers[customerIndex].currentlyRentedMovies[k].empty())
                     {
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
+                        customers[customerIndex].coins += generate_coins();
                         movies[i].rented = true;
                         movies[i].rentedCount++;
                         movies[i].rentalDays = calc_rental_days(movies[i], isDateChanged, new_date);
-                        movies[i].currentRenter = customers[customerIndex].name;;
+                        movies[i].currentRenter = customers[customerIndex].name;
                         std::cout << "Successfully rented: " << movies[i].name << " for " << movies[i].rentalDays << " days\n";
                         return;
                     }
@@ -746,7 +747,7 @@ int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date) // do
     }
 }
 
-int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date)
+int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date) // done
 {
     date::sys_days today, due = movie.dueDate;
     if (isDateChanged)
