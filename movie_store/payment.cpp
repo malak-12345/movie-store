@@ -297,15 +297,15 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         {
             std::cout << "Opening cash register!\n";
             cashRegister += amount;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             std::cout << "thanks for choosing our store!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             paid = true;
             break;
         }
         case 2:
         {
-            if (deleteSpaces(customers[customerIndex].creditcard.cardNumber).empty())
+            if (!customers[customerIndex].creditcard.cardNumber.empty())
             {
                 std::cout << "Paying with: " << customers[customerIndex].creditcard.cardNumber << '\n';
                 do

@@ -109,13 +109,18 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 id = deleteSpaces(id);
                 std::transform(id.begin(), id.end(), id.begin(), toupper); // c# ---> C#
                 
-                if (id == "0") break; //exit to main menu, note:the user will be notified at the begining of the program that entering 0 takes you back to main menu
+                if (id == "0") break;   
                 if (!isCustomerFound(customers, customers_count, id))
                 {
                     std::cerr << "Wrong id, please try again\n";
                 }
             } while (!isCustomerFound(customers, customers_count, id));
-            if(id == "0") break;
+            if(id == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
 
             rent(customers, customers_count, movies, movies_count, system_date, isDateChanged, new_date, id);
             std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -138,7 +143,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 }
 
             } while(!isMovieFound(movies,movies_count,movieName));
-            if(movieName == "0") break;
+            if(movieName == "0") 
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
 
             do
             {
@@ -153,7 +163,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     std::cout << "Wrong ID! please try again.\n";
                 }
             } while(!isCustomerFound(customers,customers_count,id));
-            if(id == "0") break;
+            if(id == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
 
             bool done = rate(movies,movies_count,movieName, customers,customers_count,id);
             while (!done)
@@ -173,13 +188,18 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 movieName = deleteSpaces(movieName);
                 std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
                 
-                if(movieName == "0") break;
+                if(movieName == "0") break;  
                 if(!isMovieFound(movies,movies_count,movieName))
                 {
                     std::cout << "This film doesn't exist! please try again.\n";
                 }
             } while(!isMovieFound(movies,movies_count,movieName));
-            if(movieName == "0") break;
+            if(movieName == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
 
             do
             {
@@ -194,7 +214,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     std::cout << "Wrong ID! please try again.\n";
                 }
             } while(!isCustomerFound(customers,customers_count,id));
-            if(id == "0") break;
+            if(id == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
 
             bool done = editRating(movies,movies_count,movieName, customers,customers_count,id); 
             while(!done)
@@ -220,7 +245,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     std::cout << "This customer doesn't exist! Please try again.\n";
                 }
             } while(!isCustomerFound(customers,customers_count,id));
-            if(id == "0") break;
+            if(id == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
             
             returnMovie(cashRegister, customers, customers_count, id, movies, movies_count, isDateChanged, new_date);
             std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -246,7 +276,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     std::cout << "This customer doesn't exist! Please try again.\n";
                 }
             } while(!isCustomerFound(customers,customers_count,id));
-            if(id == "0") break;
+            if(id == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
             
             int customerIndex = getCustomerIndex(customers, customers_count, id);
             displayCustomer(customers, customers_count, customerIndex);
@@ -309,7 +344,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     std::cout << "This film doesn't exist! please try again.\n";
                 }
             } while(!isMovieFound(movies, movies_count, movieName));
-            if(movieName == "0") break;
+            if(movieName == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
             
             deleteMovie(movies, movies_count, movieName);
             std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -331,7 +371,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     std::cout << "This customer doesn't exist! Please try again.\n";
                 }
             } while(!isCustomerFound(customers,customers_count,id));
-            if(id == "0") break;
+            if(id == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
             
             deleteCustomer(customers, customers_count, id);
             std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -354,7 +399,12 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 if(amount == 0) break;
                 if(amount > cashRegister) std::cout << "Not enough balance! Please try again.\n";
             } while(amount > cashRegister);
-            if(amount == 0) break;
+            if(amount == 0)
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
             
             std::this_thread::sleep_for(std::chrono::seconds(t));
             cashRegister -= amount;

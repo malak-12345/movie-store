@@ -195,7 +195,12 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
         check = deleteSpaces(movieName);
         (check.begin(), check.end(), check.begin(), tolower);
         
-        if(movieName == "0") return;
+        if(movieName == "0")
+        {
+            std::cout << "Returning to main menu!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(t));
+            return;
+        }
         if(isMovieFound(movies,movies_count,check))
         {
             std::cout << "This movie already exists!\n";
@@ -221,6 +226,7 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
     }
     std::cerr << "you have reached maximum movie capacity!!\n"; // if the return doesn't happen, ie there are no empty slots
     std::this_thread::sleep_for(std::chrono::seconds(t));
+    std::cout << "Returning to main menu!\n";
 }
 
 bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
@@ -237,8 +243,12 @@ bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date pri
             getline(std::cin, entered_date);
             std::cin.clear();
             entered_date = deleteSpaces(entered_date);
-            if (entered_date == "0") return false; //aborts and exits to main menu
-            
+            if (entered_date == "0") 
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                return false; //aborts and exits to main menu
+            }
             std::istringstream iss(entered_date);
             if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && date::year(y) >= system_date.year() && delimiter1 == '/' && delimiter2 == '/') 
             {
@@ -253,6 +263,8 @@ bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date pri
     }
     else 
     {
+        std::cout << "Returning to main menu!\n";
+        std::this_thread::sleep_for(std::chrono::seconds(t));
         return false; //aborting
     }
 }

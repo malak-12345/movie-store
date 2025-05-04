@@ -23,6 +23,7 @@ int getCustomerIndex(customer customers[], int customers_count, std::string& id)
 bool isMovieFound(movie movies[], int movies_count, std::string& movieName); // done
 int getMovieIndex(movie movies[], int movies_count, std::string& movieName); // done
 bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
+bool isMoviePreviouslyRentedByCustomer(customer customers[], int customerIndex, std::string& movieName);
 int getMoviesCount(movie movies[], int size_of_movies); // done
 void is_num(int& input); // done
 void is_num(double& input); // done
@@ -33,12 +34,13 @@ void listMovies(movie movies[], int movies_count); // done
 void listRented(movie movies[], int movies_count); // done 
 int listUnrented(movie movies[], int movies_count); // done
 
+void calc_rating(movie& movie, int rating); // done
+
 bool rate(movie movies[], int movies_count, std::string& movieName, 
           customer customers[], int customers_count ,std::string& id); // done
 
 bool editRating(movie movies[], int movies_count, std::string& movieName,
                 customer customers[], int customers_count, std::string& id); // done
-
 
 void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
           date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id);

@@ -126,7 +126,12 @@ void addNewCustomer(customer customers[], int size_of_customers, int& customers_
         if(deleteSpaces(name).empty()) std::cout << "Invalid name!\n";
         
     }while(deleteSpaces(name).empty());
-    if(name == "0") return;
+    if(name == "0")
+    {
+        std::cout << "Returning to main menu!\n";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        return;
+    }
     
     do 
     {
@@ -134,7 +139,12 @@ void addNewCustomer(customer customers[], int size_of_customers, int& customers_
         getline(std::cin, phoneNumber);
         phoneNumber = deleteSpaces(phoneNumber);
         
-        if(phoneNumber == "0") return;
+        if(phoneNumber == "0")
+        {
+            std::cout << "Returning to main menu!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            return;
+        }
         if(!checkPhoneNumber(phoneNumber))
         {
             std::cout << "Invalid phone number!\n";
@@ -162,10 +172,13 @@ void addNewCustomer(customer customers[], int size_of_customers, int& customers_
             customers[i].phoneNumber = phoneNumber;
             customers[i].id = id;
             customers_count++;
-            break;
+            std::cout << "Successfully added: " << name << '\n';
+            return;
         }   
     }
-    std::cout << "Successfully added: " << name << '\n';
+    std::cout << "Couldn't add : " << name << '\n';
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "Returning to main menu!\n";
 }
 
 void displayCustomer(customer customers[], int customers_count, int customerIndex) // done
@@ -398,13 +411,14 @@ void load_customers(customer customers[], int& customers_count, const std::strin
             // Previously rented
             int previouslyRentedMovies_size;
             infile >> previouslyRentedMovies_size;
-            customers[i].previouslyRentedMovies.resize(previouslyRentedMovies_size);
             infile.clear();
             infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            customers[i].previouslyRentedMovies.resize(previouslyRentedMovies_size);
 
             std::string opening_brace1;
             if (std::getline(infile, opening_brace1) && opening_brace1 == "{") 
             {
+                // customers[i].previouslyRentedMovies.resize(previouslyRentedMovies_size);
                 for (int j = 0; j < previouslyRentedMovies_size; j++)
                 {
                     std::getline(infile, customers[i].previouslyRentedMovies[j]); 
