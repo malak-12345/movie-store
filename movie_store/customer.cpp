@@ -398,6 +398,7 @@ void load_customers(customer customers[], int& customers_count, const std::strin
             // Previously rented
             int previouslyRentedMovies_size;
             infile >> previouslyRentedMovies_size;
+            customers[i].previouslyRentedMovies.resize(previouslyRentedMovies_size);
             infile.clear();
             infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
