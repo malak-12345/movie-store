@@ -244,9 +244,7 @@ int listUnrented(movie movies[], int movies_count) // done
 
 void calc_rating(movie& movie, int rating) // done
 {
-    if (!movie.allRatings.empty())
-    {
-        int a = 0, b = 0, c = 0, d = 0, e = 0;
+        double a = 0, b = 0, c = 0, d = 0, e = 0;
         for (int i : movie.allRatings)
         {
             switch (i)
@@ -272,11 +270,6 @@ void calc_rating(movie& movie, int rating) // done
             }
         }
         movie.rating = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / (a + b + c + d + e);
-    }
-    else
-    {
-        movie.rating = rating;
-    }
 }
 
 bool rate(movie movies[], int movies_count, std::string& movieName, 
@@ -284,7 +277,7 @@ bool rate(movie movies[], int movies_count, std::string& movieName,
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     
-    if (isMovieCurrentlyRentedByCustomer(customers, customers_count, id, movieName))
+    if (isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
     {
         int movieIndex = getMovieIndex(movies, movies_count, movieName);
         if(!customers[customerIndex].rating.count(movies[movieIndex].name))
@@ -354,7 +347,8 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     
-    if (isMovieCurrentlyRentedByCustomer(customers, customers_count, id, movieName))
+    if (isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
+
     {
         int movieIndex = getMovieIndex(movies, movies_count, movieName);
         if(customers[customerIndex].rating.count(movies[movieIndex].name))
@@ -414,6 +408,16 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
           date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id)
 {
+    date::sys_days today;
+    if (isDateChanged) {
+        today = new_date;
+    }
+    else {
+        today = system_date;
+    }
+
+
+
     bool repeat = true, date_good = false;
     int selected, match = 1;
     std::string entered_date;
@@ -451,13 +455,14 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
     {
         if (!movies[i].rented && match == selected)
         {
+            using namespace date;
             std::cout << "movie: " << movies[i].name << '\n';
             std::cout << "\tprice per day: " << movies[i].price << " EGP\n";
             std::cout << "\toverdue fee per day: " << movies[i].fee << " EGP\n";
             std::cout << "\tmovie rating:" << movies[i].rating << '\n';
             std::cout << "\thas been rented: " << movies[i].rentedCount << " times\n\n";
-            std::cout << "today is: " << system_date << '\n';
-            while (!date_good)/*incomplete fail safe*/ 
+            std::cout << "today is: " << today << '\n';
+            while (!date_good)
             {
                 std::cout << "specify return date in this exact format yyyy/mm/dd : ";
                 getline(std::cin, entered_date);
@@ -473,7 +478,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                 if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') //this is correct don't worry
                 {
                     movies[i].dueDate = date::year(y) / date::month(m) / date::day(d);
-                    if(movies[i].dueDate >= system_date)
+                    if(movies[i].dueDate >= today)
                     {
                         date_good = true;
                     }
@@ -496,7 +501,6 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                     if (customers[customerIndex].currentlyRentedMovies[k].empty())
                     {
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
-                        customers[customerIndex].coins += generate_coins();
                         movies[i].rented = true;
                         movies[i].rentedCount++;
                         movies[i].rentalDays = calc_rental_days(movies[i], isDateChanged, new_date);
@@ -567,17 +571,17 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                 movieName = deleteSpaces(movieName);
                 movieIndex = getMovieIndex(movies, movies_count, movieName);
                 
-                diff = validateDue(movies[movieIndex], isDateChanged, new_date);
-                if (movies[movieIndex].due) 
-                {
-                    cash = movies[movieIndex].price + movies[movieIndex].fee * diff;
-                    std::cout << "considering that the movie is due: " << diff << " days, the amount to pay is: " << cash << '\n';  
-                }
-                else 
-                {
-                    cash = movies[movieIndex].price;
-                    std::cout << "amount to pay is: " << cash << "\n\n";
-                }
+                //diff = validateDue(movies[movieIndex], isDateChanged, new_date);
+                //if (movies[movieIndex].due) 
+                //{
+                //    cash = movies[movieIndex].price + movies[movieIndex].fee * diff;
+                //    std::cout << "considering that the movie is due: " << diff << " days, the amount to pay is: " << cash << '\n';  
+                //}
+                //else 
+                //{
+                //    cash = movies[movieIndex].price;
+                //    std::cout << "amount to pay is: " << cash << "\n\n";
+                //}
                 std::cout << "(this is in an italian accent)\n";
                 std::cout << "pay up or else? y/n: ";
                 if (yes_no()) 
@@ -588,7 +592,19 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                         std::cout << "Canceling transaction!\n";
                         std::this_thread::sleep_for(std::chrono::seconds(t));
                         return;
-                    }    
+                    }else{
+                        movies[movieIndex].rented = false;
+                        movies[movieIndex].currentRenter.clear();
+                        movies[movieIndex].due = false;
+                        movies[movieIndex].rentalDays = 0;
+                        movies[movieIndex].dueDate = date::year(3000) / date::month(10) / date::day(10);
+                        customers[customerIndex].currentlyRentedMovies[found].clear();
+                        customers[customerIndex].coins += generate_coins();
+                        if (!isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
+                        {
+                            customers[customerIndex].previouslyRentedMovies.push_back(movies[movieIndex].name);
+                        }
+                    }
                 }
                 else 
                 {
@@ -601,7 +617,20 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                             std::cout << "Canceling transaction!\n";
                             std::this_thread::sleep_for(std::chrono::seconds(t));
                             return;
-                        }    
+                        }
+                        else {
+                            movies[movieIndex].rented = false;
+                            movies[movieIndex].currentRenter.clear();
+                            movies[movieIndex].due = false;
+                            movies[movieIndex].rentalDays = 0;
+                            movies[movieIndex].dueDate = date::year(3000) / date::month(10) / date::day(10);
+                            customers[customerIndex].currentlyRentedMovies[found].clear();
+                            customers[customerIndex].coins += generate_coins();
+                            if (!isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
+                            {
+                                customers[customerIndex].previouslyRentedMovies.push_back(movies[movieIndex].name);
+                            }
+                        }
                     }
                     else 
                     {
@@ -634,16 +663,6 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                     }
                 }
 
-                movies[movieIndex].rented = false;
-                movies[movieIndex].currentRenter.clear();
-                movies[movieIndex].due = false;
-                movies[movieIndex].rentalDays = 0;
-                movies[movieIndex].dueDate = date::year(3000) / date::month(10) / date::day(10);
-                customers[customerIndex].currentlyRentedMovies[found].clear();
-                if(!isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
-                {
-                    customers[customerIndex].previouslyRentedMovies.push_back(movies[movieIndex].name);
-                }
             }
             else 
             {

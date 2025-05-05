@@ -24,7 +24,8 @@ void displayMenu(std::string version, date::sys_days today, bool isDateChanged, 
         "press  10: List unrented movies",
         "press  11: List due accounts",
         "press  12: List top 10 rented movies",
-        "press  13: List top 10 rated movies"
+        "press  13: List top 10 rated movies",
+        "press  14: Add a movie"
     };
 
     if (isDateChanged)
@@ -46,16 +47,16 @@ void displayMenu(std::string version, date::sys_days today, bool isDateChanged, 
 
     if(version == "user")
     {
-        std::cout << "press  14: Log out\n"; // done
+        std::cout << "press  15: Log out\n"; // done
     }
     else if (version == "admin") 
     {
-        std::cout << "press  14: Add a movie\n"; // done
         std::cout << "press  15: Delete a movie\n"; // done
         std::cout << "press  16: Delete a customer\n"; // done
         std::cout << "press  17: set date manually\n"; // done
         std::cout << "press  18: withdraw\n";
         std::cout << "press  19: switch user account\n"; // done
+        std::cout << "press  20: save data manually\n"; // done
     }
     std::cout << "press  0: Exit\n";
     std::cout << "\nat any point in time, if you wish to go back to main menu enter \"0\"\n";
@@ -68,7 +69,7 @@ int takeInput(std::string version)
     while (!valid) 
     {
         std::cin >> choice;
-        if ((std::cin.good() && choice <= 14 && choice > -1) || (std::cin.good() && version == "admin" && choice <= 19 && choice > -1)) 
+        if ((std::cin.good() && choice < 16 && choice > -1) || (std::cin.good() && version == "admin" && choice < 21 && choice > -1)) 
         {
             valid = true;
         }
@@ -315,44 +316,44 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             listTopRated(movies, movies_count);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
-        case 14: // log out for user --- add new movie for admin.
+        case 14: //add new movie
+        {   
+            addNewMovie(movies, size_of_movies,movies_count);
+            std::this_thread::sleep_for(std::chrono::seconds(t));
+            break;
+        }
+        case 15: // delete movie for admin --- log out for user
         {
-            if(version == "user")
+            if (version == "user")
             {
                 version = login();
             }
             else if (version == "admin")
             {
-                addNewMovie(movies, size_of_movies,movies_count);
-                std::this_thread::sleep_for(std::chrono::seconds(t));
-            }
-            break;
-        }
-        case 15: // delete movie
-        {
-            std::string movieName;
-            do
-            {
-                std::cout << "Enter movie name: ";
-                getline(std::cin, movieName);
-                movieName = deleteSpaces(movieName);
-                std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
-                
-                if(movieName == "0") break;
-                if(!isMovieFound(movies,movies_count,movieName))
+                std::string movieName;
+                do
                 {
-                    std::cout << "This film doesn't exist! please try again.\n";
+                    std::cout << "Enter movie name: ";
+                    getline(std::cin, movieName);
+                    movieName = deleteSpaces(movieName);
+                    std::transform(movieName.begin(), movieName.end(), movieName.begin(), tolower);
+
+                    if (movieName == "0") break;
+                    if (!isMovieFound(movies, movies_count, movieName))
+                    {
+                        std::cout << "This film doesn't exist! please try again.\n";
+                    }
+                } while (!isMovieFound(movies, movies_count, movieName));
+                if (movieName == "0")
+                {
+                    std::cout << "Returning to main menu!\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
+                    break;
                 }
-            } while(!isMovieFound(movies, movies_count, movieName));
-            if(movieName == "0")
-            {
-                std::cout << "Returning to main menu!\n";
+
+                deleteMovie(movies, movies_count, movieName, customers, customers_count);
                 std::this_thread::sleep_for(std::chrono::seconds(t));
-                break;
             }
-            
-            deleteMovie(movies, movies_count, movieName, customers, customers_count);
-            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }
         case 16: // delete customer
@@ -414,6 +415,11 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
         }
         case 19: // logout for admin
             version = login();
+            break;
+        case 20: // save manually
+            save_movies(cashRegister, movies, movies_count, "movies_data");
+            save_customers(customers, customers_count, "customers_data");
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         default:
             std::cerr << "Validation error in the main menu function, please contact your IT provider\nexiting program in 2 seconds"; //TODO: Change Line.

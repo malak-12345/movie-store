@@ -79,7 +79,7 @@ bool isCreditCardRegistered(customer customers[], int customers_count, std::stri
     return false;
 }
 
-void addCreditCard(customer customers[], int customers_count, std::string& id) // done
+void addCreditCard(customer customers[], int customers_count, std::string& id, bool isDateChanged) // done
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     std::string card, ccv, date;
@@ -117,7 +117,19 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
     date::year y;
     date::month m;
     date::year_month yy_mm;
-    int y_val, m_val;
+    int y_val, m_val, year_int, century;
+    extern date::year_month_day system_date;
+    extern date::sys_days new_date;
+    if (isDateChanged) {
+        system_date = new_date;
+        year_int = static_cast<int>(system_date.year());
+        century = year_int / 100;
+    }
+    else {
+        //year_int = static_cast<int>(system_date.year());
+        year_int = system_date.year().operator int();
+        century = year_int / 100;
+    }
     char del;
     bool valid = false;
 
@@ -132,8 +144,8 @@ void addCreditCard(customer customers[], int customers_count, std::string& id) /
         std::istringstream iss(date);
         if(iss >> y_val >> del >> m_val && (del == '/'))
         {
+            y_val += (century * 100);
             y = date::year(y_val);
-            y += date::years(2000);
             m = date::month(m_val);
             if(m.ok() && y >= system_date.year())
             {
@@ -362,7 +374,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 std::cout << "You don't have a credit card. Do you want to add one? (y/n): ";
                 if (yes_no())
                 {
-                    addCreditCard(customers, customers_count, id);
+                    addCreditCard(customers, customers_count, id, isDateChanged);
                     cashRegister += amount;
                     paid = true;
                     std::cout << "Transaction completed!\n\n";
@@ -425,18 +437,23 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
         case 4: //no need for extra safety
         {
-            if (customers[customerIndex].coins > in_coins) 
-            {
-                customers[customerIndex].coins -= in_coins;
-                paid = true;
-                std::cout << "\nTransaction completed!\n\n";
-                std::cout << "Thanks for choosing our store!\n\n";
-                std::this_thread::sleep_for(std::chrono::seconds(t));
-                return true;
+            if (!movie.due) {
+                if (customers[customerIndex].coins > in_coins)
+                {
+                    customers[customerIndex].coins -= in_coins;
+                    paid = true;
+                    std::cout << "\nTransaction completed!\n\n";
+                    std::cout << "Thanks for choosing our store!\n\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
+                    return true;
+                }
+                else
+                {
+                    std::cout << "\nNot enough coins, use a different method\n\n";
+                }
             }
-            else 
-            {
-                std::cout << "\nNot enough coins, use a different method\n\n";
+            else {
+                std::cerr << "movie is due, cocequently coins are unavailable\n";
             }
             break;
         }
@@ -446,99 +463,3 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
     } while (ans > 4 || ans <= -1 || !paid);
 }
-
-
-
-
-
-
-/*
-bool pay(customer customers[], int customers_count, std::string& id)
-{
-    int customerIndex = getCustomerIndex(customers, customers_count, id);
-    int ans;
-    std::string ccv, date;
-    std::cout << "1. cash\n2. credit card\n";
-    do
-    {
-        is_num(ans);
-        if(ans == 0) return false;
-        if(ans == 1)
-        {
-            std::cout << "Opening cash register!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-        }
-        else if(ans == 2)
-        {
-            if(!customers[customerIndex].creditcard.cardNumber.empty())
-            {
-                std::cout << "Paying with: " << customers[customerIndex].creditcard.cardNumber << '\n';
-                do
-                {
-                    std::cout << "Enter ccv: ";
-                    getline(std::cin, ccv);
-                    std::cin.clear();
-                    ccv = deleteSpaces(ccv);
-                    
-                    if(ccv == "0") return false; // exiting to main menu
-                    if(customers[customerIndex].creditcard.ccv != ccv)
-                    {
-                        std::cout << "Wrong ccv!\n";
-                    }
-                } while(customers[customerIndex].creditcard.ccv != ccv);
-                
-                date::year_month yy_mm;
-                date::year y;
-                date::month m;
-                int y_val, m_val;
-                char del;
-                do
-                {
-                    std::cout << "Enter expiry date: year/month: ";
-                    
-                    getline(std::cin, date);
-                    std::cin.clear();
-                    date = deleteSpaces(date);
-
-                    if(ccv == "0") return false;
-                    
-                    std::istringstream iss(date);
-                    if(iss >> std::setw(2) >> y_val >> del >> std::setw(2) >> m_val && del=='/')
-                    {
-                        y = date::year(y_val);
-                        y += date::years(2000);
-                        m = date::month(m_val);
-                        if(m.ok())
-                        {
-                            yy_mm = y / m;
-                            if(yy_mm == customers[customerIndex].creditcard.yy_mm)
-                            {
-                                std::cout << "Transaction completed!\n\n";
-                            }
-                        }
-                        else
-                        {
-                            std::cout << "Wrong date or format!\n";
-                        }
-                    }
-                } while(yy_mm != customers[customerIndex].creditcard.yy_mm);    
-            }
-            else
-            {
-                std::cout << "You don't have a credit card. Do you want to add one? (y/n): ";
-                if(yes_no())
-                {
-                    addCreditCard(customers, customers_count, id);
-                    std::cout << "Transaction completed!\n\n";
-                }
-                else
-                {
-                    return false; // exiting to main menu
-                }
-            }
-        }
-    } while (ans != 1 && ans != 2);
-    return true; // continuing
-}
-
-*/
