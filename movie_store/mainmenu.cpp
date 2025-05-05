@@ -107,10 +107,9 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             {
                 std::cout << "Enter customer id: ";
                 std::getline(std::cin, id);
-                id = deleteSpaces(id);
-                std::transform(id.begin(), id.end(), id.begin(), toupper); // c# ---> C#
-                
                 if (id == "0") break;   
+                id = deleteSpaces(id);
+                std::transform(id.begin(), id.end(), id.begin(), toupper); // c# ---> C
                 if (!isCustomerFound(customers, customers_count, id))
                 {
                     std::cerr << "Wrong id, please try again\n";
@@ -123,7 +122,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 break;
             }
 
-            rent(customers, customers_count, movies, movies_count, system_date, isDateChanged, new_date, id);
+            rent(customers, customers_count, movies, movies_count, isDateChanged, new_date, id);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         } 
@@ -393,10 +392,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             do
             {
                 std::cout << "Enter amount to withdraw: ";
-                std::cin >> amount;
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                
+                is_num(amount);                
                 if(amount == 0) break;
                 if(amount > cashRegister) std::cout << "Not enough balance! Please try again.\n";
             } while(amount > cashRegister);

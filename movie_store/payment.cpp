@@ -375,6 +375,9 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 if (yes_no())
                 {
                     addCreditCard(customers, customers_count, id, isDateChanged);
+                    if (customers[customerIndex].creditcard.cardNumber.empty()){
+                        return false;
+                    }
                     cashRegister += amount;
                     paid = true;
                     std::cout << "Transaction completed!\n\n";

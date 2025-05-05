@@ -331,7 +331,7 @@ void save_customers(customer customers[], int customers_count, const std::string
     }
     else 
     {
-        std::cerr << "Unable to open file " << file_name << "please try saving manually before terminating the program,\nif the problem persists please contact your IT provider" << std::endl;
+        std::cerr << "Unable to open file " << file_name << " ,contact your IT provider" << std::endl;
     }
 }
 

@@ -45,7 +45,6 @@ void deleteCustomer(customer customers[], int& customers_count, std::string& id,
                         return;
                     }
                 }
-                std::cout << i << '\n';
                 if(i < customers_count-1)
                 {
                     customers[i].name = customers[customers_count-1].name;
@@ -306,10 +305,16 @@ bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date pri
                 return false; //aborts and exits to main menu
             }
             std::istringstream iss(entered_date);
-            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && date::year(y) >= system_date.year() && delimiter1 == '/' && delimiter2 == '/') 
+            if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') 
             {
                 new_date = date::year(y) / date::month(m) / date::day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
-                return true;
+                if (new_date >= system_date) {
+                    return true;
+                }
+                else {
+                    std::cerr << "invalid date\n";
+                    return false;
+                }
             }
             else 
             {
