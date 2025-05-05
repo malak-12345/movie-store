@@ -54,7 +54,7 @@ int getMovieIndex(movie movies[], int movies_count, std::string& movieName) // d
         movieIndex++;
     }
 }
-bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName) // done
+bool isMovieCurrentlyRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName) // done
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     for (std::string movie : customers[customerIndex].currentlyRentedMovies)
@@ -348,6 +348,7 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     
     if (isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
+
     {
         int movieIndex = getMovieIndex(movies, movies_count, movieName);
         if(customers[customerIndex].rating.count(movies[movieIndex].name))

@@ -37,6 +37,15 @@ void deleteCustomer(customer customers[], int& customers_count, std::string& id,
         {
             if (customers[i].id == id) 
             {
+                for(int j = 0; j < limit; j++)
+                {
+                    if(!(customers[i].currentlyRentedMovies[j].empty()))
+                    {
+                        std::cout << "Return rented movies before deleting!\n";
+                        return;
+                    }
+                }
+                std::cout << i << '\n';
                 if(i < customers_count-1)
                 {
                     customers[i].name = customers[customers_count-1].name;
@@ -51,19 +60,7 @@ void deleteCustomer(customer customers[], int& customers_count, std::string& id,
                     customers[i].SC_passwrd = customers[customers_count-1].SC_passwrd;
                     for(int j = 0; j < limit; j++)
                     {
-                        if(!(customers[i].currentlyRentedMovies[j].empty()))
-                        {
-                            std::string movie = customers[i].currentlyRentedMovies[j];
-                            std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
-                            movie = deleteSpaces(movie);
-                            int movieIndex = getMovieIndex(movies, movies_count, movie);
-
-                            movies[movieIndex].rented = false;
-                            movies[movieIndex].due = false;
-                            movies[movieIndex].currentRenter.clear();
-                            movies[movieIndex].dueDate = date::year(3000)/10/10;
-                            customers[i].currentlyRentedMovies[j] = customers[customers_count-1].currentlyRentedMovies[j];
-                        }
+                        customers[i].currentlyRentedMovies[j] = customers[customers_count-1].currentlyRentedMovies[j];
                     }
                     //--------------clear last element--------------
                     customers[customers_count-1].name.clear();
@@ -101,25 +98,13 @@ void deleteCustomer(customer customers[], int& customers_count, std::string& id,
                     customers[i].SC_passwrd.clear();
                     for(int j = 0; j < limit; j++)
                     {
-                        if(!(customers[i].currentlyRentedMovies[j].empty()))
-                        {
-                            std::string movie = customers[i].currentlyRentedMovies[j];
-                            std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
-                            movie = deleteSpaces(movie);
-                            int movieIndex = getMovieIndex(movies, movies_count, movie);
-
-                            movies[movieIndex].rented = false;
-                            movies[movieIndex].due = false;
-                            movies[movieIndex].currentRenter.clear();
-                            movies[movieIndex].dueDate = date::year(3000)/10/10;
-                            customers[i].currentlyRentedMovies[j].clear();
-                        }
+                        customers[i].currentlyRentedMovies[j].clear();
                     }
                     customers_count--;
                 }
                 else
                 {
-                    std::cout << "Error in the customer array, please contact your IT provider\n";
+                    std::cout << "Error in the customer array!\n";
                     break;
                 }
                 std::cout << "Customer with ID: " << id << " deleted successfully.\n";
@@ -147,14 +132,20 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName, cust
             {
                 for(int j = 0; j < customers_count; j++)
                 {
-                    for(int k = 0; k < limit; k++)
+                    if(isMovieCurrentlyRentedByCustomer(customers, customers_count, customers[j].id, name))
                     {
-                        std::string movie = customers[j].currentlyRentedMovies[k];
+                        std::cout << "\ncan't delete movie!\n";
+                        std::cout << "This movie is currently rented by: " << customers[j].id << '\n';
+                        return;
+                    }
+
+                    for(int k = 0; k < customers[j].previouslyRentedMovies.size(); k++)
+                    {
+                        std::string movie = customers[j].previouslyRentedMovies[k];
                         std::transform(movie.begin(), movie.end(), movie.begin(), tolower);
                         if(deleteSpaces(movie) == name)
                         {
-                            customers[j].currentlyRentedMovies[k].clear();
-                            break;
+                            customers[j].previouslyRentedMovies[k].append(" (deleted)");
                         }
                     }
                 }
@@ -203,7 +194,7 @@ void deleteMovie(movie movies[], int& movies_count, std::string& movieName, cust
                 }
                 else 
                 {
-                    std::cerr << "Error in the movies array, please contact your IT provider";
+                    std::cerr << "Error in the movies array\n";
                     break;
                 }
                 std::cout << "Movie deleted successfully!\n";

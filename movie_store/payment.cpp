@@ -304,7 +304,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
             std::this_thread::sleep_for(std::chrono::seconds(t));
             std::cout << "thanks for choosing our store!\n";
             std::this_thread::sleep_for(std::chrono::seconds(t));
-            break;
+            return true;
         }
         case 2:
         {
