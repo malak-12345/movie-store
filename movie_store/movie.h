@@ -22,7 +22,7 @@ bool isCustomerFound(customer customers[], int customers_count ,std::string& id)
 int getCustomerIndex(customer customers[], int customers_count, std::string& id); // done
 bool isMovieFound(movie movies[], int movies_count, std::string& movieName); // done
 int getMovieIndex(movie movies[], int movies_count, std::string& movieName); // done
-bool isMovieRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
+bool isMovieCurrentlyRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
 bool isMoviePreviouslyRentedByCustomer(customer customers[], int customerIndex, std::string& movieName);
 int getMoviesCount(movie movies[], int size_of_movies); // done
 void is_num(int& input); // done
