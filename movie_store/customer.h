@@ -33,7 +33,7 @@ bool checkPhoneNumberRegistered(customer customers[], int customers_count, std::
 bool checkId(customer customers[], int customers_count, std::string& id); // done
 int getCustomersCount(customer customers[], int size_of_customers); // done
 std::string isCurrentlyRentedAvailable(customer customers[], int customerIndex); // done
-bool file_empty(std::ifstream& file);
+bool file_empty(std::ifstream& file); // done
 int getMonthNum(std::string& mon); // done
 //---------------------------------------------------------------
 

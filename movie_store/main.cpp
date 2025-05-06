@@ -1,8 +1,8 @@
 #include "mainmenu.h"
 #include "movie.h"
 #include "customer.h"
+#include "admin.h" // contains new_date, today, system_date, cashRegister
 #include <iostream>
-#include "admin.h" // for cashRegister variable
 
 // customer c[customers_max] = {
 //     {/*name*/ "Loai Mohammed", 
@@ -107,13 +107,9 @@
 //     {"Spiderman",      "",               /*price*/70,   /*fee*/10,   /*rating*/4,   /*rent count*/9,    /*rental days*/0,    /*rented?*/false,  /*due?*/false,   /*allratings*/{4},   /*due date*/}
 // };
 
-// -----doesn't work ------
 customer c[customers_max];
 
 movie m[movies_max];
-
-int customers_count;
-int movies_count;
 
 int main()
 {

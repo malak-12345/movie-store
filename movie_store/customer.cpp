@@ -81,7 +81,7 @@ std::string isCurrentlyRentedAvailable(customer customers[], int customerIndex) 
     else if (count == limit) return "empty";
     return "available";
 }
-bool file_empty(std::ifstream& file) 
+bool file_empty(std::ifstream& file) // done
 {
     if (file.peek() == std::ifstream::traits_type::eof() || file.peek() == 0) 
     {
@@ -208,7 +208,7 @@ void displayCustomer(customer customers[], int customers_count, int customerInde
         }
         std::cout << "\n";
     
-        if (!customers[customerIndex].previouslyRentedMovies.size() == 0)
+        if (customers[customerIndex].previouslyRentedMovies.size() != 0)
         {
             std::cout << "Has rented: ";
     
@@ -257,7 +257,7 @@ void listCustomers(customer customers[], int customers_count) // done
             }
             std::cout << "\n";
     
-            if (!customers[i].previouslyRentedMovies.size() == 0)
+            if (customers[i].previouslyRentedMovies.size() != 0)
             {
                 std::cout << "Has rented: ";
     
@@ -430,7 +430,7 @@ void load_customers(customer customers[], int& customers_count, const std::strin
             }
             else 
             {
-                std::cerr << "error taking in previouslyRentedMovies vector for customersomer: " << customers[i].id << std::endl;
+                std::cerr << "error taking in previouslyRentedMovies vector for customer: " << customers[i].id << std::endl;
             }
             //___________
             // Rating map
@@ -443,7 +443,7 @@ void load_customers(customer customers[], int& customers_count, const std::strin
 
             if (std::getline(infile, opening_brace3) && opening_brace3 == "{") 
             {
-                for (int j = 0; j < rating_size; j++) 
+                for (int j = 0; j < rating_size; j++)
                 {
                     std::string key;
                     int value;

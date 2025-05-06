@@ -5,27 +5,31 @@
 #include <chrono>
 #include <algorithm>
 #include <limits>
-#include "admin.h"
+#include "admin.h" // contains new_date,today,system_date
 #include "payment.h"
 using namespace date;
+int customers_count;
+int movies_count;
+
 void displayMenu(std::string version, date::sys_days system_date)
 { 
     std::string menu[] = {
         "\n-----------------------------\n",
-        "press  1: Rent a movie",
-        "press  2: Rate a movie",
-        "press  3: Edit a rating",
-        "press  4: Return a movie",
-        "press  5: List all customers",
-        "press  6: display a customer",
-        "press  7: Add a customer",
-        "press  8: List all movies",
-        "press  9: List rented movies",
+        "press  1:  Rent a movie",
+        "press  2:  Rate a movie",
+        "press  3:  Edit a rating",
+        "press  4:  Return a movie",
+        "press  5:  List all customers",
+        "press  6:  display a customer",
+        "press  7:  Add a customer",
+        "press  8:  List all movies",
+        "press  9:  List rented movies",
         "press  10: List unrented movies",
         "press  11: List due accounts",
         "press  12: List top 10 rented movies",
         "press  13: List top 10 rated movies",
-        "press  14: Add a movie"
+        "press  14: Add a movie",
+        "press  15: Payment options"
     };
     std::cout << "\n\ncurrent date: " << system_date;
 
@@ -37,18 +41,17 @@ void displayMenu(std::string version, date::sys_days system_date)
 
     if(version == "user")
     {
-        std::cout << "press  15: Log out\n"; // done
+        std::cout << "press  16: Log out\n"; // done
     }
     else if (version == "admin") 
     {
-        std::cout << "press  15: Delete a movie\n"; // done
-        std::cout << "press  16: Delete a customer\n"; // done
-        std::cout << "press  17: set date manually\n"; // done
-        std::cout << "press  18: withdraw\n";
-        std::cout << "press  19: switch user account\n"; // done
-        std::cout << "press  20: save data manually\n"; // done
+        std::cout << "press  16: Delete a movie\n"; // done
+        std::cout << "press  17: Delete a customer\n"; // done
+        std::cout << "press  18: set date manually\n"; // done
+        std::cout << "press  19: withdraw\n"; // done
+        std::cout << "press  20: switch user account\n"; // done
     }
-    std::cout << "press  0: Exit\n";
+    std::cout << "press  0:  Exit\n";
     std::cout << "\nat any point in time, if you wish to go back to main menu enter \"0\"\n";
     std::cout << "-----------------------------\n";
 }
@@ -59,7 +62,7 @@ int takeInput(std::string version)
     while (!valid) 
     {
         std::cin >> choice;
-        if ((std::cin.good() && choice < 16 && choice > -1) || (std::cin.good() && version == "admin" && choice < 21 && choice > -1)) 
+        if ((std::cin.good() && choice < 17 && choice > -1) || (std::cin.good() && version == "admin" && choice < 21 && choice > -1)) 
         {
             valid = true;
         }
@@ -76,8 +79,6 @@ int takeInput(std::string version)
 
 void MainMenu(customer customers[], int size_of_customers, movie movies[], int size_of_movies)
 {
-    extern int customers_count;
-    extern int movies_count;
     bool isDateChanged = false;
     std::string version;
     
@@ -97,9 +98,10 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             {
                 std::cout << "Enter customer id: ";
                 std::getline(std::cin, id);
-                if (id == "0") break;   
                 id = deleteSpaces(id);
                 std::transform(id.begin(), id.end(), id.begin(), toupper); // c# ---> C
+
+                if (id == "0") break;   
                 if (!isCustomerFound(customers, customers_count, id))
                 {
                     std::cerr << "Wrong id, please try again\n";
@@ -111,7 +113,6 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 std::this_thread::sleep_for(std::chrono::seconds(t));
                 break;
             }
-
             rent(customers, customers_count, movies, movies_count, system_date, id);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
@@ -311,7 +312,88 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }
-        case 15: // delete movie for admin --- log out for user
+        case 15: // payment options
+        {
+            int choice;
+            std::string id;
+            do
+            {
+                std::cout << "Enter customer id: ";
+                getline(std::cin, id);
+                id = deleteSpaces(id);
+                std::transform(id.begin(), id.end(), id.begin(), toupper);
+                
+                if(id == "0") break;
+                if(!isCustomerFound(customers,customers_count,id))
+                {
+                    std::cout << "This customer doesn't exist! Please try again.\n";
+                }
+            } while(!isCustomerFound(customers,customers_count,id));
+            if(id == "0")
+            {
+                std::cout << "Returning to main menu!\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
+                break;
+            }
+            int customerIndex = getCustomerIndex(customers, customers_count, id);
+            
+            do
+            {
+                std::cout << "1. Add credit card\n"
+                          << "2. Create SC\n"
+                          << "3. Reset SC password\n\n";
+                std::cout << "Enter choice: ";
+                is_num(choice);
+                switch (choice)
+                {
+                case 0:
+                    std::cout << "Returning to main menu!\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
+                    break;
+                case 1:
+                {
+                    if(customers[customerIndex].creditcard.cardNumber.empty())
+                    {
+                        addCreditCard(customers, customers_count, id, isDateChanged);
+                    }
+                    else
+                    {
+                        std::cout << "this customer already has a credit card!\n";
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    if(!customers[customerIndex].SC)
+                    {
+                        create_SC(customers, customers_count, id);
+                    }
+                    else
+                    {
+                        std::cout << "this customer already has a SC!\n";
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    if(customers[customerIndex].SC)
+                    {
+                        reset_SC_passwrd(customers, customers_count, id);
+                    }
+                    else
+                    {
+                        std::cout << "this customer doesn't have a SC!\n";
+                    }
+                    break;
+                }
+                default:
+                    std::cout << "Invalid choice!\n\n";
+                    break;
+                }
+            } while(choice > 3 || choice <= -1);
+            break;
+        }
+        case 16: // delete movie for admin --- log out for user
         {
             if (version == "user")
             {
@@ -345,7 +427,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             }
             break;
         }
-        case 16: // delete customer
+        case 17: // delete customer
         {
             std::string id;
             do
@@ -368,15 +450,15 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 break;
             }
             
-            deleteCustomer(customers, customers_count, id, movies, movies_count);
+            deleteCustomer(customers, customers_count, id);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }
-        case 17: // change date
+        case 18: // change date
             isDateChanged = ChangeDate(system_date);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
-        case 18: // withdraw
+        case 19: // withdraw
         {
             double amount;
             do
@@ -399,13 +481,8 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }
-        case 19: // logout for admin
+        case 20: // logout for admin
             version = login();
-            break;
-        case 20: // save manually
-            save_movies(cashRegister, movies, movies_count, "movies_data");
-            save_customers(customers, customers_count, "customers_data");
-            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         default:
             std::cerr << "Validation error in the main menu function, please contact your IT provider\nexiting program in 2 seconds"; //TODO: Change Line.
