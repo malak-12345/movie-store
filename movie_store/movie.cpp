@@ -207,6 +207,7 @@ void listRented(movie movies[], int movies_count) // done
                 std::cout << movieNum << ". \n";
                 std::cout << "Movie name: " << movies[i].name << '\n';
                 std::cout << "Rented by :" << movies[i].currentRenter << '\n';
+                std::cout << "due by :" << movies[i].dueDate << '\n';
                 movieNum++;
             }
         }

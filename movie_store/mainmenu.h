@@ -3,8 +3,10 @@
 #include "movie.h"
 #include "Howard_Hinnant/include/date/date.h"
 
-auto now = std::chrono::system_clock::now();
-date::sys_days system_date = date::floor<date::days>(now);
+extern date::sys_days system_date;
+extern double cashRegister;
+extern int customers_count;
+extern int movies_count;
 extern double cashRegister;
 void displayMenu(std::string version, date::sys_days system_date);
 int takeInput(std::string version);

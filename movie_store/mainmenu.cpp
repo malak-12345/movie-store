@@ -10,6 +10,8 @@
 using namespace date;
 int customers_count;
 int movies_count;
+auto now = std::chrono::system_clock::now();
+date::sys_days system_date = date::floor<date::days>(now);
 
 void displayMenu(std::string version, date::sys_days system_date)
 { 
@@ -354,7 +356,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 {
                     if(customers[customerIndex].creditcard.cardNumber.empty())
                     {
-                        addCreditCard(customers, customers_count, id, isDateChanged);
+                        addCreditCard(customers, customers_count, id);
                     }
                     else
                     {
