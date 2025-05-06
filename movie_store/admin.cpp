@@ -11,9 +11,6 @@ std::string USER = "user";
 std::string USER_PSSWRD = "user";
 
 double cashRegister = 0.0;
-auto now = std::chrono::system_clock::now();
-date::sys_days new_date, today = date::floor<date::days>(now);
-date::year_month_day system_date = today;
 
 
 std::string checkCredentials(std::string& login, std::string& passwrd) // done
@@ -284,11 +281,12 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
     std::cout << "Returning to main menu!\n";
 }
 
-bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
+bool ChangeDate(date::sys_days&system_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
 {
     int y, m, d;
     char delimiter1, delimiter2;
     std::string entered_date;
+    date::sys_days old_date = system_date;
     std::cout << "do you wish to set date manually y/n?: ";
     if (yes_no()) 
     {
@@ -307,12 +305,13 @@ bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date pri
             std::istringstream iss(entered_date);
             if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') 
             {
-                new_date = date::year(y) / date::month(m) / date::day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
-                if (new_date >= system_date) {
+                system_date = date::year(y) / date::month(m) / date::day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
+                if (system_date >= old_date) {
                     return true;
                 }
                 else {
                     std::cerr << "invalid date\n";
+                    system_date = old_date;
                     return false;
                 }
             }
