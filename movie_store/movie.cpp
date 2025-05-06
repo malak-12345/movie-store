@@ -6,8 +6,7 @@
 #include <chrono>
 #include <sstream>
 #include <fstream>
-#include "admin.h" // contains new_date, today, system_date, cashRegister
-
+#include "admin.h" // contains system_date, cashRegister
 
 
 //-------------------------utilities-----------------------------
@@ -410,7 +409,7 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
     return true; // for main menu
 }
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::sys_days system_date, std::string& id)
+void rent(customer customers[], int customers_count, movie movies[], int movies_count, std::string& id)
 {
 
     bool repeat = true, date_good = false;
@@ -498,7 +497,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
                         movies[i].rented = true;
                         movies[i].rentedCount++;
-                        movies[i].rentalDays = calc_rental_days(movies[i], system_date);
+                        movies[i].rentalDays = calc_rental_days(movies[i]);
                         movies[i].currentRenter = customers[customerIndex].name;
                         std::cout << "Successfully rented: " << movies[i].name << " for " << movies[i].rentalDays << " days\n";
                         return;
@@ -518,7 +517,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
     }
 }
 
-void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, date::sys_days system_date) // done
+void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count) // done
 {
     int num = 1, found, movieIndex, ans, index = 0;
     std::string movieName;
@@ -570,7 +569,7 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                 if (yes_no()) 
                 {
 
-                    if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex],system_date)) 
+                    if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex])) 
                     {
                         std::cout << "Canceling transaction!\n";
                         std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -597,7 +596,7 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                     if (yes_no()) 
                     {
                         std::cout << "Smart lad, say hi to your family for me\n";
-                        if(!pay(cashRegister ,customers, customers_count, id, movies[movieIndex], system_date))
+                        if(!pay(cashRegister ,customers, customers_count, id, movies[movieIndex]))
                         {
                             std::cout << "Canceling transaction!\n";
                             std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -763,7 +762,7 @@ void listTopRented(movie movies[], int movies_count) //using insertion sort, lis
     }
 }
 
-int validateDue(movie& movie, date::sys_days system_date) // done
+int validateDue(movie& movie) // done
 {
     date::sys_days due = movie.dueDate;
     if (system_date > due)
@@ -786,8 +785,7 @@ int validateDue(movie& movie, date::sys_days system_date) // done
     }
 }
 
-
-int calc_rental_days(movie& movie, date::sys_days system_date) // done
+int calc_rental_days(movie& movie) // done
 {
     date::sys_days today, due = movie.dueDate;
 
@@ -804,14 +802,13 @@ int calc_rental_days(movie& movie, date::sys_days system_date) // done
     return diff;
 }
 
-
-void listDueAccounts(movie movies[],int movies_count, customer customers[], int customers_count, date::sys_days system_date) // done
+void listDueAccounts(movie movies[],int movies_count, customer customers[], int customers_count) // done
 { //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
     int num = 1;
     std::cout << "\n-----------------------------\n";   
     for (int i = 0; i < movies_count; i++)
     {
-        int days_due = validateDue(movies[i], system_date);
+        int days_due = validateDue(movies[i]);
         if (movies[i].due == true)
         {
             for (int j = 0; j < customers_count; j++)

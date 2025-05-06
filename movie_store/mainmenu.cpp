@@ -5,15 +5,14 @@
 #include <chrono>
 #include <algorithm>
 #include <limits>
-#include "admin.h" // contains new_date,today,system_date
+#include "admin.h" // contains system_date, cashRegister
 #include "payment.h"
 using namespace date;
+
 int customers_count;
 int movies_count;
-auto now = std::chrono::system_clock::now();
-date::sys_days system_date = date::floor<date::days>(now);
 
-void displayMenu(std::string version, date::sys_days system_date)
+void displayMenu(std::string version)
 { 
     std::string menu[] = {
         "\n-----------------------------\n",
@@ -81,13 +80,12 @@ int takeInput(std::string version)
 
 void MainMenu(customer customers[], int size_of_customers, movie movies[], int size_of_movies)
 {
-    bool isDateChanged = false;
     std::string version;
     
     version = login();
     while(version == "user" || version == "admin")
     {
-        displayMenu(version, system_date);
+        displayMenu(version);
 
         switch (takeInput(version))
         {
@@ -115,7 +113,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 std::this_thread::sleep_for(std::chrono::seconds(t));
                 break;
             }
-            rent(customers, customers_count, movies, movies_count, system_date, id);
+            rent(customers, customers_count, movies, movies_count, id);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         } 
@@ -245,7 +243,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                 break;
             }
             
-            returnMovie(cashRegister, customers, customers_count, id, movies, movies_count, system_date);
+            returnMovie(cashRegister, customers, customers_count, id, movies, movies_count);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }            
@@ -297,7 +295,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 11: // list due accounts
-            listDueAccounts(movies, movies_count, customers, customers_count, system_date);
+            listDueAccounts(movies, movies_count, customers, customers_count);
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 12: // top 10 rented
@@ -457,7 +455,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             break;
         }
         case 18: // change date
-            isDateChanged = ChangeDate(system_date);
+            ChangeDate();
             std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         case 19: // withdraw

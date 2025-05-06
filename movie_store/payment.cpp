@@ -1,6 +1,6 @@
 #include "payment.h"
 #include "movie.h"
-#include "admin.h" // contains new_date, today, system_date, cashRegister
+#include "admin.h" // contains system_date, cashRegister
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -240,9 +240,9 @@ int generate_coins() // from 1 to 10
     return coins;
 }
 
-double amount2pay(movie& mov, date::sys_days system_date) 
+double amount2pay(movie& mov) 
 {
-    int fee_days = validateDue(mov, system_date);
+    int fee_days = validateDue(mov);
     int price_days = mov.rentalDays;
     double amount = 0;
     if (mov.due)
@@ -257,7 +257,7 @@ double amount2pay(movie& mov, date::sys_days system_date)
 }
 
 bool pay(double& cashRegister, customer customers[], int customers_count, 
-         std::string& id, movie& movie, date::sys_days system_date) 
+         std::string& id, movie& movie) 
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
@@ -266,7 +266,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     
     double SC_amount, in_coins;
 
-    double amount = amount2pay(movie, system_date); //due status is set now
+    double amount = amount2pay(movie); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
     
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due

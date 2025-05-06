@@ -4,13 +4,16 @@
 #include <thread>
 #include <chrono>
 
+auto now = std::chrono::system_clock::now();
+date::sys_days system_date = date::floor<date::days>(now);
+double cashRegister = 0.0;
+
 std::string ADMIN = "admin";
 std::string ADMIN_PSSWRD = "admin";
 
 std::string USER = "user";
 std::string USER_PSSWRD = "user";
 
-double cashRegister = 0.0;
 
 
 std::string checkCredentials(std::string& login, std::string& passwrd) // done
@@ -237,7 +240,7 @@ std::string login() // done
 }
 
 
-bool ChangeDate(date::sys_days&system_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
+void ChangeDate() // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
 {
     int y, m, d;
     char delimiter1, delimiter2;
@@ -255,19 +258,20 @@ bool ChangeDate(date::sys_days&system_date) // doesn't allow you to set a date p
             {
                 std::cout << "Returning to main menu!\n";
                 std::this_thread::sleep_for(std::chrono::seconds(t));
-                return false; //aborts and exits to main menu
+                return; //aborts and exits to main menu
             }
             std::istringstream iss(entered_date);
             if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') 
             {
                 system_date = date::year(y) / date::month(m) / date::day(d); //converts date::year_month_day to sys_days, thnx to sir Howard Hinnant
-                if (system_date >= old_date) {
-                    return true;
+                if (system_date >= old_date) 
+                {
+                    return;
                 }
-                else {
+                else 
+                {
                     std::cerr << "invalid date\n";
                     system_date = old_date;
-                    return false;
                 }
             }
             else 
@@ -280,6 +284,6 @@ bool ChangeDate(date::sys_days&system_date) // doesn't allow you to set a date p
     {
         std::cout << "Returning to main menu!\n";
         std::this_thread::sleep_for(std::chrono::seconds(t));
-        return false; //aborting
+        return; //aborting
     }
 }
