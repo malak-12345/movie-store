@@ -6,7 +6,7 @@
 #include <chrono>
 #include <sstream>
 #include <fstream>
-#include "admin.h"
+#include "admin.h" // contains new_date, today, system_date, cashRegister
 
 
 
@@ -138,7 +138,7 @@ bool yes_no()
 			std::cerr << "Input error occurred.\n";
 			continue;
 		}
-		else if (tolower(ans) != 'y' && tolower(ans) != 'n') 
+		else if (tolower(ans) != 'y' && tolower(ans) != 'n')
 		{
 			std::cout << "Invalid input, please enter a valid choice: ";
 		}
@@ -167,7 +167,7 @@ void listMovies(movie movies[], int movies_count) // done
             std::cout << MovieNum << ". " << movies[i].name << '\n';
             std::cout << "\tprice: " << movies[i].price << " EGP" << '\n';
             std::cout << "\trented: " << movies[i].rentedCount << " times" << '\n';
-            if (movies[i].rating == 0)
+            if (movies[i].rating != 0)
             {
                 std::cout << "\trating:" << movies[i].rating << '\n';
             }
@@ -409,18 +409,18 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
     return true; // for main menu
 }
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
-            bool isDateChanged, date::sys_days new_date, std::string& id)
+void rent(customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, 
+            bool isDateChanged)
 {
-    date::sys_days today;
-    if (isDateChanged) {
+    // date::sys_days today;
+    if (isDateChanged) 
+    {
         today = new_date;
     }
-    else {
+    else 
+    {
         today = system_date;
     }
-
-
 
     bool repeat = true, date_good = false;
     int selected, match = 1;
@@ -507,7 +507,7 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
                         movies[i].rented = true;
                         movies[i].rentedCount++;
-                        movies[i].rentalDays = calc_rental_days(movies[i], isDateChanged, new_date);
+                        movies[i].rentalDays = calc_rental_days(movies[i], isDateChanged);
                         movies[i].currentRenter = customers[customerIndex].name;
                         std::cout << "Successfully rented: " << movies[i].name << " for " << movies[i].rentalDays << " days\n";
                         return;
@@ -528,13 +528,13 @@ void rent(customer customers[], int customers_count, movie movies[], int movies_
 }
 
 void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
-                 bool isDateChanged, date::sys_days new_date) // done
+                 bool isDateChanged) // done
 {
-    int num = 1, found, movieIndex, ans, diff, index = 0;
+    int num = 1, found, movieIndex, ans, index = 0;
     std::string movieName;
     int customerIndex = getCustomerIndex(customers, customers_count, id);
 
-    if(isCurrentlyRentedAvailable(customers, customerIndex) != "full")
+    if(isCurrentlyRentedAvailable(customers, customerIndex) != "empty")
     {
         for (std::string movie : customers[customerIndex].currentlyRentedMovies)
         {
@@ -580,12 +580,14 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                 if (yes_no()) 
                 {
 
-                    if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex], isDateChanged, new_date)) 
+                    if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex], isDateChanged)) 
                     {
                         std::cout << "Canceling transaction!\n";
                         std::this_thread::sleep_for(std::chrono::seconds(t));
                         return;
-                    }else{
+                    }
+                    else
+                    {
                         movies[movieIndex].rented = false;
                         movies[movieIndex].currentRenter.clear();
                         movies[movieIndex].due = false;
@@ -605,7 +607,7 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                     if (yes_no()) 
                     {
                         std::cout << "Smart lad, say hi to your family for me\n";
-                        if(!pay(cashRegister ,customers, customers_count, id, movies[movieIndex], isDateChanged, new_date)) 
+                        if(!pay(cashRegister ,customers, customers_count, id, movies[movieIndex], isDateChanged))
                         {
                             std::cout << "Canceling transaction!\n";
                             std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -669,6 +671,51 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
     }
 }
 
+void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done 
+{
+    std::string movieName, check;
+    double price = 0, fee = 0;
+    do
+    {
+        std::cout << "Enter movie name: ";
+        getline(std::cin, movieName);
+        check = deleteSpaces(movieName);
+        (check.begin(), check.end(), check.begin(), tolower);
+        
+        if(movieName == "0")
+        {
+            std::cout << "Returning to main menu!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(t));
+            return;
+        }
+        if(isMovieFound(movies,movies_count,check))
+        {
+            std::cout << "This movie already exists!\n";
+            continue;
+        }
+        std::cout << "\nEnter movie price per day (EGP) : ";
+        is_num(price);
+        std::cout << "\nEnter due fees per day (EGP) : ";
+        is_num(fee);
+    } while(isMovieFound(movies,movies_count,check) || check.empty());
+    
+    for(int i = 0; i < size_of_movies; i++)
+    {
+        if(movies[i].name.empty())
+        {
+            movies[i].name = movieName;
+            movies[i].price = price;
+            movies[i].fee = fee;
+            movies_count++;
+            std::cout << "Successfully added: " << movieName << '\n';
+            return;
+        }
+    }
+    std::cerr << "you have reached maximum movie capacity!!\n"; // if the return doesn't happen, ie there are no empty slots
+    std::this_thread::sleep_for(std::chrono::seconds(t));
+    std::cout << "Returning to main menu!\n";
+}
+
 void listTopRated(movie movies[], int movies_count) //using insertion sort, listing top 10 rated
 {
     movie copy[movies_max];
@@ -726,18 +773,18 @@ void listTopRented(movie movies[], int movies_count) //using insertion sort, lis
     }
 }
 
-int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date) // done
+int validateDue(movie& movie, bool isDateChanged) // done
 {
     date::sys_days today, due = movie.dueDate;
     if (isDateChanged) 
     {
         today = new_date;
     }
-    else 
-    {
-        auto now = std::chrono::system_clock::now(); // return current system date
-        today = date::floor<date::days>(now);
-    }
+    // else 
+    // {
+    //     auto now = std::chrono::system_clock::now(); // return current system date
+    //     today = date::floor<date::days>(now);
+    // }
     
     auto today_n = today.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
     int today_int = today_n.count(); // convert it to int --> 20205d --> 20205
@@ -759,18 +806,18 @@ int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date) // do
     }
 }
 
-int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date) // done
+int calc_rental_days(movie& movie, bool isDateChanged) // done
 {
-    date::sys_days today, due = movie.dueDate;
+    date::sys_days due = movie.dueDate;
     if (isDateChanged)
     {
         today = new_date;
     }
-    else
-    {
-        auto now = std::chrono::system_clock::now(); // return current system date
-        today = date::floor<date::days>(now);
-    }
+    // else
+    // {
+    //     auto now = std::chrono::system_clock::now(); // return current system date
+    //     today = date::floor<date::days>(now);
+    // }
 
     auto today_n = today.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
     int today_int = today_n.count(); // convert it to int --> 20205d --> 20205
@@ -785,13 +832,13 @@ int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date) 
 }
 
 void listDueAccounts(movie movies[],int movies_count, customer customers[], int customers_count, 
-                     bool isDateChanged, date::sys_days new_date) // done
+                     bool isDateChanged) // done
 { //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
     int num = 1;
     std::cout << "\n-----------------------------\n";   
     for (int i = 0; i < movies_count; i++)
     {
-        int days_due = validateDue(movies[i], isDateChanged, new_date);
+        int days_due = validateDue(movies[i], isDateChanged);
         if (movies[i].due == true)
         {
             for (int j = 0; j < customers_count; j++)

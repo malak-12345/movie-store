@@ -29,7 +29,7 @@ std::string checkCredentials(std::string& login, std::string& passwrd) // done
     return "";
 }
 
-void deleteCustomer(customer customers[], int& customers_count, std::string& id, movie movies[], int movies_count) // done
+void deleteCustomer(customer customers[], int& customers_count, std::string& id) // done
 {
     if(customers_count != 0)
     {
@@ -239,51 +239,6 @@ std::string login() // done
     } while(checkCredentials(login, passwrd) == "");
 }
 
-void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
-{
-    std::string movieName, check;
-    double price = 0, fee = 0;
-    do
-    {
-        std::cout << "Enter movie name: ";
-        getline(std::cin, movieName);
-        check = deleteSpaces(movieName);
-        (check.begin(), check.end(), check.begin(), tolower);
-        
-        if(movieName == "0")
-        {
-            std::cout << "Returning to main menu!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(t));
-            return;
-        }
-        if(isMovieFound(movies,movies_count,check))
-        {
-            std::cout << "This movie already exists!\n";
-            continue;
-        }
-        std::cout << "\nEnter movie price per day (EGP) : ";
-        is_num(price);
-        std::cout << "\nEnter due fees per day (EGP) : ";
-        is_num(fee);
-    } while(isMovieFound(movies,movies_count,check) || check.empty());
-    
-    for(int i = 0; i < size_of_movies; i++)
-    {
-        if(movies[i].name.empty())
-        {
-            movies[i].name = movieName;
-            movies[i].price = price;
-            movies[i].fee = fee;
-            movies_count++;
-            std::cout << "Successfully added: " << movieName << '\n';
-            return;
-        }
-    }
-    std::cerr << "you have reached maximum movie capacity!!\n"; // if the return doesn't happen, ie there are no empty slots
-    std::this_thread::sleep_for(std::chrono::seconds(t));
-    std::cout << "Returning to main menu!\n";
-}
-
 bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date prior to actual current date from system_clock, in order to avoid embezzlement
 {
     int y, m, d;
@@ -296,7 +251,6 @@ bool ChangeDate(date::sys_days& new_date) // doesn't allow you to set a date pri
         {
             std::cout << "specify date in this exact format yyyy/mm/dd : ";
             getline(std::cin, entered_date);
-            std::cin.clear();
             entered_date = deleteSpaces(entered_date);
             if (entered_date == "0") 
             {

@@ -23,7 +23,7 @@ int getCustomerIndex(customer customers[], int customers_count, std::string& id)
 bool isMovieFound(movie movies[], int movies_count, std::string& movieName); // done
 int getMovieIndex(movie movies[], int movies_count, std::string& movieName); // done
 bool isMovieCurrentlyRentedByCustomer(customer customers[], int customers_count ,std::string& id, std::string& movieName); // done
-bool isMoviePreviouslyRentedByCustomer(customer customers[], int customerIndex, std::string& movieName);
+bool isMoviePreviouslyRentedByCustomer(customer customers[], int customerIndex, std::string& movieName); // done
 int getMoviesCount(movie movies[], int size_of_movies); // done
 void is_num(int& input); // done
 void is_num(double& input); // done
@@ -44,19 +44,20 @@ bool rate(movie movies[], int movies_count, std::string& movieName,
 bool editRating(movie movies[], int movies_count, std::string& movieName,
                 customer customers[], int customers_count, std::string& id); // done
 
-void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
-            bool isDateChanged, date::sys_days new_date, std::string& id);
+void rent(customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, 
+            bool isDateChanged);
 
 void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
-    bool isDateChanged, date::sys_days new_date);
+    bool isDateChanged);
 
+void addNewMovie(movie movies[], int size_of_movies, int& movies_count); // done
 
-int validateDue(movie& movie, bool isDateChanged, date::sys_days new_date); // done
+int validateDue(movie& movie, bool isDateChanged); // done
 
-int calc_rental_days(movie& movie, bool isDateChanged, date::sys_days new_date);
+int calc_rental_days(movie& movie, bool isDateChanged);
 
 void listDueAccounts(movie movies[], int movies_count, customer customers[], int customers_count, 
-                     bool isDateChanged, date::sys_days new_date); //done
+                     bool isDateChanged); //done
 
 void listTopRated(movie movies[], int movies_count); // done
     

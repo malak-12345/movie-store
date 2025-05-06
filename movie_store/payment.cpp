@@ -1,13 +1,12 @@
 #include "payment.h"
 #include "movie.h"
-#include "admin.h"
+#include "admin.h" // contains new_date, today, system_date, cashRegister
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <sstream>
 #include <thread>
 #include <chrono>
-#include <iomanip>
 #include "Howard_Hinnant/include/date/date.h"
 
 
@@ -118,15 +117,16 @@ void addCreditCard(customer customers[], int customers_count, std::string& id, b
     date::month m;
     date::year_month yy_mm;
     int y_val, m_val, year_int, century;
-    extern date::year_month_day system_date;
-    extern date::sys_days new_date;
-    if (isDateChanged) {
-        system_date = new_date;
-        year_int = static_cast<int>(system_date.year());
+    // extern date::year_month_day system_date;
+    // extern date::sys_days new_date;
+    if (isDateChanged) ///note
+    {
+        system_date = new_date; // this is a global variable not a copy
+        year_int = system_date.year().operator int();
         century = year_int / 100;
     }
-    else {
-        //year_int = static_cast<int>(system_date.year());
+    else 
+    {
         year_int = system_date.year().operator int();
         century = year_int / 100;
     }
@@ -184,6 +184,8 @@ void create_SC(customer cust[], int customers_count, std::string& id)
             std::cout << "create a strong password (no spaces): ";
             getline(std::cin, passwrd);
         } while(passwrd.find(" ") != passwrd.npos); // continues asking if space is found
+        if(passwrd == "0") return;
+
         do
         {
             std::cout << "re-enter the password: ";
@@ -197,7 +199,7 @@ void create_SC(customer cust[], int customers_count, std::string& id)
     }
 }
 
-void set_SC_passwrd(customer cust[], int customers_count, std::string& id) {
+void reset_SC_passwrd(customer cust[], int customers_count, std::string& id) {
     std::string passwrd, old_passwrd;
     int Index = getCustomerIndex(cust, customers_count, id);
     
@@ -205,13 +207,12 @@ void set_SC_passwrd(customer cust[], int customers_count, std::string& id) {
     {
         std::cout << "enter previous password: ";
         getline(std::cin, old_passwrd);
+        if(passwrd == "0") return;
         while (old_passwrd != cust[Index].SC_passwrd) 
         {
             if (old_passwrd == "0") return;
             std::cerr << "wrong password, try again";
             std::cout << "enter previous password: ";
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             getline(std::cin, old_passwrd);
         }
         do
@@ -219,6 +220,7 @@ void set_SC_passwrd(customer cust[], int customers_count, std::string& id) {
             std::cout << "enter New password (no spaces): ";
             getline(std::cin, passwrd);
         } while (passwrd.find(" ") != passwrd.npos);
+        if(passwrd == "0") return;
         
         cust[Index].SC_passwrd = passwrd;
         std::cout << "password changed successfully\n";
@@ -247,9 +249,9 @@ int generate_coins() // from 1 to 10
     return coins;
 }
 
-double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date) 
+double amount2pay(movie& mov, bool isDateChanged)
 {
-    int fee_days = validateDue(mov, isDateChanged, new_date);
+    int fee_days = validateDue(mov, isDateChanged);
     int price_days = mov.rentalDays;
     double amount = 0;
     if (mov.due)
@@ -264,7 +266,7 @@ double amount2pay(movie& mov, bool isDateChanged, date::sys_days new_date)
 }
 
 bool pay(double& cashRegister, customer customers[], int customers_count, 
-         std::string& id, movie& movie, bool isDateChanged, date::sys_days new_date) 
+         std::string& id, movie& movie, bool isDateChanged) 
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
@@ -272,25 +274,26 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     std::string SC_password, ccv, date;
     
     double SC_amount, in_coins;
-    double amount = amount2pay(movie, isDateChanged, new_date); //due status is set now
+    double amount = amount2pay(movie, isDateChanged); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
     
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
-    std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
-    std::cout << "1. in cash = " << amount << "$\n2. via credit card = " << amount
-              << "$\n3. via SC card = " << SC_amount << "$\n4. redeem coins";
-
-    if (movie.due) 
-    {
-        std::cout << "(unavailable)\n"; // for coins i mean
-    }
-    else 
-    {
-        std::cout << " = " << in_coins << " coins\n"; // for coins
-    }
     do
     {
-        std::cout << "Enter choice: ";
+        std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
+        std::cout << "1. in cash = " << amount << "$\n2. via credit card = " << amount
+              << "$\n3. via SC card = " << SC_amount << "$\n4. redeem coins";
+
+        if (movie.due) 
+        {
+            std::cout << "(unavailable)\n"; // for coins i mean
+        }
+        else 
+        {
+            std::cout << " = " << in_coins << " coins\n"; // for coins
+        }
+
+        std::cout << "Enter choosen method: ";
         is_num(ans);
         if (ans == 0) return false;
 
@@ -317,17 +320,18 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                     getline(std::cin, ccv);
                     ccv = deleteSpaces(ccv);
 
-                    if (ccv == "0") return false; // exiting to main menu
+                    if (ccv == "0") break;
                     if (customers[customerIndex].creditcard.ccv != ccv)
                     {
                         std::cout << "Wrong ccv!\n";
                     }
                 } while (customers[customerIndex].creditcard.ccv != ccv);
+                if (ccv == "0") break;
 
                 date::year_month yy_mm;
                 date::year y;
                 date::month m;
-                int y_val, m_val;
+                int y_val, m_val, year_int, century;
                 char del;
                 
                 do
@@ -337,13 +341,14 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                     getline(std::cin, date);
                     date = deleteSpaces(date);
 
-                    if (date == "0") return false;
+                    if (date == "0") break;
 
                     std::istringstream iss(date);
                     if (iss >> y_val >> del >> m_val && del == '/')
                     {   
-                        y = date::year(y_val);
-                        y += date::years(2000);
+                        year_int = customers[customerIndex].creditcard.yy_mm.year().operator int();
+                        century = year_int/100;
+                        y += date::years(century*100);
                         m = date::month(m_val);
                         if (m.ok())
                         {
@@ -368,6 +373,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                         }
                     }
                 } while (yy_mm != customers[customerIndex].creditcard.yy_mm);
+                if (date == "0") break;
             }
             else
             {
@@ -375,9 +381,8 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 if (yes_no())
                 {
                     addCreditCard(customers, customers_count, id, isDateChanged);
-                    if (customers[customerIndex].creditcard.cardNumber.empty()){
-                        return false;
-                    }
+                    if (customers[customerIndex].creditcard.cardNumber.empty()) break;
+                    
                     cashRegister += amount;
                     paid = true;
                     std::cout << "Transaction completed!\n\n";
@@ -394,12 +399,12 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
         case 3:
         {
-            if (customers[customerIndex].SC) 
+            if (customers[customerIndex].SC)
             {
                 std::cout << "Enter password: ";
                 getline(std::cin, SC_password);
 
-                if(SC_password == "0") return false;
+                if(SC_password == "0") break;
                 while (customers[customerIndex].SC_passwrd != SC_password) 
                 {
                     std::cerr << "wrong password try again: ";
@@ -440,7 +445,8 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
         case 4: //no need for extra safety
         {
-            if (!movie.due) {
+            if (!movie.due) 
+            {
                 if (customers[customerIndex].coins > in_coins)
                 {
                     customers[customerIndex].coins -= in_coins;
@@ -456,7 +462,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 }
             }
             else {
-                std::cerr << "movie is due, cocequently coins are unavailable\n";
+                std::cerr << "movie is due, paying in coins are unavailable\n";
             }
             break;
         }
