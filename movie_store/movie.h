@@ -36,7 +36,7 @@ void listRented(movie movies[], int movies_count); // done
 
 int listUnrented(movie movies[], int movies_count); // done
 
-void calc_rating(movie& movie, int rating); // done
+void calc_rating(movie& movie); // done
 
 bool rate(movie movies[], int movies_count, std::string& movieName, 
           customer customers[], int customers_count ,std::string& id); // done
@@ -45,7 +45,7 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
                 customer customers[], int customers_count, std::string& id); // done
 
 void rent(customer customers[], int customers_count, movie movies[], int movies_count, 
-          date::year_month_day system_date, bool isDateChanged, date::sys_days new_date, std::string& id);
+            bool isDateChanged, date::sys_days new_date, std::string& id);
 
 void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
     bool isDateChanged, date::sys_days new_date);
