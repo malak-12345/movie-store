@@ -118,8 +118,8 @@ int main()
     
     customers_count = getCustomersCount(c, customers_max);
     movies_count = getMoviesCount(m, movies_max);
-    std::cout << "Number of customers: " << customers_count << '\n';
-    std::cout << "Number of movies: " << movies_count << '\n';
+    //std::cout << "Number of customers: " << customers_count << '\n';
+    //std::cout << "Number of movies: " << movies_count << '\n';
     
     MainMenu(c, customers_max, m, movies_max);
     
