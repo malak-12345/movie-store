@@ -10,11 +10,10 @@ bool isCreditCardRegistered(customer customers[], int customers_count, std::stri
 //Luhn algorithm
 bool validateCreditCard(std::string& creditCard); // done
 
-void addCreditCard(customer customers[], int customers_count, std::string& id, bool isDateChanged); // done
+void addCreditCard(customer customers[], int customers_count, std::string& id); // done
 void create_SC(customer cust[], int customers_count, std::string& id);
 void reset_SC_passwrd(customer cust[], int customers_count, std::string& id);
 void charge_SC(customer cust[], int customers_count, std::string& id);
 int generate_coins();
-double amount2pay(movie& mov, bool isDateChanged);
-bool pay(double& cashRegister, customer customers[], int customers_count, 
-         std::string& id, movie& mov, bool isDateChanged);
+double amount2pay(movie& mov, date::sys_days system_date);
+bool pay(double& cashRegister, customer customers[], int customers_count, std::string& id, movie& movie, date::sys_days system_date);

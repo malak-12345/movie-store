@@ -207,6 +207,7 @@ void listRented(movie movies[], int movies_count) // done
                 std::cout << movieNum << ". \n";
                 std::cout << "Movie name: " << movies[i].name << '\n';
                 std::cout << "Rented by :" << movies[i].currentRenter << '\n';
+                std::cout << "due by :" << movies[i].dueDate << '\n';
                 movieNum++;
             }
         }
@@ -281,7 +282,7 @@ bool rate(movie movies[], int movies_count, std::string& movieName,
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     
-    if (isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
+    if (isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName) || isMovieCurrentlyRentedByCustomer(customers, customers_count, id, movieName))
     {
         int movieIndex = getMovieIndex(movies, movies_count, movieName);
         if(!customers[customerIndex].rating.count(movies[movieIndex].name))
@@ -351,7 +352,7 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     
-    if (isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName))
+    if (isMoviePreviouslyRentedByCustomer(customers, customerIndex, movieName) || isMovieCurrentlyRentedByCustomer(customers, customers_count, id, movieName))
 
     {
         int movieIndex = getMovieIndex(movies, movies_count, movieName);
@@ -409,18 +410,8 @@ bool editRating(movie movies[], int movies_count, std::string& movieName,
     return true; // for main menu
 }
 
-void rent(customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, 
-            bool isDateChanged)
+void rent(customer customers[], int customers_count, movie movies[], int movies_count, date::sys_days system_date, std::string& id)
 {
-    // date::sys_days today;
-    if (isDateChanged) 
-    {
-        today = new_date;
-    }
-    else 
-    {
-        today = system_date;
-    }
 
     bool repeat = true, date_good = false;
     int selected, match = 1;
@@ -465,7 +456,7 @@ void rent(customer customers[], int customers_count, std::string& id, movie movi
             std::cout << "\toverdue fee per day: " << movies[i].fee << " EGP\n";
             std::cout << "\tmovie rating:" << movies[i].rating << '\n';
             std::cout << "\thas been rented: " << movies[i].rentedCount << " times\n\n";
-            std::cout << "today is: " << today << '\n';
+            std::cout << "today is: " << system_date << '\n';
             while (!date_good)
             {
                 std::cout << "specify return date in this exact format yyyy/mm/dd : ";
@@ -482,7 +473,7 @@ void rent(customer customers[], int customers_count, std::string& id, movie movi
                 if (iss >> y >> delimiter1 >> m >> delimiter2 >> d && delimiter1 == '/' && delimiter2 == '/') //this is correct don't worry
                 {
                     movies[i].dueDate = date::year(y) / date::month(m) / date::day(d);
-                    if(movies[i].dueDate >= today)
+                    if(movies[i].dueDate >= system_date)
                     {
                         date_good = true;
                     }
@@ -507,7 +498,7 @@ void rent(customer customers[], int customers_count, std::string& id, movie movi
                         customers[customerIndex].currentlyRentedMovies[k] = movies[i].name;
                         movies[i].rented = true;
                         movies[i].rentedCount++;
-                        movies[i].rentalDays = calc_rental_days(movies[i], isDateChanged);
+                        movies[i].rentalDays = calc_rental_days(movies[i], system_date);
                         movies[i].currentRenter = customers[customerIndex].name;
                         std::cout << "Successfully rented: " << movies[i].name << " for " << movies[i].rentalDays << " days\n";
                         return;
@@ -527,8 +518,7 @@ void rent(customer customers[], int customers_count, std::string& id, movie movi
     }
 }
 
-void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count,
-                 bool isDateChanged) // done
+void returnMovie(double& cashRegister, customer customers[], int customers_count, std::string& id, movie movies[], int movies_count, date::sys_days system_date) // done
 {
     int num = 1, found, movieIndex, ans, index = 0;
     std::string movieName;
@@ -580,7 +570,7 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                 if (yes_no()) 
                 {
 
-                    if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex], isDateChanged)) 
+                    if(!pay(cashRegister, customers, customers_count, id, movies[movieIndex],system_date)) 
                     {
                         std::cout << "Canceling transaction!\n";
                         std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -607,7 +597,7 @@ void returnMovie(double& cashRegister, customer customers[], int customers_count
                     if (yes_no()) 
                     {
                         std::cout << "Smart lad, say hi to your family for me\n";
-                        if(!pay(cashRegister ,customers, customers_count, id, movies[movieIndex], isDateChanged))
+                        if(!pay(cashRegister ,customers, customers_count, id, movies[movieIndex], system_date))
                         {
                             std::cout << "Canceling transaction!\n";
                             std::this_thread::sleep_for(std::chrono::seconds(t));
@@ -773,28 +763,18 @@ void listTopRented(movie movies[], int movies_count) //using insertion sort, lis
     }
 }
 
-int validateDue(movie& movie, bool isDateChanged) // done
+int validateDue(movie& movie, date::sys_days system_date) // done
 {
-    date::sys_days today, due = movie.dueDate;
-    if (isDateChanged) 
+    date::sys_days due = movie.dueDate;
+    if (system_date > due)
     {
-        today = new_date;
-    }
-    // else 
-    // {
-    //     auto now = std::chrono::system_clock::now(); // return current system date
-    //     today = date::floor<date::days>(now);
-    // }
+        auto today_n = system_date.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
+        int today_int = today_n.count(); // convert it to int --> 20205d --> 20205
     
-    auto today_n = today.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
-    int today_int = today_n.count(); // convert it to int --> 20205d --> 20205
-    
-    auto due_n = due.time_since_epoch();
-    int due_int = due_n.count();
-    int diff = 0;
-    
-    if (today > due)
-    {
+        auto due_n = due.time_since_epoch();
+        int due_int = due_n.count();
+        int diff = 0;
+
         movie.due = true;
         diff = today_int - due_int;
         return diff;
@@ -806,20 +786,13 @@ int validateDue(movie& movie, bool isDateChanged) // done
     }
 }
 
-int calc_rental_days(movie& movie, bool isDateChanged) // done
-{
-    date::sys_days due = movie.dueDate;
-    if (isDateChanged)
-    {
-        today = new_date;
-    }
-    // else
-    // {
-    //     auto now = std::chrono::system_clock::now(); // return current system date
-    //     today = date::floor<date::days>(now);
-    // }
 
-    auto today_n = today.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
+int calc_rental_days(movie& movie, date::sys_days system_date) // done
+{
+    date::sys_days today, due = movie.dueDate;
+
+
+    auto today_n = system_date.time_since_epoch(); // diff in days from 1970 to present for ex. 20205d, (d) for days
     int today_int = today_n.count(); // convert it to int --> 20205d --> 20205
 
     auto due_n = due.time_since_epoch();
@@ -831,14 +804,14 @@ int calc_rental_days(movie& movie, bool isDateChanged) // done
     return diff;
 }
 
-void listDueAccounts(movie movies[],int movies_count, customer customers[], int customers_count, 
-                     bool isDateChanged) // done
+
+void listDueAccounts(movie movies[],int movies_count, customer customers[], int customers_count, date::sys_days system_date) // done
 { //note for when u r debugging dummy, it updates the accounts right before listing them, no earlier
     int num = 1;
     std::cout << "\n-----------------------------\n";   
     for (int i = 0; i < movies_count; i++)
     {
-        int days_due = validateDue(movies[i], isDateChanged);
+        int days_due = validateDue(movies[i], system_date);
         if (movies[i].due == true)
         {
             for (int j = 0; j < customers_count; j++)

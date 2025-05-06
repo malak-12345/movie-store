@@ -9,7 +9,7 @@
 #include <chrono>
 #include "Howard_Hinnant/include/date/date.h"
 
-
+extern date::sys_days system_date;
 
 bool isDigit(std::string& str) // done
 {
@@ -78,7 +78,7 @@ bool isCreditCardRegistered(customer customers[], int customers_count, std::stri
     return false;
 }
 
-void addCreditCard(customer customers[], int customers_count, std::string& id, bool isDateChanged) // done
+void addCreditCard(customer customers[], int customers_count, std::string& id) // done
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     std::string card, ccv, date;
@@ -116,22 +116,13 @@ void addCreditCard(customer customers[], int customers_count, std::string& id, b
     date::year y;
     date::month m;
     date::year_month yy_mm;
+    date::year_month_day system = system_date; // conversion from sys_days to a year_month_day var (necessary)
     int y_val, m_val, year_int, century;
-    // extern date::year_month_day system_date;
-    // extern date::sys_days new_date;
-    if (isDateChanged) ///note
-    {
-        system_date = new_date; // this is a global variable not a copy
-        year_int = system_date.year().operator int();
-        century = year_int / 100;
-    }
-    else 
-    {
-        year_int = system_date.year().operator int();
-        century = year_int / 100;
-    }
     char del;
     bool valid = false;
+    year_int = system.year().operator int();
+    century = year_int / 100;
+
 
     while(!valid)
     {
@@ -147,7 +138,7 @@ void addCreditCard(customer customers[], int customers_count, std::string& id, b
             y_val += (century * 100);
             y = date::year(y_val);
             m = date::month(m_val);
-            if(m.ok() && y >= system_date.year())
+            if(m.ok() && y >= system.year())   //check if works
             {
                 yy_mm = y / m;
             }
@@ -249,9 +240,9 @@ int generate_coins() // from 1 to 10
     return coins;
 }
 
-double amount2pay(movie& mov, bool isDateChanged)
+double amount2pay(movie& mov, date::sys_days system_date) 
 {
-    int fee_days = validateDue(mov, isDateChanged);
+    int fee_days = validateDue(mov, system_date);
     int price_days = mov.rentalDays;
     double amount = 0;
     if (mov.due)
@@ -266,7 +257,7 @@ double amount2pay(movie& mov, bool isDateChanged)
 }
 
 bool pay(double& cashRegister, customer customers[], int customers_count, 
-         std::string& id, movie& movie, bool isDateChanged) 
+         std::string& id, movie& movie, date::sys_days system_date) 
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
@@ -274,7 +265,8 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     std::string SC_password, ccv, date;
     
     double SC_amount, in_coins;
-    double amount = amount2pay(movie, isDateChanged); //due status is set now
+
+    double amount = amount2pay(movie, system_date); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
     
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
@@ -380,9 +372,10 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 std::cout << "You don't have a credit card. Do you want to add one? (y/n): ";
                 if (yes_no())
                 {
-                    addCreditCard(customers, customers_count, id, isDateChanged);
-                    if (customers[customerIndex].creditcard.cardNumber.empty()) break;
-                    
+                    addCreditCard(customers, customers_count, id);
+                    if (customers[customerIndex].creditcard.cardNumber.empty()){
+                        return false;
+                    }
                     cashRegister += amount;
                     paid = true;
                     std::cout << "Transaction completed!\n\n";
