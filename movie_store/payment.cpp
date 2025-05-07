@@ -228,7 +228,13 @@ void charge_SC(customer cust[], int customers_count, std::string& id) {
 
     std::cout << "enter amount you want to charge with: ";
     is_num(amount); // if 0 nothing will happen, and will go back to main menu
+    if (amount == 0) {
+        std::cout << "\ncanceling\n";
+        std::this_thread::sleep_for(std::chrono::seconds(t));
+        return;
+    }
     cust[Index].SC_balance += amount;
+    std::cout << "\nsuccessfully charged\n";
 }
 
 // if payment == true, cust[index].coins += generate_coins();
@@ -240,7 +246,7 @@ int generate_coins() // from 1 to 10
     return coins;
 }
 
-double amount2pay(movie& mov) 
+double amount2pay(movie& mov, bool& damaged) 
 {
     int fee_days = validateDue(mov);
     int price_days = mov.rentalDays;
@@ -253,6 +259,11 @@ double amount2pay(movie& mov)
     {
         amount = mov.price * price_days;
     }
+    std::cout << "is movie damaged y/n? ";
+    if (yes_no()) {
+        amount += 500; //constant damage fee of 500 EGP
+        damaged = true;
+    }
     return amount;
 }
 
@@ -261,12 +272,12 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
 {
     int customerIndex = getCustomerIndex(customers, customers_count, id);
     int ans;
-    bool paid = false;
+    bool paid = false, damaged = false;
     std::string SC_password, ccv, date;
     
     double SC_amount, in_coins, creditCardFees;
 
-    double amount = amount2pay(movie); //due status is set now
+    double amount = amount2pay(movie, damaged); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
     creditCardFees = amount * 0.05;  // credit card fees 5%
 
@@ -281,9 +292,10 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                   << "$\n3. via SC card = " << SC_amount 
                   << "$\n4. redeem coins";
 
-        if (movie.due) 
+        if (movie.due || damaged) 
         {
             std::cout << "(unavailable)\n"; // for coins i mean
+            std::cout << "\nconsidering that the movie is damaged a fine of 500 EGP will be added, and payment via SC and coins are unavailable\n\n"; // for coins i mean
         }
         else 
         {
@@ -399,53 +411,60 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
         case 3:
         {
-            if (customers[customerIndex].SC)
-            {
-                std::cout << "Enter password: ";
-                getline(std::cin, SC_password);
-
-                if(SC_password == "0") break;
-                while (customers[customerIndex].SC_passwrd != SC_password) 
+            if (!damaged) {
+                if (customers[customerIndex].SC)
                 {
-                    std::cerr << "wrong password try again: ";
+                    std::cout << "Enter password: ";
                     getline(std::cin, SC_password);
+
+                    if (SC_password == "0") break;
+                    while (customers[customerIndex].SC_passwrd != SC_password)
+                    {
+                        std::cerr << "wrong password try again: ";
+                        getline(std::cin, SC_password);
+                    }
                 }
-            }
-            else 
-            {
-                std::cout << "No SC card detected, would you like to make one y/n? ";
-                if (yes_no()) 
+                else
                 {
-                    create_SC(customers, customers_count, id);
-                    charge_SC(customers, customers_count, id);
-                    std::cout << "\nSC card created successfully!\n\n";
+                    std::cout << "No SC card detected, would you like to make one y/n? ";
+                    if (yes_no())
+                    {
+                        create_SC(customers, customers_count, id);
+                        charge_SC(customers, customers_count, id);
+                        std::cout << "\nSC card created successfully!\n\n";
+                        std::this_thread::sleep_for(std::chrono::seconds(t));
+                    }
+                    else
+                    {
+                        std::cerr << "\nchoose a different method to pay\n";
+                        break;
+                    }
+                }
+                if (customers[customerIndex].SC_balance > SC_amount)
+                {
+                    customers[customerIndex].SC_balance -= SC_amount;
+                    cashRegister += SC_amount;
+                    paid = true; //not really necessary but what the heck,keep it just in case
+                    std::cout << "\nTransaction completed!\n\n";
+                    std::cout << "Thanks for choosing our store!\n\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
+                    return true;
+                }
+                else
+                {
+                    std::cerr << "\nnot enough balance in your SC card, use a different method\n\n";
                     std::this_thread::sleep_for(std::chrono::seconds(t));
                 }
-                else 
-                {
-                    std::cerr << "\nchoose a different method to pay\n";
-                    break;
-                }
             }
-            if (customers[customerIndex].SC_balance > SC_amount) 
-            {
-                customers[customerIndex].SC_balance -= SC_amount;
-                cashRegister += SC_amount;
-                paid = true; //not really necessary but what the heck,keep it just in case
-                std::cout << "\nTransaction completed!\n\n";
-                std::cout << "Thanks for choosing our store!\n\n";
+            else {
+                std::cerr << "\nmovie is due or damaged, paying via SC is unavailable\n";
                 std::this_thread::sleep_for(std::chrono::seconds(t));
-                return true;
-            }
-            else 
-            {
-                std::cout << "\nnot enough balance in your SC card, use a different method\n\n";
             }
             break;
         }
         case 4: //no need for extra safety
         {
-            if (!movie.due) 
+            if (!movie.due && !damaged) 
             {
                 if (customers[customerIndex].coins > in_coins)
                 {
@@ -459,15 +478,18 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 else
                 {
                     std::cout << "\nNot enough coins, use a different method\n\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(t));
                 }
             }
             else {
-                std::cerr << "movie is due, paying in coins are unavailable\n";
+                std::cerr << "\nmovie is due or damaged, paying with coins is unavailable\n";
+                std::this_thread::sleep_for(std::chrono::seconds(t));
             }
             break;
         }
         default:
             std::cout << "\nInvalid choice!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(t));
             break;
         }
     } while (ans > 4 || ans <= -1 || !paid);
