@@ -168,7 +168,8 @@ void listMovies(movie movies[], int movies_count) // done
             std::cout << "\trented: " << movies[i].rentedCount << " times" << '\n';
             if (movies[i].rating != 0)
             {
-                std::cout << "\trating:" << movies[i].rating << '\n';
+                std::cout << "\trating: " << movies[i].rating << '\n';
+                std::cout << "\trated by: " << movies[i].allRatings.size() << " people\n";
             }
             else 
             {
