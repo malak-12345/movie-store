@@ -1,7 +1,7 @@
 #include "mainmenu.h"
 #include "movie.h"
 #include "customer.h"
-#include "admin.h" // contains new_date, today, system_date, cashRegister
+#include "admin.h" // system_date, cashRegister
 #include <iostream>
 
 // customer c[customers_max] = {

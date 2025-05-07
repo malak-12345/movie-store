@@ -485,7 +485,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             version = login();
             break;
         default:
-            std::cerr << "Validation error in the main menu function, please contact your IT provider\nexiting program in 2 seconds"; //TODO: Change Line.
+            std::cerr << "error in the main menu function\nexiting program in 1 seconds";
             std::this_thread::sleep_for(std::chrono::seconds(t));
             return;
         }

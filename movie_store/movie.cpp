@@ -677,6 +677,11 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
             std::this_thread::sleep_for(std::chrono::seconds(t));
             return;
         }
+        if(check.empty())
+        {
+            std::cout << "Invalid name!\n";
+            continue;   
+        }
         if(isMovieFound(movies,movies_count,check))
         {
             std::cout << "This movie already exists!\n";

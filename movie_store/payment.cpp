@@ -273,6 +273,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     do
     {
         std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
+        std::cout << "\nSC balance : " << customers[customerIndex].SC_balance << " EGP\n\n"; // if doesn't have it will display zero
         std::cout << "1. in cash = " << amount << "$\n2. via credit card = " << amount
               << "$\n3. via SC card = " << SC_amount << "$\n4. redeem coins";
 
@@ -323,9 +324,12 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 date::year_month yy_mm;
                 date::year y;
                 date::month m;
+                date::year_month_day system = system_date;
                 int y_val, m_val, year_int, century;
                 char del;
-                
+                year_int = system.year().operator int();
+                century = year_int/100;
+
                 do
                 {
                     std::cout << "Enter expiry date: yy/mm: ";
@@ -337,9 +341,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
 
                     std::istringstream iss(date);
                     if (iss >> y_val >> del >> m_val && del == '/')
-                    {   
-                        year_int = customers[customerIndex].creditcard.yy_mm.year().operator int();
-                        century = year_int/100;
+                    {
                         y += date::years(century*100);
                         m = date::month(m_val);
                         if (m.ok())
@@ -373,8 +375,9 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                 if (yes_no())
                 {
                     addCreditCard(customers, customers_count, id);
-                    if (customers[customerIndex].creditcard.cardNumber.empty()){
-                        return false;
+                    if (customers[customerIndex].creditcard.cardNumber.empty())
+                    {
+                        break; // breaks from case. display the payments again
                     }
                     cashRegister += amount;
                     paid = true;
