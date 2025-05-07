@@ -264,18 +264,22 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
     bool paid = false;
     std::string SC_password, ccv, date;
     
-    double SC_amount, in_coins;
+    double SC_amount, in_coins, creditCardFees;
 
     double amount = amount2pay(movie); //due status is set now
     SC_amount = amount * 0.9; //10% discount on all movies
-    
+    creditCardFees = amount * 0.05;  // credit card fees 5%
+
     in_coins = 50; //even if coins payment unavailable no problem, any movie costs 50 coins as long as it is not due
     do
     {
         std::cout << "\nYou have : " << customers[customerIndex].coins << " coins\n\n";
         std::cout << "\nSC balance : " << customers[customerIndex].SC_balance << " EGP\n\n"; // if doesn't have it will display zero
-        std::cout << "1. in cash = " << amount << "$\n2. via credit card = " << amount
-              << "$\n3. via SC card = " << SC_amount << "$\n4. redeem coins";
+        
+        std::cout << "1. in cash = " << amount 
+                  << "$\n2. via credit card = " << amount + creditCardFees
+                  << "$\n3. via SC card = " << SC_amount 
+                  << "$\n4. redeem coins";
 
         if (movie.due) 
         {
@@ -349,7 +353,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                             yy_mm = y / m;
                             if (yy_mm == customers[customerIndex].creditcard.yy_mm)
                             {
-                                cashRegister += amount;
+                                cashRegister += (amount + creditCardFees);
                                 paid = true;
                                 std::cout << "Transaction completed!\n\n";
                                 std::cout << "Thanks for choosing our store!\n\n";
@@ -379,7 +383,7 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                     {
                         break; // breaks from case. display the payments again
                     }
-                    cashRegister += amount;
+                    cashRegister += (amount + creditCardFees);
                     paid = true;
                     std::cout << "Transaction completed!\n\n";
                     std::cout << "Thanks for choosing our store!\n\n";
