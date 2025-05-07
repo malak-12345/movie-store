@@ -358,7 +358,8 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
                     std::istringstream iss(date);
                     if (iss >> y_val >> del >> m_val && del == '/')
                     {
-                        y += date::years(century*100);
+                        y_val += (century * 100);
+                        y = date::year(y_val);
                         m = date::month(m_val);
                         if (m.ok())
                         {
@@ -411,7 +412,8 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
         case 3:
         {
-            if (!damaged) {
+            if (!damaged) 
+            {
                 if (customers[customerIndex].SC)
                 {
                     std::cout << "Enter password: ";
