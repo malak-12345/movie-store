@@ -341,7 +341,8 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
             {
                 std::cout << "1. Add credit card\n"
                           << "2. Create SC\n"
-                          << "3. Reset SC password\n\n";
+                          << "3. charge SC\n"
+                          << "4. Reset SC password\n\n";
                 std::cout << "Enter choice: ";
                 is_num(choice);
                 switch (choice)
@@ -359,6 +360,7 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     else
                     {
                         std::cout << "this customer already has a credit card!\n";
+                        std::this_thread::sleep_for(std::chrono::seconds(t));
                     }
                     break;
                 }
@@ -371,12 +373,26 @@ void MainMenu(customer customers[], int size_of_customers, movie movies[], int s
                     else
                     {
                         std::cout << "this customer already has a SC!\n";
+                        std::this_thread::sleep_for(std::chrono::seconds(t));
                     }
                     break;
                 }
                 case 3:
                 {
                     if(customers[customerIndex].SC)
+                    {
+                        charge_SC(customers, customers_count, id);
+                    }
+                    else
+                    {
+                        std::cout << "this customer doesn't have a SC!\n";
+                        std::this_thread::sleep_for(std::chrono::seconds(t));
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    if (customers[customerIndex].SC)
                     {
                         reset_SC_passwrd(customers, customers_count, id);
                     }

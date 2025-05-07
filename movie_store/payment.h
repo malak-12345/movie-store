@@ -15,5 +15,5 @@ void create_SC(customer cust[], int customers_count, std::string& id);
 void reset_SC_passwrd(customer cust[], int customers_count, std::string& id);
 void charge_SC(customer cust[], int customers_count, std::string& id);
 int generate_coins();
-double amount2pay(movie& mov); //
+double amount2pay(movie& mov, bool& damaged); //
 bool pay(double& cashRegister, customer customers[], int customers_count, std::string& id, movie& movie); //
