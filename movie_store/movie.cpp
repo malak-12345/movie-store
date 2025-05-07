@@ -690,8 +690,21 @@ void addNewMovie(movie movies[], int size_of_movies, int& movies_count) // done
         }
         std::cout << "\nEnter movie price per day (EGP) : ";
         is_num(price);
+        if(price == 0)
+        {
+            std::cout << "Returning to main menu!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(t));
+            return;
+        }
+
         std::cout << "\nEnter due fees per day (EGP) : ";
         is_num(fee);
+        if(fee == 0)
+        {
+            std::cout << "Returning to main menu!\n";
+            std::this_thread::sleep_for(std::chrono::seconds(t));
+            return;
+        }
     } while(isMovieFound(movies,movies_count,check) || check.empty());
     
     for(int i = 0; i < size_of_movies; i++)
