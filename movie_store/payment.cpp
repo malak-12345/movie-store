@@ -412,7 +412,8 @@ bool pay(double& cashRegister, customer customers[], int customers_count,
         }
         case 3:
         {
-            if (!damaged) {
+            if (!damaged) 
+            {
                 if (customers[customerIndex].SC)
                 {
                     std::cout << "Enter password: ";
